@@ -1,0 +1,89 @@
+---
+doc_id: "CR-{{PROJECT_NAME}}-001"
+type: CR
+standard: lean-7-docs
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Change Request — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author | Change Summary              | CR-id       | PR/SHA |
+|---------|------------|--------|--------|-----------------------------|-------------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle   | Initial CR scaffold         | CR-{{DATE}}-NNN | -  |
+
+---
+
+## 1. Change Request Header
+
+| Field                 | Value                                                       |
+|-----------------------|-------------------------------------------------------------|
+| CR identifier         | CR-{{DATE}}-NNN                                             |
+| Project               | {{PROJECT_NAME}}                                            |
+| Date raised           | {{DATE}}                                                    |
+| Raised by             | [Your Name / Oracle name]                                        |
+| Priority              | Critical / High / Medium / Low                              |
+| Type                  | Requirement change / Defect fix / Enhancement / Process CR  |
+| Affected REQ-id(s)    | REQ-{{REQ_ID_PREFIX}}-NNN                                   |
+| Affected documents    | PROJECT_PLAN / SRS / SDD / CR / RISK / UXUI / UAT          |
+
+---
+
+## 2. Change Description
+
+### 2.1 Current Behaviour / Current Requirement
+
+[Describe the current state — what the system does now, or what the requirement says now. Copy the original requirement text here verbatim.]
+
+### 2.2 Requested Change
+
+[Describe clearly what should change. Precise, measurable. "The system shall..." format for requirement changes.]
+
+### 2.3 Justification
+
+[Why is this change necessary? Business reason, defect evidence, Your Name decision, regulatory requirement, or technical finding.]
+
+---
+
+## 3. Impact Analysis
+
+| Dimension         | Impact assessment                                             |
+|-------------------|---------------------------------------------------------------|
+| SRS sections      | [Which REQ-ids are added / amended / removed]                 |
+| SDD sections      | [Which design sections need updating]                         |
+| UAT test cases    | [Which test cases need updating or new ones required]         |
+| UAT traceability  | [Which UAT rows / REQ-id mappings need updating]              |
+| UXUI / previews   | [Which UI components are affected]                            |
+| Code files        | [Which source files are affected — estimated]                 |
+| Effort estimate   | [Hours — rough estimate]                                      |
+| Risk              | [Any new risks introduced by this change]                     |
+| Schedule impact   | [Days added / removed from plan]                              |
+
+---
+
+## 4. Decision
+
+| Field           | Value                                              |
+|-----------------|----------------------------------------------------|
+| Decision        | Approved / Rejected / Deferred / Needs more info   |
+| Decided by      | [Your Name / My Oracle]                                      |
+| Decision date   | [date]                                             |
+| Notes           | [Any conditions on approval]                       |
+
+---
+
+## 5. Implementation Record
+
+| Field           | Value                                              |
+|-----------------|----------------------------------------------------|
+| Implemented by  | [Oracle name]                                      |
+| PR / SHA        | [github.com/<your-github-user>/{{PROJECT_NAME}}/pull/NNN] |
+| Merged date     | [date]                                             |
+| Docs updated    | PROJECT_PLAN v[N] / SRS v[N] / SDD v[N] / CR v[N] / RISK v[N] / UXUI v[N] / UAT v[N] |
+| Closed date     | [date]                                             |
+| Status          | Implemented / Verified / Closed                    |
