@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# omx-launch — trust-prime the cwd, then launch omx (oh-my-codex wrapping codex).
+#
+# WHY: omx runs codex underneath, and codex's interactive TUI shows the same
+# one-time workspace-TRUST prompt codex-launch exists to pre-answer (see
+# codex-launch for the full root-cause writeup — maw-hey keystrokes race the
+# prompt and wedge the pane to a shell). The trust entry is launcher-agnostic:
+# prime it the same way, then exec omx instead of codex.
+#
+# my-oracle 2026-06-06 — OMX pilot (engine key "omx"); mirrors codex-launch ba4b00d/2a9ec60.
+set -euo pipefail
+cfg="${CODEX_HOME:-$HOME/.codex}/config.toml"
+cwd="$(pwd -P)"
+# NESTED-WORKTREE FIX (2026-06-13): prime cwd AND the main repo root — codex
+# resolves trust by the main git root, so a nested worktree (<repo>/agents/<wt>)
+# primed only by cwd still prompts and kills the worker. See codex-launch.
+paths="$cwd"
+if common="$(git -C "$cwd" rev-parse --git-common-dir 2>/dev/null)"; then
+  case "$common" in /*) : ;; *) common="$cwd/$common" ;; esac
+  root="$(cd "$(dirname "$common")" 2>/dev/null && pwd -P)" || root=""
+  [ -n "$root" ] && [ "$root" != "$cwd" ] && paths="$paths
+$root"
+fi
+if [ -f "$cfg" ]; then
+  # Serialize read-modify-write: concurrent tiles must not double-append the
+  # same [projects."x"] table — a duplicate TOML table is a parse error.
+  {
+    flock 9
+    while IFS= read -r p; do
+      [ -n "$p" ] || continue
+      grep -qF "[projects.\"$p\"]" "$cfg" \
+        || printf '\n[projects."%s"]\ntrust_level = "trusted"\n' "$p" >> "$cfg"
+    done <<< "$paths"
+  } 9>>"$cfg"
+fi
+# `omx-launch` is the maw worker entrypoint and is normally invoked with
+# `--direct`; direct workers must not inherit HUD ownership from the leader pane.
+unset OMX_TMUX_HUD_OWNER OMX_TMUX_HUD_LEADER_PANE
+# exec the external omx binary directly (never `exec command omx` — exec can't
+# run shell builtins; that exact form wedged tiles on 2026-06-05).
+exec omx "$@"

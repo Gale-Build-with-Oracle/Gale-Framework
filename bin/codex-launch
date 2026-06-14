@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# codex-launch — trust-prime the cwd, then launch codex.
+#
+# WHY: codex's interactive TUI (v0.136/0.137) shows a one-time workspace-TRUST
+# prompt the first time it launches in a directory not already in
+# ~/.codex/config.toml [projects]. --dangerously-bypass-approvals-and-sandbox
+# does NOT suppress that prompt (only `codex exec` auto-trusts). maw spawns a
+# tile then injects the brief via `maw hey`; those keystrokes race into the
+# unanswered trust prompt, dismiss it, and drop the pane to a shell — the brief
+# lands as multiline shell input. Every `--wt` worktree is a new path, so the
+# prompt fires on every spawn.
+#
+# FIX: append an idempotent trusted entry for the cwd BEFORE launching the TUI.
+#
+# my-oracle 2026-06-05 — root-caused from my-oracle's YourProject-example-forms tile breakage.
+set -euo pipefail
+cfg="${CODEX_HOME:-$HOME/.codex}/config.toml"
+cwd="$(pwd -P)"
+# NESTED-WORKTREE FIX (2026-06-13, public starter directive "always trust, skip asking"):
+# codex resolves the trust key by walking UP to the main git root, so priming only
+# the worktree cwd leaves a nested worktree (<repo>/agents/<wt>) untrusted — the
+# prompt fires and kills the worker (E2E 2026-06-12). Prime the cwd AND the main
+# repo root (parent of git-common-dir) so every layout is covered with no manual
+# per-repo pre-seeding.
+paths="$cwd"
+if common="$(git -C "$cwd" rev-parse --git-common-dir 2>/dev/null)"; then
+  case "$common" in /*) : ;; *) common="$cwd/$common" ;; esac
+  root="$(cd "$(dirname "$common")" 2>/dev/null && pwd -P)" || root=""
+  [ -n "$root" ] && [ "$root" != "$cwd" ] && paths="$paths
+$root"
+fi
+if [ -f "$cfg" ]; then
+  # Serialize read-modify-write: concurrent tiles must not double-append the
+  # same [projects."x"] table — a duplicate TOML table is a parse error that
+  # would stop codex from starting (a different wedge).
+  {
+    flock 9
+    while IFS= read -r p; do
+      [ -n "$p" ] || continue
+      grep -qF "[projects.\"$p\"]" "$cfg" \
+        || printf '\n[projects."%s"]\ntrust_level = "trusted"\n' "$p" >> "$cfg"
+    done <<< "$paths"
+  } 9>>"$cfg"
+fi
+# Launch the real codex binary. NOT `exec command codex`: `command` is a shell
+# BUILTIN and `exec` only execs external files, so that form dies with
+# "exec: command: not found" (the bug that wedged my-oracle's tiles 2026-06-05).
+# This is a non-interactive script, so interactive aliases are not expanded —
+# bare `codex` resolves to the PATH binary, which is what we want.
+exec codex "$@"
