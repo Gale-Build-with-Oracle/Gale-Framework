@@ -1,0 +1,87 @@
+---
+doc_id: "CM_AUDIT_LOG-{{PROJECT_NAME}}-001"
+type: CM_AUDIT_LOG
+tier: 2
+category: recurring
+pa: CM
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Configuration Item Audit — Quarterly — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author   | Change Summary        | CR-id | PR/SHA |
+|---------|------------|--------|----------|-----------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle     | Initial audit entry   | -     | -      |
+
+---
+
+## 1. Audit Scope
+
+| Attribute              | Value                                          |
+|------------------------|------------------------------------------------|
+| Quarter                | [YYYY-Qn: YYYY-MM-DD to YYYY-MM-DD]           |
+| Repository             | `github.com/<your-github-user>/{{PROJECT_NAME}}`      |
+| Auditor                | [Oracle name]                                  |
+| Audit method           | Script-assisted (`git` + `gh` CLI) + manual    |
+
+---
+
+## 2. Configuration Item Baseline Check
+
+### 2.1 Baseline Status
+
+| CI type                     | Expected state                          | Actual state           | Compliant |
+|-----------------------------|----------------------------------------|------------------------|-----------|
+| Source code — HEAD          | Tagged release for each version        | [tag list]             | Yes / No  |
+| Documents — SRS             | Version matches release tag            | v[N] committed         | Yes / No  |
+| Documents — SDD             | Version matches release tag            | v[N] committed         | Yes / No  |
+| Documents — UAT             | Executed + signed-off in `docs/UAT.md` | [date signed]          | Yes / No  |
+| Documents — RTM             | All Must reqs have status "Verified"   | [coverage %]           | Yes / No  |
+| CHANGELOG                   | Entry for each tagged version          | [list]                 | Yes / No  |
+
+### 2.2 Branch / PR Compliance
+
+| Check                                              | Compliant | Evidence                          |
+|----------------------------------------------------|-----------|-----------------------------------|
+| No direct pushes to `main` this quarter            | Yes / No  | `git log --no-merges origin/main` |
+| All PRs have linked REQ-id or "internal" label     | Yes / No  | `gh pr list --state merged`       |
+| No `--no-verify` bypasses                          | Yes / No  | Git commit logs                   |
+| Worktrees cleaned up after merge                   | Yes / No  | `git worktree list`               |
+
+---
+
+## 3. Integrity Check
+
+```bash
+# Commands run during audit:
+git fsck --full --no-reflogs 2>&1 | head -20
+git log --oneline origin/main | head -20
+gh pr list --state merged --limit 50
+git tag -l | sort -V
+```
+
+Results: [Paste relevant output or note "clean — no issues found"]
+
+---
+
+## 4. Findings and Corrective Actions
+
+| Finding ID | Description                                     | Severity     | CA raised |
+|------------|-------------------------------------------------|--------------|-----------|
+| -          | [No findings — or describe finding]             | -            | -         |
+
+---
+
+## 5. Auditor Sign-off
+
+| Field      | Value              |
+|------------|--------------------|
+| Auditor    | [Oracle name]      |
+| Date       | {{DATE}}           |
+| Next audit | [YYYY-Qn+1 start]  |

@@ -1,0 +1,66 @@
+---
+doc_id: "OPP_OBJECTIVES-{{PROJECT_NAME}}-001"
+type: OPP_OBJECTIVES
+tier: 4
+category: future
+pa: OPP
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Organizational Process Performance Objectives — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author | Change Summary                     | CR-id | PR/SHA |
+|---------|------------|--------|--------|------------------------------------|-------|--------|
+| 0.1.0   | {{DATE}}   | -      | My Oracle   | OPP objectives stub — L3 placeholder | -  | -      |
+
+---
+
+## 1. Purpose
+
+This document defines aspirational quantitative performance objectives for the My Oracle fleet. At CMMI L4, these objectives drive quantitative project management (QPM). At L3, they guide improvement priorities and measurement focus.
+
+---
+
+## 2. Fleet-Level Quality Objectives
+
+| Objective ID | Metric                              | L3 target (aspirational) | L4 target (binding, post-PPB) | Data source                      |
+|--------------|-------------------------------------|--------------------------|-------------------------------|----------------------------------|
+| QPO-001      | PR cycle time (p50)                 | ≤ 2 days                 | within PPB mean ± 1σ          | GitHub API                       |
+| QPO-002      | Defects found post-release (per version) | 0 P0, ≤ 2 P1        | ≤ PPB mean                    | GitHub issues (post-release label) |
+| QPO-003      | RTM coverage at merge               | 100%                     | 100%                          | RTM.md coverage column           |
+| QPO-004      | UAT pass rate (first run)           | ≥ 90%                    | ≥ 95% (UCL from PPB)          | UAT sign-off records             |
+| QPO-005      | Oracle token cost per project       | ≤ $[N]                   | within PPB mean + 2σ          | `maw costs`                      |
+| QPO-006      | Test coverage (unit, business logic)| ≥ 80%                    | ≥ 85%                         | CI coverage report               |
+| QPO-007      | WCAG violations at UAT              | 0                        | 0                             | axe-core scan                    |
+
+---
+
+## 3. Sub-Process Objectives
+
+| Sub-process               | Objective                                                       | When binding |
+|---------------------------|------------------------------------------------------------------|--------------|
+| Requirements management   | Requirements churn rate ≤ 20% after SRS approval                | L4           |
+| Development               | Estimation accuracy within 20% of actuals                       | L4           |
+| QA                        | NCR resolution within 30 days: ≥ 95%                            | L4           |
+| Deployment                | Deployment frequency ≥ 1 per sprint (YourProject) / weekly (Internal Tools)       | L3 (current) |
+
+---
+
+## 4. Review Cadence
+
+Objectives are reviewed quarterly as part of the OPF appraisal (`docs/pal/appraisal.md.tmpl`). Targets are updated when PPB data becomes available (month 12).
+
+---
+
+## 5. References
+
+- `docs/opp/PPB.md` — process performance baselines (stub until month 12)
+- `docs/ma/gqm.md` — GQM measurement plan
+- `docs/CMMI-L3-audit-checklist.md` §8 — L4 readiness gate
+- CMMI v3.0 OPP + QPM practice areas

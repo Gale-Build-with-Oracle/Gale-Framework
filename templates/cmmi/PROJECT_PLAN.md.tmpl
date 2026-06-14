@@ -1,0 +1,136 @@
+---
+doc_id: "PROJECT_PLAN-{{PROJECT_NAME}}-001"
+type: PROJECT_PLAN
+standard: lean-7-docs
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Project Plan — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id                   | Author       | Change Summary                  | CR-id | PR/SHA |
+|---------|------------|--------------------------|--------------|---------------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -                        | My Oracle         | Initial scaffold                | -     | -      |
+
+---
+
+## 1. Project Overview
+
+| Attribute              | Value                                             |
+|------------------------|---------------------------------------------------|
+| Project name           | {{PROJECT_NAME}}                                  |
+| Project ID             | PROJ-{{REQ_ID_PREFIX}}                            |
+| Start date             | {{DATE}}                                          |
+| Target end date        | [target date]                                     |
+| Lead Oracle            | My Oracle                                              |
+| Development Oracle     | [Dev Oracle / Dev Oracle / assigned]                        |
+| Product owner          | Your Name (<your-github-user>)                                |
+| Lifecycle model        | Lean 7-doc project standard — code first, docs after |
+| Process record         | `docs/PROJECT_PLAN.md` plus SRS/SDD/CR/RISK/UXUI/UAT |
+
+---
+
+## 2. Stakeholder List
+
+| Name / Oracle        | Role                        | Commitment                                | Contact                          |
+|----------------------|-----------------------------|-------------------------------------------|----------------------------------|
+| Your Name (<your-github-user>)   | Product owner, approver     | Requirements sign-off; UAT sign-off       | product-owner@example.com          |
+| My Oracle          | Architect, orchestrator     | SDD, code review, delegation              | oracle fleet                     |
+| [Oracle name]        | Developer                   | Implementation, unit tests                | oracle fleet                     |
+| [Oracle name]        | QA                          | Process audits, UAT execution             | oracle fleet                     |
+
+---
+
+## 3. Work Breakdown Structure (WBS)
+
+| WBS-id | Task                                           | Deliverable                     | Owner      | Effort (h) | Depends on |
+|--------|------------------------------------------------|---------------------------------|------------|------------|------------|
+| 1.0    | Requirements                                   |                                 |            |            |            |
+| 1.1    | Draft SRS                                      | `docs/SRS.md`                   | My Oracle       | [N]        | -          |
+| 1.2    | Your Name approval of SRS                           | Signed SRS                      | Your Name       | [N]        | 1.1        |
+| 2.0    | Design                                         |                                 |            |            |            |
+| 2.1    | Draft SDD                                      | `docs/SDD.md`                   | My Oracle       | [N]        | 1.2        |
+| 2.2    | Draft UXUI specification                       | `docs/UXUI.md`                   | My Oracle      | [N]        | 2.1        |
+| 2.3    | Your Name UI confirmation                           | Signed UXUI                     | Your Name       | [N]        | 2.2        |
+| 3.0    | Build                                          |                                 |            |            |            |
+| 3.1    | Implementation — feature group 1               | PR + code                       | [Oracle]   | [N]        | 2.3        |
+| 3.2    | Implementation — feature group 2               | PR + code                       | [Oracle]   | [N]        | 3.1        |
+| 3.3    | Unit + integration tests                       | `tests/` + CI green             | [Oracle]   | [N]        | 3.2        |
+| 4.0    | Verification & Validation                      |                                 |            |            |            |
+| 4.1    | Update UAT traceability                        | `docs/UAT.md` REQ-id column complete | My Oracle  | [N]        | 3.3        |
+| 4.2    | UAT execution                                  | `docs/UAT.md` executed          | Your Name/My Oracle  | [N]        | 4.1        |
+| 4.3    | Your Name UAT sign-off                              | Signed UAT §12                  | Your Name       | [N]        | 4.2        |
+| 5.0    | Release                                        |                                 |            |            |            |
+| 5.1    | Merge to main                                  | Merged PR                       | [Oracle]   | [N]        | 4.3        |
+| 5.2    | Prepare PR/release notes                       | PR description / deployment note | My Oracle      | [N]        | 5.1        |
+| 5.3    | Production deploy                              | Live deployment                 | [Oracle]   | [N]        | 5.2        |
+
+---
+
+## 4. Schedule (Gantt-ready)
+
+> Dates are targets. Update this table at each weekly status review (PMC cadence).
+
+| WBS-id | Task                           | Start      | End        | Duration | Status   |
+|--------|--------------------------------|------------|------------|----------|----------|
+| 1.1    | Draft SRS                      | {{DATE}}   | [date]     | [N] days | Planned  |
+| 1.2    | Your Name SRS approval              | [date]     | [date]     | [N] days | Planned  |
+| 2.1    | Draft SDD                      | [date]     | [date]     | [N] days | Planned  |
+| 2.2    | Draft UXUI specification       | [date]     | [date]     | [N] days | Planned  |
+| 2.3    | Your Name UI confirmation           | [date]     | [date]     | [N] days | Planned  |
+| 3.1    | Implementation (group 1)       | [date]     | [date]     | [N] days | Planned  |
+| 3.2    | Implementation (group 2)       | [date]     | [date]     | [N] days | Planned  |
+| 3.3    | Tests                          | [date]     | [date]     | [N] days | Planned  |
+| 4.1-4.3| Verification & Validation     | [date]     | [date]     | [N] days | Planned  |
+| 5.1-5.3| Release                       | [date]     | [date]     | [N] days | Planned  |
+
+---
+
+## 5. Effort Estimates
+
+| Phase              | Estimate method      | Estimate (person-hours) | Confidence |
+|--------------------|----------------------|-------------------------|------------|
+| Requirements       | Expert judgment      | [N]                     | Medium     |
+| Design             | Expert judgment      | [N]                     | Medium     |
+| Build              | Story points × avg   | [N]                     | Low        |
+| Verification       | Past project avg     | [N]                     | High       |
+| Release            | Fixed overhead       | [N]                     | High       |
+| **Total**          |                      | **[N]**                 |            |
+
+Estimation method rationale: [Describe why this method was chosen for this project size/complexity.]
+
+---
+
+## 6. Risk References
+
+Active risks, decisions, and corrective actions are tracked in `docs/RISK.md`. This section summarizes top risks at plan creation.
+
+| Risk-id | Description                        | Likelihood | Impact | Mitigation summary                  |
+|---------|------------------------------------|------------|--------|-------------------------------------|
+| RISK-001| [Top risk description]             | [1-5]      | [1-5]  | [Mitigation approach]               |
+| RISK-002| [Second risk description]          | [1-5]      | [1-5]  | [Mitigation approach]               |
+
+---
+
+## 7. Lifecycle Model Citation
+
+This project follows the lean 7-doc standard defined by `/sop-cmmi`: code first, then update PROJECT_PLAN, SRS, SDD, CR, RISK, UXUI, and UAT.
+
+Any significant deviation from the standard workflow or architecture should be recorded in `docs/RISK.md` Section B (Decisions / DAR).
+
+---
+
+## 8. Commitment Record
+
+All stakeholders below acknowledge this project plan and commit to their respective responsibilities.
+
+| Stakeholder        | Role              | Committed     | Date       | Notes                    |
+|--------------------|-------------------|---------------|------------|--------------------------|
+| Your Name               | Product owner     | [Yes / TBD]   | [date]     | [Conditions if any]      |
+| My Oracle        | Architect         | Yes           | {{DATE}}   | Plan generated by My Oracle   |
+| [Oracle]           | Developer         | [Yes / TBD]   | [date]     | -                        |

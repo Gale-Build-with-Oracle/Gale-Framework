@@ -1,0 +1,18 @@
+{
+  "name": "01-my-oracle",
+  "windows": [
+    {
+      "name": "my-oracle",
+      "repo": "github.com/<your-github-user>/my-oracle"
+    },
+    {
+      "name": "my-product",
+      "repo": "github.com/<your-github-user>/my-product"
+    },
+    {
+      "name": "my-infra",
+      "repo": "github.com/<your-github-user>/my-infra"
+    }
+  ],
+  "sync_peers": []
+}

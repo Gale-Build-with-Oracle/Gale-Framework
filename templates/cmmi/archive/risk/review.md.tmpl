@@ -1,0 +1,70 @@
+---
+doc_id: "RISK_REVIEW-{{PROJECT_NAME}}-001"
+type: RISK_REVIEW
+tier: 2
+category: recurring
+pa: RSKM
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Risk Review — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author   | Change Summary        | CR-id | PR/SHA |
+|---------|------------|--------|----------|-----------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle     | Initial review entry  | -     | -      |
+
+---
+
+## 1. Review Summary
+
+| Field            | Value                         |
+|------------------|-------------------------------|
+| Review date      | {{DATE}}                      |
+| Reviewer         | [Oracle / Your Name]               |
+| Risks reviewed   | [N] total — [N] open, [N] closed this month |
+
+---
+
+## 2. Risk Status Update
+
+For each open risk from `docs/RISK_REGISTER.md`:
+
+| Risk-id  | Previous score | Current score | Change | Reason for change                     | Mitigation status           |
+|----------|---------------|--------------|--------|---------------------------------------|------------------------------|
+| RISK-001 | [L×I]         | [L×I]        | Up / Down / Same | [What changed]           | [On track / Overdue / Done] |
+
+---
+
+## 3. New Risks Identified This Month
+
+| Risk-id  | Description                                              | Likelihood | Impact | Score | Owner    | Mitigation                        |
+|----------|----------------------------------------------------------|------------|--------|-------|----------|-----------------------------------|
+| RISK-NNN | [New risk identified this month]                         | [1-5]      | [1-5]  | [L×I] | [Oracle] | [Mitigation action]               |
+
+---
+
+## 4. Risks Closed This Month
+
+| Risk-id  | Description               | Reason for closure                          |
+|----------|---------------------------|---------------------------------------------|
+| RISK-NNN | [Risk description]        | [Why the risk no longer applies]            |
+
+---
+
+## 5. Actions
+
+| Action                              | Owner    | Target date | Status |
+|-------------------------------------|----------|-------------|--------|
+| [Action from this review]           | [Oracle] | [date]      | Open   |
+
+---
+
+## 6. Next Review
+
+Scheduled: [first Monday of next month]. Risk register will be updated in `docs/RISK_REGISTER.md`.
