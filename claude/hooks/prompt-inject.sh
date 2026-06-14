@@ -161,11 +161,12 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
       EXTRA="Product repo (permissive): direct push OK."
     fi
     # Frontend/theme SOP detection by repo family
+    # Example: route repo families to a frontend/theme SOP. Replace these globs
+    # with your own product naming. (Generic placeholders — no real project names.)
     case "$REPO_NAME" in
-      YourProject-*|YourProject-*)  FRONTEND_SOP="/sop-frontend + /your-project-theme. DB → /your-db-skill." ;;
-      YourProject-*)            FRONTEND_SOP="/sop-frontend + /your-project-theme. DB → /your-db-skill." ;;
-      Solution-Lab*|social-listening*|Line-webhook|YourName-Portfolio) FRONTEND_SOP="/sop-frontend + /sl-theme." ;;
-      odoo_*|odoo19-*)  FRONTEND_SOP="/sop-frontend (Odoo XML/QWeb views)." ;;
+      YourProduct-*)   FRONTEND_SOP="/sop-frontend + /your-project-theme. DB → /your-db-skill." ;;
+      YourSite-*)      FRONTEND_SOP="/sop-frontend + /your-site-theme." ;;
+      *-erp|*-odoo)    FRONTEND_SOP="/sop-frontend (ERP/QWeb views)." ;;
     esac
     # Also detect from file presence (catches repos not in the case list)
     if [ -z "$FRONTEND_SOP" ] && [ -n "$REPO_ROOT" ]; then

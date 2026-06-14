@@ -333,7 +333,7 @@ case "$TOOL" in
           "$PROJECT_ROOT"/*|"$PROJECT_ROOT") ;;
           /tmp/*|/private/tmp/*|"$HOME_ROOT"/.claude/*|"$HOME_ROOT"/.*) ;;
           "$HOME_ROOT"/Library/*) ;;
-          */ghq/github.com/$(gh api user -q .login)/*|*/ghq/github.com/vibe-hub-co/*) ;;
+          */ghq/github.com/$(gh api user -q .login)/*) ;;
           *)
             echo -e "${RED}BLOCKED: Editing outside project ($(basename "$PROJECT_ROOT")). Target: $(dirname "$FILE_ABS")${RST}" >&2
             exit 2 ;;

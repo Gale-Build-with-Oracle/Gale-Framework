@@ -70,7 +70,7 @@ Hook-enforced for Claude (`pre-guard.sh`); git-guard-enforced for both engines a
 
 The flow is set by which repo you touch:
 
-- **Product repos → heavyweight**: `YourProject-*`, `YourProject-*` (incl. `YourProject-FGlabel`, `YourProject-HR-Leave`), `NPD-AI`, `Planning`, `Solution-Lab-*` and client projects. Worktree via `maw workon` → `/sop-*` chain → `/sop-qa` → branch → PR → **merge gate** (see below). Push-to-main is hook-blocked. YourProject testing surface is Docker only — never `npm run dev`/`bun dev`.
+- **Product repos → heavyweight**: `YourProduct-*` (e.g. `YourProduct-Web`, `YourProduct-API`, `YourProduct-Mobile`) and client projects. Worktree via `maw workon` → `/sop-*` chain → `/sop-qa` → branch → PR → **merge gate** (see below). Push-to-main is hook-blocked. YourProject testing surface is Docker only — never `npm run dev`/`bun dev`.
 - **Infra / kernel / oracle repos → lightweight**: `*-oracle`, `Gale-Framework`, `maw-js`, `maw-ui`, `maw-plugin-registry`, `arra-oracle-skills-cli`, `oracle` (arra-oracle-v3), plugins. Branch → fix → focused test/build/diff → **L1 self-merges** (work done in the L1 pane itself merges directly; work done in an L2 worktree still ends at PR + DONE ping — L1 merges, see Merge Gate). No `/sop-*` ceremony, no Your Name merge approval.
 
 Escalate an infra change to PR ONLY when: Your Name asks, OR it's fleet-breaking risk (could break maw/wake for every oracle), OR a repo hook blocks the direct push.

@@ -15,7 +15,7 @@
 #   4. oracle repos: sweep retired render-indirection cruft (fragment/build/doctrine symlink).
 #      Per-oracle CLAUDE.md/AGENTS.md are HAND-EDITED identity — fleet-sync does NOT render them.
 #   4b. product AGENTS.md: managed block = thin pointer to global doctrine
-#       (manage permissive odoo repos · drift-detect hook-blocked product mains)
+#       (manage permissive repos · drift-detect hook-blocked product mains)
 #   5. structural guard: no doctrine text in any per-oracle CLAUDE.md/AGENTS.md (hand-edited)
 #   6. reconcile Gale-Framework submodule pointers (commit clean+pushed gitlink drift,
 #      e.g. after /maw-update bumps a submodule) so WF's recorded state stays exact
@@ -126,7 +126,7 @@ for REPO in "$GHQ"/*-oracle; do
   fi
 done
 
-echo "── 4b. product AGENTS.md fan-out (manage odoo · detect hook-blocked) ──"
+echo "── 4b. product AGENTS.md fan-out (manage permissive · detect hook-blocked) ──"
 # Codex worktrees obey the PROJECT AGENTS.md; a repo missing/contradicting the team-spawn
 # fan-out routing makes codex default to solo. Permissive product repos get the managed
 # block auto-synced from doctrine/core.md; hook-blocked product mains (PR-only) are

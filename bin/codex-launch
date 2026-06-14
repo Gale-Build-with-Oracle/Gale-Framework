@@ -12,7 +12,7 @@
 #
 # FIX: append an idempotent trusted entry for the cwd BEFORE launching the TUI.
 #
-# my-oracle 2026-06-05 — root-caused from my-oracle's YourProject-NPD-Forms tile breakage.
+# Root-caused from a worker tile breakage where the trust prompt wedged the pane.
 set -euo pipefail
 cfg="${CODEX_HOME:-$HOME/.codex}/config.toml"
 cwd="$(pwd -P)"

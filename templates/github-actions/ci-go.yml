@@ -1,6 +1,6 @@
 # CI Template: Go backend + React frontend
 # Copy to: .github/workflows/ci.yml
-# Stacks: HR-Leave, YourProject-NPD-Forms
+# Stacks: any Go service
 
 name: CI
 

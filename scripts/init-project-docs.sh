@@ -8,7 +8,7 @@
 #   init-project-docs.sh [options]
 #
 # Options:
-#   --project-name <name>   Required. Project repository name (e.g., YourProject-Putaway).
+#   --project-name <name>   Required. Project repository name (e.g., YourProduct-Web).
 #   --req-prefix <prefix>   Optional. Uppercase prefix for REQ-ids (default: derived from project-name).
 #   --target-dir <path>     Optional. Override target project directory (default: ~/ghq/github.com/${GITHUB_USER}/<name>).
 #   --dry-run               Optional. Print plan without creating any files.
@@ -17,9 +17,9 @@
 #   --help, -h              Show this help message.
 #
 # Examples:
-#   init-project-docs.sh --project-name YourProject-Putaway
-#   init-project-docs.sh --project-name Social-Listening --dry-run
-#   init-project-docs.sh --project-name YourProject-Putaway --req-prefix YourProjectPUT --force
+#   init-project-docs.sh --project-name YourProduct-Web
+#   init-project-docs.sh --project-name YourProduct-Site --dry-run
+#   init-project-docs.sh --project-name YourProduct-Web --req-prefix YOURPRODWEB --force
 #
 # What it does:
 #   Copies .md.tmpl files from templates/cmmi/ into <project>/docs/,
@@ -110,7 +110,7 @@ fi
 
 # ---- Derive REQ prefix ----
 if [ -z "$REQ_PREFIX" ]; then
-  # Uppercase, remove hyphens: YourProject-Putaway → YourProjectPUTAWAY
+  # Uppercase, remove hyphens: YourProduct-Web → YOURPRODWEBAWAY
   REQ_PREFIX="$(echo "$PROJECT_NAME" | tr '[:lower:]' '[:upper:]' | tr -d '-')"
 fi
 
