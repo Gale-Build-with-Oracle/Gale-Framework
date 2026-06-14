@@ -25,6 +25,18 @@ bash scripts/setup.sh
 
 After setup, fork the upstream repositories you plan to use, point the template configuration at your forks, and add your projects in `fleet/projects.yaml`.
 
+### Verify the full system (including the L3 worktree layer)
+
+`scripts/setup.sh` wires the complete maw-js system with **zero manual config** — the L1 oracle, the L2 `maw workon` orchestrator, and the **L3 ephemeral OMX worker layer** (`maw team spawn --wt --engine omx`). It installs the `codex` + `omx` engines, puts the trust-prime launchers on `PATH`, and seeds the maw engine map so OMX workers never silently fall back to Claude.
+
+Confirm it end to end at any time:
+
+```bash
+bash scripts/maw-check.sh    # expect all ✓
+```
+
+`maw-check` verifies: core binaries, the `codex`/`omx` launchers + engines, the four engine-map keys (`codex`, `omx`, `codex-resume`, `omx-resume`) that guard against silent fallback, the Claude hooks + fan-out gate, codex trust pre-prime, and `maw workon` / `team` / `done`. A green run means `maw workon <repo> <slug>` → `maw team spawn <team> w1 --wt --engine omx --exec` → `maw done` works out of the box.
+
 ## Upstream repositories
 
 Users fork these upstream repositories themselves and keep their forks under their own account or organization.
