@@ -1,0 +1,91 @@
+# Sprint charter template (EPHEMERAL) — used by maw team load + maw team up
+#
+# Usage:
+#   1. Copy to <worktree>/.maw/teams/sprint-<slug>.yaml and fill in
+#   2. maw team plan .maw/teams/sprint-<slug>.yaml        (parse check — MUST show zero warnings)
+#   3. maw team preflight .maw/teams/sprint-<slug>.yaml   (collision check)
+#   4. maw team load .maw/teams/sprint-<slug>.yaml --no-spawn   (registers team → enables `maw team status`)
+#   5. maw team up sprint-<slug>                          (spawn/reconcile — re-run until all members live)
+#
+# ⚠ PARSER CONSTRAINTS (verified on maw team v2.1.0, 2026-06-10 spike):
+#   - NO `defaults:` block — unknown top-level keys are SILENTLY IGNORED.
+#     A charter relying on `defaults: worktree: true` spawns workers WITHOUT
+#     worktree isolation (shared cwd — the maw-tile bug class). Set
+#     `worktree: true` ON EVERY worker member.
+#   - NO YAML anchors (&x / *x) — regex subset parser treats them as literal
+#     text. Repeat prompt blocks per member.
+#   - Spawn loop ABORTS on a brief-submit error → expect ~1 member spawned per
+#     `team up` run; re-run until all live. "submit FAILED" is usually a FALSE
+#     NEGATIVE — the brief lands via the inbox copy; verify with `maw peek`.
+#   - `maw team bring --gather` is NOT adopted (enumerates role+name duplicates
+#     on this version). Monitor with `maw team status` + `maw capture` on anomaly.
+#   - Resume of a dead member uses `commands.<engine>-resume` from the maw
+#     config — `omx-resume`/`codex-resume` keys MUST exist or the worker
+#     silently relaunches as Claude (commands.default fallback).
+
+name: sprint-<slug>
+description: "<one-line goal>"
+goal: "Close issues #N, #N, #N"
+# project: routes WORKER worktrees to the product repo's agents/ dir
+# while the orchestrator stays in its own worktree.
+project: <your-github-user>/<repo>
+
+members:
+  # L2 orchestrator pane — usually ALREADY EXISTS (the `maw workon` pane that
+  # copies this template). Keep worktree: false so team up does not try to
+  # spawn a second orchestrator. Lead members are special-cased ("keep (lead)")
+  # and are NOT auto-spawned by team up.
+  - role: lead
+    name: sprint-<slug>-lead
+    engine: claude
+    worktree: false
+    prompt: |
+      L2 orchestrator contract:
+      - Research with subagents (Explore, haiku/sonnet) — never read raw files in own context
+      - Write briefs to .maw/briefs/<member>.md; notify via maw hey "Read and execute .maw/briefs/<member>.md"
+      - Post-brief sweep: maw team status until every worker shows working
+      - Monitor: maw team status on ~5 min cadence; maw capture ONLY on anomaly (dead/stuck/no-commit)
+      - Aggregate sub-branches locally -> lint/build/test green -> touch .maw/aggregate-verified
+      - ONE consolidated PR listing every Closes #N
+      - maw team shutdown <team> (ephemeral teams only) -> DONE-ping L1 -> /rrr -> STOP
+      - NEVER merge. NEVER maw done your own window.
+
+  - role: worker-1
+    name: issue-<N>
+    engine: omx
+    worktree: true
+    prompt: |
+      Worker contract — Issue #<N>: <title>.
+      - arra_search the topic FIRST
+      - **You run in a FRESH per-project worktree — no warm pool, no carried-over state**
+      - Bug-labeled issue: /debug-mantra (reproduce, trace, falsify) BEFORE any fix code
+      - Code ONLY your slice
+      - Commit on your sub-branch
+      - Verify (build/test/typecheck)
+      - Report: maw hey <lead-pane> "[<team>-worker-1] DONE: #<N> <summary>" -> STOP
+      - NEVER push main, NEVER open PRs, NEVER merge
+
+  - role: worker-2
+    name: issue-<N>
+    engine: omx
+    worktree: true
+    prompt: |
+      Worker contract — Issue #<N>: <title>.
+      - arra_search the topic FIRST
+      - **You run in a FRESH per-project worktree — no warm pool, no carried-over state**
+      - Bug-labeled issue: /debug-mantra (reproduce, trace, falsify) BEFORE any fix code
+      - Code ONLY your slice
+      - Commit on your sub-branch
+      - Verify (build/test/typecheck)
+      - Report: maw hey <lead-pane> "[<team>-worker-2] DONE: #<N> <summary>" -> STOP
+      - NEVER push main, NEVER open PRs, NEVER merge
+
+  # Max 4 workers per team (HARD RULE — pane readability). Add worker-3/-4 by
+  # copying a worker block; >4 issues → parallel L2 windows instead.
+
+lifecycle:
+  standing: false
+  spawn: "maw team up sprint-<slug>"
+  resume: "maw team resume sprint-<slug>"
+  reassign: "maw team reassign <member> '#issue'"
+  shutdown: "maw team shutdown sprint-<slug>"   # MANDATORY after every TEAM batch — ephemeral is the only mode

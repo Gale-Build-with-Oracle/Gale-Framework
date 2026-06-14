@@ -1,0 +1,98 @@
+---
+doc_id: "MA_MONTHLY-{{PROJECT_NAME}}-001"
+type: MA_MONTHLY
+tier: 2
+category: recurring
+pa: MA
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Measurement and Analysis Monthly Report — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author    | Change Summary        | CR-id | PR/SHA |
+|---------|------------|--------|-----------|-----------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | [Analyst] | Initial report entry  | -     | -      |
+
+---
+
+## 1. Executive Summary
+
+[2-3 sentences: are we on track? What's the one thing that stands out this month?]
+
+---
+
+## 2. Measurements
+
+Per the GQM plan in `docs/ma/gqm.md`:
+
+### 2.1 Development Velocity
+
+| Metric                              | Target        | Actual ([YYYY-MM]) | Trend      | Status     |
+|-------------------------------------|---------------|--------------------|------------|------------|
+| Requirements closed this month      | [N] REQs      | [N] REQs           | Up / Down  | On track / At risk |
+| PR cycle time (open → merge, median)| ≤ 2 days      | [N] days           | -          | -          |
+| PR cycle time (p95)                 | ≤ 5 days      | [N] days           | -          | -          |
+| Defects found in UAT                | 0 P0, ≤2 P1   | [N] P0, [N] P1     | -          | -          |
+
+### 2.2 Quality
+
+| Metric                              | Target        | Actual ([YYYY-MM]) | Trend      | Status     |
+|-------------------------------------|---------------|--------------------|------------|------------|
+| Test coverage (unit)                | ≥ 80%         | [N]%               | -          | -          |
+| RTM coverage (verified reqs)        | 100% before release | [N]%         | -          | -          |
+| Open NCRs                           | 0 major       | [N] major, [N] minor | -        | -          |
+| WCAG 2.2 AA violations (latest scan)| 0             | [N]                | -          | -          |
+
+### 2.3 Cost / Effort
+
+| Metric                              | Target        | Actual ([YYYY-MM]) | Trend      | Status     |
+|-------------------------------------|---------------|--------------------|------------|------------|
+| Oracle token cost this month        | ≤ $[N]        | $[N]               | -          | -          |
+| Effort (estimated vs actual)        | ≤ 20% variance| [N]% variance      | -          | -          |
+
+---
+
+## 3. Analysis
+
+### 3.1 Key Findings
+
+- [Finding 1: what the data tells us]
+- [Finding 2]
+
+### 3.2 Root Causes (if any metric is off-target)
+
+- [Metric name]: [Root cause — not symptoms. Use 5-Whys if needed.]
+
+---
+
+## 4. Actions
+
+| Action                                | Owner      | Target date | Status  |
+|---------------------------------------|------------|-------------|---------|
+| [Action derived from analysis]        | [Oracle]   | [date]      | Open    |
+
+---
+
+## 5. Trend Charts
+
+[Add Mermaid xychart or ASCII table showing 3-month trend for key metrics. Remove if data not yet available.]
+
+```
+PR cycle time (days) — last 3 months
+  2026-03: 1.8 days
+  2026-04: 2.4 days
+  2026-05: 1.5 days  [target: ≤2 days]
+```
+
+---
+
+## 6. Next Month Focus
+
+- [Priority 1 for next measurement period]
+- [Priority 2]

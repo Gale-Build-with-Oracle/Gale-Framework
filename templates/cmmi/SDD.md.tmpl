@@ -1,0 +1,288 @@
+---
+doc_id: "SDD-{{PROJECT_NAME}}-001"
+type: SDD
+standard: lean-7-docs
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Software Design Description — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id                   | Author       | Change Summary                  | CR-id | PR/SHA |
+|---------|------------|--------------------------|--------------|---------------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -                        | My Oracle         | Initial scaffold                | -     | -      |
+
+---
+
+## 1. Identification
+
+| Attribute              | Value                                                    |
+|------------------------|----------------------------------------------------------|
+| System name            | {{PROJECT_NAME}}                                         |
+| SDD version            | 1.0.0                                                    |
+| SRS reference          | SRS-{{PROJECT_NAME}}-001 v1.0.0                          |
+| Prepared by            | My Oracle on behalf of Your Name (<your-github-user>)              |
+| Intended readers       | Development Oracle, QA, Your Name                             |
+| Date                   | {{DATE}}                                                 |
+| Classification         | Internal — Oracle family                                 |
+
+---
+
+## 2. Stakeholders and Concerns
+
+### 2.1 Stakeholders
+
+| Stakeholder          | Role                         | Primary concerns                            |
+|----------------------|------------------------------|---------------------------------------------|
+| Your Name (<your-github-user>)   | Product owner                | Correct behavior, on-time delivery, cost     |
+| My Oracle          | Lead architect / orchestrator| Design quality, CMMI compliance, security    |
+| Development Oracle   | Implementer                  | Clarity of interfaces, testability           |
+| QA                   | Verifier                     | Traceability from design to test cases       |
+| End users            | Consumers                    | Performance, reliability, usability          |
+
+### 2.2 Design Concerns
+
+| Concern ID | Concern                                              | Addressed in viewpoint |
+|------------|------------------------------------------------------|------------------------|
+| C-01       | Component boundaries and responsibility allocation   | Composition            |
+| C-02       | Business logic and data flow                         | Logical                |
+| C-03       | Inter-component dependencies and coupling            | Dependency             |
+| C-04       | External API contracts and data schemas              | Interface              |
+| C-05       | Persistent data structures and state management      | Information            |
+| C-06       | Runtime interaction sequences for key use cases      | Interaction            |
+| C-07       | Directory structure, module layout, tech stack       | Implementation         |
+
+---
+
+## 3. Viewpoints
+
+This SDD uses the seven viewpoints defined by IEEE 1016-2009:
+
+| Viewpoint      | Purpose                                                    |
+|----------------|------------------------------------------------------------|
+| Composition    | System decomposition into subsystems and components        |
+| Logical        | Domain concepts, business rules, functional behavior       |
+| Dependency     | Import/use/call relationships between components           |
+| Interface      | Public APIs, data contracts, integration points            |
+| Information    | Persistent data models, state machines                     |
+| Interaction    | Sequence and collaboration diagrams for key scenarios      |
+| Implementation | Technology stack, directory layout, deployment topology    |
+
+---
+
+## 4. Views
+
+### 4.1 Composition View
+
+#### 4.1.1 System Decomposition
+
+```mermaid
+graph TD
+    subgraph "{{PROJECT_NAME}}"
+        FE["Frontend Layer<br/>(UI)"]
+        API["API Layer<br/>(Business Logic)"]
+        DATA["Data Layer<br/>(Persistence)"]
+    end
+    FE --> API
+    API --> DATA
+    API --> EXT["External Services"]
+```
+
+#### 4.1.2 Component Catalog
+
+| Component ID | Name                  | Responsibility                                          | REQ coverage                        |
+|--------------|-----------------------|---------------------------------------------------------|-------------------------------------|
+| COMP-001     | [Component name]      | [What it owns and is responsible for]                   | REQ-{{REQ_ID_PREFIX}}-001           |
+| COMP-002     | [Component name]      | [What it owns and is responsible for]                   | REQ-{{REQ_ID_PREFIX}}-002           |
+
+---
+
+### 4.2 Logical View
+
+#### 4.2.1 Domain Model
+
+```mermaid
+classDiagram
+    class Entity1 {
+        +id: string
+        +createdAt: Date
+    }
+    class Entity2 {
+        +id: string
+        +entity1Id: string
+    }
+    Entity1 "1" --> "*" Entity2
+```
+
+#### 4.2.2 Business Rules
+
+| Rule ID | Description                                              | REQ-id                           |
+|---------|----------------------------------------------------------|----------------------------------|
+| BR-001  | [Business rule statement]                                | REQ-{{REQ_ID_PREFIX}}-001        |
+
+---
+
+### 4.3 Dependency View
+
+#### 4.3.1 Component Dependencies
+
+```mermaid
+graph LR
+    COMP001["COMP-001"] --> COMP002["COMP-002"]
+    COMP001 --> EXT_SVC["External SDK"]
+```
+
+#### 4.3.2 External Dependencies
+
+| Package / Service   | Version  | License   | Purpose                                   |
+|---------------------|----------|-----------|-------------------------------------------|
+| [package-name]      | ^x.y.z   | MIT/ISC   | [What it provides]                        |
+
+---
+
+### 4.4 Interface View
+
+#### 4.4.1 REST API Contracts
+
+For each REQ-id that requires an API endpoint:
+
+---
+
+**API-{{REQ_ID_PREFIX}}-001** — [Endpoint description]
+
+| Field         | Value                                                                |
+|---------------|----------------------------------------------------------------------|
+| REQ-id        | REQ-{{REQ_ID_PREFIX}}-001                                            |
+| Method        | GET / POST / PUT / PATCH / DELETE                                    |
+| Path          | `/api/v1/[resource]`                                                 |
+| Auth          | Bearer JWT (header: `Authorization: Bearer <token>`)                 |
+| Request body  | `{ "field": "string" }`                                              |
+| Response 200  | `{ "data": [...] }`                                                  |
+| Response 400  | `{ "error": "VALIDATION_ERROR", "details": [...] }`                  |
+| Response 401  | `{ "error": "UNAUTHORIZED" }`                                        |
+| Response 500  | `{ "error": "INTERNAL_ERROR" }`                                      |
+| Rate limit    | 100 req/min per authenticated user                                   |
+
+---
+
+#### 4.4.2 Internal Module Interfaces
+
+| Interface ID  | Provider (COMP) | Consumer (COMP) | Method / Event      | Data shape                             |
+|---------------|-----------------|-----------------|---------------------|----------------------------------------|
+| IF-001        | COMP-002        | COMP-001        | `findById(id)`      | `Promise<Entity | null>`               |
+
+---
+
+### 4.5 Information View
+
+#### 4.5.1 Data Schema
+
+| Table / Collection | Column / Field    | Type         | Nullable | Constraints          | Description                   |
+|--------------------|-------------------|--------------|----------|----------------------|-------------------------------|
+| [entity_table]     | id                | uuid         | No       | primary key          | Surrogate key                 |
+|                    | created_at        | timestamptz  | No       | default: now()       | Record creation timestamp     |
+|                    | updated_at        | timestamptz  | No       | default: now()       | Last update timestamp         |
+
+#### 4.5.2 State Machine
+
+[Add state machine diagram for any entity with lifecycle states, e.g., workflow status.]
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> Approved : approve()
+    Draft --> Rejected : reject()
+    Approved --> Completed : complete()
+    Rejected --> [*]
+    Completed --> [*]
+```
+
+---
+
+### 4.6 Interaction View
+
+#### 4.6.1 [Use Case — e.g., User submits a request]
+
+*Covers*: REQ-{{REQ_ID_PREFIX}}-001
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant FE as Frontend
+    participant API as API Layer
+    participant DB as Database
+
+    User->>FE: Submit form
+    FE->>API: POST /api/v1/resource {payload}
+    API->>API: Validate input
+    API->>DB: INSERT INTO entity (...)
+    DB-->>API: entity_id
+    API-->>FE: 201 { data: { id, ... } }
+    FE-->>User: Success message
+```
+
+---
+
+### 4.7 Implementation View
+
+#### 4.7.1 Technology Stack
+
+| Layer         | Technology                    | Version  | Rationale                                  |
+|---------------|-------------------------------|----------|--------------------------------------------|
+| Frontend      | [React / Next.js / Svelte]    | [x.y.z]  | [Why this choice]                          |
+| Backend       | [Node.js / Bun / Python]      | [x.y.z]  | [Why this choice]                          |
+| Database      | [PostgreSQL / MSSQL / D1]     | [x.y.z]  | [Why this choice]                          |
+| Auth          | [Supabase Auth / JWT / OAuth] | [x.y.z]  | [Why this choice]                          |
+| Hosting       | [Vercel / Cloudflare Workers] | -        | [Why this choice]                          |
+
+#### 4.7.2 Directory Layout
+
+```
+{{PROJECT_NAME}}/
+├── src/
+│   ├── app/            # Next.js App Router / entry points
+│   ├── components/     # Shared UI components
+│   ├── lib/            # Business logic, utilities
+│   ├── api/            # API route handlers
+│   └── types/          # TypeScript type definitions
+├── docs/               # PROJECT_PLAN, SRS, SDD, CR, RISK, UXUI, UAT
+├── tests/              # Unit and integration tests
+├── scripts/            # Automation and migration scripts
+└── public/             # Static assets
+```
+
+#### 4.7.3 Deployment Topology
+
+```mermaid
+graph LR
+    User(["Browser / Client"]) --> CDN["CDN / Edge<br/>(Vercel / Cloudflare)"]
+    CDN --> APP["Application Server<br/>(Worker / Serverless fn)"]
+    APP --> DB[("Database<br/>(PostgreSQL / D1)")]
+    APP --> CACHE["Cache<br/>(KV / Redis)"]
+```
+
+---
+
+## 5. Appendices
+
+### 5.1 Design Decisions
+
+See `docs/RISK.md` Section B (Decisions / DAR) for significant architecture decisions made during this project.
+
+### 5.2 Open Design Items
+
+| Item ID | Description                            | Raised     | Owner      | Target     |
+|---------|----------------------------------------|------------|------------|------------|
+| ODI-001 | [Open design question or TBD]          | {{DATE}}   | [Oracle]   | [date]     |
+
+### 5.3 References
+
+- IEEE 1016-2009 — Standard for Information Technology: Systems Design: Software Design Descriptions
+- IEEE 29148:2018 — SRS standard (referenced document: SRS-{{PROJECT_NAME}}-001)
+- CMMI v3.0 — Technical Solution (TS) practice area
+- `docs/CMMI-L3-audit-checklist.md` — organizational CMMI readiness plan
