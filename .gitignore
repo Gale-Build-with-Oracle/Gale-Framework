@@ -1,0 +1,20 @@
+# Secrets — never commit
+.env*
+codex/config.toml
+maw/maw.config.json
+
+# Oracle runtime artifacts (memory, mailbox, worktree state)
+ψ/
+.maw/
+.oracle-build-backups/
+
+# Databases / logs / dumps
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.log
+*.jsonl
+
+# Dependencies / OS
+node_modules/
+.DS_Store

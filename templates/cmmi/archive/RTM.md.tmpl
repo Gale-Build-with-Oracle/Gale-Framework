@@ -1,0 +1,101 @@
+---
+doc_id: "RTM-{{PROJECT_NAME}}-001"
+type: RTM
+tier: 1
+category: per_project
+pa: REQM
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Requirements Traceability Matrix — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id                   | Author       | Change Summary                  | CR-id | PR/SHA |
+|---------|------------|--------------------------|--------------|---------------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -                        | My Oracle         | Initial scaffold                | -     | -      |
+
+---
+
+## 1. Purpose
+
+This Requirements Traceability Matrix provides forward and backward traceability for all requirements in `docs/SRS.md`. Every requirement traces from source (SRS) through design (SDD) through implementation (code files) to verification (UAT test case) and closure (PR SHA).
+
+**Forward traceability**: REQ → SDD → Code → UAT
+
+**Backward traceability**: UAT → Code → SDD → REQ
+
+This document is the authoritative source for CMMI audit evidence. Keep it updated with every PR that touches a requirement.
+
+---
+
+## 2. RTM Legend
+
+| Column         | Description                                               |
+|----------------|-----------------------------------------------------------|
+| REQ-id         | Requirement identifier from `docs/SRS.md`                 |
+| REQ summary    | One-line description from SRS                             |
+| Priority       | Must / Should / Could / Won't (MoSCoW)                    |
+| SDD section    | Section(s) in `docs/SDD.md` where design is documented    |
+| Source files   | Production code file(s) implementing the requirement      |
+| Test file      | Automated test file (unit/integration) if applicable      |
+| UAT test ID    | Identifier in `docs/UAT.md`                               |
+| PR SHA         | Merge commit SHA(s) delivering implementation             |
+| Status         | Draft / In Design / In Dev / In Test / Verified / Closed  |
+
+---
+
+## 3. Functional Requirements Traceability
+
+| REQ-id                        | REQ summary             | Priority | SDD section | Source files                         | Test file                            | UAT test ID                       | PR SHA       | Status   |
+|-------------------------------|-------------------------|----------|-------------|--------------------------------------|--------------------------------------|-----------------------------------|--------------|----------|
+| REQ-{{REQ_ID_PREFIX}}-001     | [Short requirement text] | Must    | §4.2.1      | `src/[path/to/module].[ts\|py\|rs]`  | `tests/unit/[module].test.ts`        | TC-{{REQ_ID_PREFIX}}-001          | [sha]        | Draft    |
+| REQ-{{REQ_ID_PREFIX}}-002     | [Short requirement text] | Must    | §4.2.1      | `src/[path/to/module].[ts\|py\|rs]`  | `tests/unit/[module].test.ts`        | TC-{{REQ_ID_PREFIX}}-002          | [sha]        | Draft    |
+
+---
+
+## 4. Non-Functional Requirements Traceability
+
+| REQ-id                           | REQ summary                    | Priority | SDD section | Source files                        | Test file / Tool                     | UAT test ID                          | PR SHA    | Status   |
+|----------------------------------|--------------------------------|----------|-------------|-------------------------------------|--------------------------------------|--------------------------------------|-----------|----------|
+| REQ-{{REQ_ID_PREFIX}}-NF-001     | Response time ≤200 ms (p95)    | Must     | §4.7.1      | `src/api/[handler].[ts]`           | `tests/perf/load.js` (k6)            | TC-{{REQ_ID_PREFIX}}-NF-001          | [sha]     | Draft    |
+| REQ-{{REQ_ID_PREFIX}}-NF-002     | Availability ≥99.5%            | Must     | §4.7.3      | Platform / deployment config        | Uptime monitor                       | TC-{{REQ_ID_PREFIX}}-NF-002          | [sha]     | Draft    |
+| REQ-{{REQ_ID_PREFIX}}-NF-003     | Auth on all data endpoints     | Must     | §4.4.1      | `src/middleware/auth.[ts]`         | `tests/security/auth.test.ts`        | TC-{{REQ_ID_PREFIX}}-NF-003          | [sha]     | Draft    |
+| REQ-{{REQ_ID_PREFIX}}-NF-004     | WCAG 2.2 AA                    | Must     | §4.4.1      | `src/components/**`                | axe-core scan                        | TC-{{REQ_ID_PREFIX}}-NF-004          | [sha]     | Draft    |
+| REQ-{{REQ_ID_PREFIX}}-NF-005     | Test coverage ≥80%             | Should   | §4.7.2      | All `src/**` modules               | CI coverage report                   | TC-{{REQ_ID_PREFIX}}-NF-005          | [sha]     | Draft    |
+
+---
+
+## 5. Coverage Summary
+
+| Status        | Count  | Percentage                                  |
+|---------------|--------|---------------------------------------------|
+| Closed        | 0      | 0%                                          |
+| Verified      | 0      | 0%                                          |
+| In Test       | 0      | 0%                                          |
+| In Dev        | 0      | 0%                                          |
+| In Design     | 0      | 0%                                          |
+| Draft         | [N]    | 100%                                        |
+| **Total**     | [N]    | -                                           |
+
+---
+
+## 6. Change Log
+
+When a requirement is amended via CR, record the change here AND update the requirement's own revision note in SRS.md.
+
+| CR-id   | Date       | REQ-id affected                | Nature of change                     | Author    |
+|---------|------------|--------------------------------|--------------------------------------|-----------|
+| -       | {{DATE}}   | -                              | Initial RTM creation                 | My Oracle      |
+
+---
+
+## 7. Audit Note
+
+Per CMMI v3.0 RDM SP 1.4 (Maintain Bidirectional Traceability of Requirements): this document is evidence of bidirectional traceability. SCAMPI assessors should find every SRS requirement represented in this table with at least one implementation file and one test reference before status "Closed" is claimed.
+
+Gaps in "Source files" or "UAT test ID" columns indicate open traceability items that must be resolved before the RTM row reaches "Verified".

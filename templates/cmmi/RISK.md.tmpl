@@ -1,0 +1,184 @@
+---
+doc_id: "RISK-{{PROJECT_NAME}}-001"
+type: RISK
+standard: lean-7-docs
+project: "{{PROJECT_NAME}}"
+status: active
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Risk / Decisions / Corrective Actions — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date | REQ/CR-id | Author | Change | PR |
+|---------|------|-----------|--------|--------|----|
+| 1.0.0 | {{DATE}} | - | My Oracle | Initial lean RISK scaffold: Risk Register + Decisions/DAR + Corrective Actions/CAR | - |
+
+---
+
+## Section A: Risk Register
+
+This section tracks open and closed project risks for the lean 7-doc standard.
+
+### A.1 Risk Scoring Guide
+
+| Attribute | Scale | Definition |
+|-----------|-------|------------|
+| Likelihood | 1-5 | 1 = rare (<5%), 3 = possible (40-60%), 5 = almost certain (>90%) |
+| Impact | 1-5 | 1 = negligible, 3 = moderate schedule/quality/business impact, 5 = project-threatening |
+| Risk score | L x I | High >= 15, Medium 6-14, Low <= 5 |
+
+### A.2 Active Risks
+
+| Risk-id | Description | Likelihood | Impact | Score | Owner | Mitigation | Review date | Status |
+|---------|-------------|------------|--------|-------|-------|------------|-------------|--------|
+| RISK-{{REQ_ID_PREFIX}}-001 | [Risk description — short, specific] | [1-5] | [1-5] | [L x I] | [Oracle / Your Name] | [Concrete mitigation action] | {{DATE}} | Open |
+
+### A.3 Risk Log
+
+| Date | Reviewer | Risks reviewed | Changes made | New risks added | Closed risks |
+|------|----------|----------------|--------------|-----------------|--------------|
+| {{DATE}} | My Oracle | Initial register | Lean 7-doc RISK scaffold created | RISK-{{REQ_ID_PREFIX}}-001 | - |
+
+### A.4 Closed Risks
+
+| Risk-id | Description | Closed date | Reason for closure | Evidence |
+|---------|-------------|-------------|--------------------|----------|
+| - | - | - | - | - |
+
+### A.5 Risk Visualization
+
+Update this section during project review. Quadrant: X = Likelihood, Y = Impact.
+
+```text
+Impact
+  5 |         | High      |
+    |         |           |
+  3 | Medium  | Medium    |
+    |         |           |
+  1 | Low     | Low       |
+    +---------+-----------+
+      1       3           5  Likelihood
+```
+
+### A.6 References
+
+- `docs/PROJECT_PLAN.md` — project scope, schedule, and ownership context.
+- `docs/SRS.md` — requirements that may introduce or mitigate risk.
+- `docs/UAT.md` — REQ-id traceability and acceptance evidence.
+
+---
+
+## Section B: Decisions / DAR
+
+Record significant decisions here when the choice affects architecture, vendor selection, operating cost, reversibility, security posture, or stakeholder impact.
+
+### B.1 Decision Log
+
+| Date | DAR-id | Decision | Alternatives | Criteria | Choice | Rationale | PR |
+|------|--------|----------|--------------|----------|--------|-----------|----|
+| {{DATE}} | DAR-{{REQ_ID_PREFIX}}-001 | [Decision title] | [Option A / Option B / Option C] | [Weighted criteria summary] | [Selected option] | [Short rationale] | - |
+
+### B.2 Weighted Criteria Worksheet
+
+Use this worksheet for each DAR row when the decision needs visible scoring. Weights should sum to 100.
+
+| Criterion | Weight | Option A score (1-5) | Option B score (1-5) | Option C score (1-5) |
+|-----------|--------|----------------------|----------------------|----------------------|
+| [Criterion name] | [0-100] | [1-5] | [1-5] | [1-5] |
+| [Criterion name] | [0-100] | [1-5] | [1-5] | [1-5] |
+| [Criterion name] | [0-100] | [1-5] | [1-5] | [1-5] |
+| **Weighted total** | **100** | [sum] | [sum] | [sum] |
+
+### B.3 Decision Detail
+
+#### DAR-{{REQ_ID_PREFIX}}-001 — [Decision title]
+
+| Field | Value |
+|-------|-------|
+| Trigger | [What prompted this decision] |
+| Context | [1-3 sentences describing the problem] |
+| Selected option | [Option name] |
+| Owner | [Oracle / Your Name] |
+| Status | Decided / Superseded / Under review |
+
+**Rationale**: [Explain why the selected option was chosen. Reference weighted scores and qualitative trade-offs.]
+
+**Consequences**
+
+- Positive: [What this decision enables]
+- Trade-offs: [What we accept or give up]
+- Follow-up actions: [Tasks created as a result]
+
+---
+
+## Section C: Corrective Actions / CAR
+
+Record post-incident corrective actions here. Use this section alongside `/post-mortem` when the project needs a detailed engineering RCA.
+
+### C.1 Incident Summary
+
+| Field | Value |
+|-------|-------|
+| CAR-id | CAR-{{DATE}}-NNN |
+| Detection date | {{DATE}} |
+| Severity | P0 (critical) / P1 (major) / P2 (minor) |
+| Discovered by | [Oracle / CI / Your Name / user] |
+| Affected project(s) | {{PROJECT_NAME}} |
+| Affected REQ-id(s) | REQ-{{REQ_ID_PREFIX}}-NNN |
+| Description | [Clear factual description: what happened, when, who was affected, and impact] |
+
+### C.2 Root Cause Analysis
+
+#### Five Whys
+
+| Why | Answer |
+|-----|--------|
+| Incident | [Description of the observed failure] |
+| Why 1 | [Immediate cause] |
+| Why 2 | [Deeper cause] |
+| Why 3 | [Process/design gap] |
+| Why 4 | [Systemic cause] |
+| Why 5 | [Root cause] |
+
+**Root cause**: [Concise statement of the root cause identified at Why 5.]
+
+### C.3 Corrective Actions
+
+| CA-id | Description | Owner | Target date | Status | Closure evidence |
+|-------|-------------|-------|-------------|--------|------------------|
+| CA-001 | [Immediate fix applied to stop the issue] | [Oracle] | [date] | Open | PR SHA / test evidence |
+| CA-002 | [Medium-term fix addressing the root cause] | [Oracle] | [date] | Open | PR SHA / test evidence |
+
+### C.4 Preventive Actions
+
+Preventive actions address systemic causes so the issue does not recur in this or sibling projects.
+
+| PA-id | Description | Owner | Target date | Status | Cross-project? |
+|-------|-------------|-------|-------------|--------|----------------|
+| PA-001 | [Process, template, hook, test, or architecture change] | [Oracle] | [date] | Open | Yes / No |
+
+### C.5 Verification
+
+| Action | Verified | Method | Verified by | Date |
+|--------|----------|--------|-------------|------|
+| CA-001 | [Y/N] | [Test / inspection / monitoring] | [Oracle] | [date] |
+| PA-001 | [Y/N] | [How we know recurrence is prevented] | [Oracle] | [date] |
+
+### C.6 Lessons Captured
+
+| Lesson | Saved to |
+|--------|----------|
+| [Actionable transferable lesson] | `ψ/memory/learnings/[date]_[slug].md` |
+
+### C.7 CAR Sign-off
+
+| Field | Value |
+|-------|-------|
+| CAR author | My Oracle |
+| Review by | [Your Name / Oracle] |
+| Closed date | [date] |
+| Status | Open / Closed |

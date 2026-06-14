@@ -1,0 +1,136 @@
+---
+doc_id: "CAR_EXERCISE-{{PROJECT_NAME}}-001"
+type: CAR_EXERCISE
+tier: 4
+category: future
+pa: CAR
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Causal Analysis and Resolution — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author | Change Summary                | CR-id | PR/SHA |
+|---------|------------|--------|--------|-------------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle   | Initial CAR scaffold          | -     | -      |
+
+---
+
+## 1. Incident Summary
+
+| Field                  | Value                                                       |
+|------------------------|-------------------------------------------------------------|
+| CAR-id                 | CAR-{{DATE}}-NNN                                            |
+| Detection date         | {{DATE}}                                                    |
+| Severity               | P0 (critical) / P1 (major) / P2 (minor)                    |
+| Discovered by          | [Oracle / CI / Your Name / user]                                 |
+| Affected project(s)    | {{PROJECT_NAME}} / [other projects]                          |
+| Affected REQ-id(s)     | REQ-{{REQ_ID_PREFIX}}-NNN                                   |
+| Description            | [Clear, factual description of the defect or failure — what happened, when, what was the impact] |
+
+---
+
+## 2. Root Cause Analysis
+
+### 2.1 Five-Whys
+
+```mermaid
+graph TD
+    I["Incident: [description]"]
+    W1["Why 1: [immediate cause]"]
+    W2["Why 2: [deeper cause]"]
+    W3["Why 3: [process gap]"]
+    W4["Why 4: [systemic cause]"]
+    W5["Why 5: [root cause]"]
+
+    I --> W1 --> W2 --> W3 --> W4 --> W5
+```
+
+**Root cause**: [Concise statement of the root cause identified at Why 5]
+
+### 2.2 Fishbone (Cause-and-Effect) Diagram
+
+```mermaid
+graph LR
+    E(["Effect: {{PROJECT_NAME}} incident"])
+
+    subgraph Process
+        P1["[Process factor 1]"]
+        P2["[Process factor 2]"]
+    end
+
+    subgraph Technology
+        T1["[Tech factor 1]"]
+        T2["[Tech factor 2]"]
+    end
+
+    subgraph People
+        PE1["[People factor 1]"]
+    end
+
+    subgraph Environment
+        EN1["[Environment factor 1]"]
+    end
+
+    P1 --> E
+    P2 --> E
+    T1 --> E
+    T2 --> E
+    PE1 --> E
+    EN1 --> E
+```
+
+---
+
+## 3. Corrective Actions
+
+| CA-id   | Description                                             | Owner      | Target date | Status   | Closure evidence                   |
+|---------|---------------------------------------------------------|------------|-------------|----------|------------------------------------|
+| CA-001  | [Immediate fix — what was done to stop the bleeding]    | [Oracle]   | [date]      | Open     | PR SHA / commit                    |
+| CA-002  | [Medium-term fix — addresses root cause in code/config] | [Oracle]   | [date]      | Open     | PR SHA / commit                    |
+
+---
+
+## 4. Preventive Actions
+
+Preventive actions address the systemic root cause to prevent recurrence across other projects.
+
+| PA-id   | Description                                             | Owner      | Target date | Status   | Cross-project? |
+|---------|---------------------------------------------------------|------------|-------------|----------|----------------|
+| PA-001  | [Preventive action — process, hook, template, or skill change] | [Oracle] | [date] | Open | Yes / No |
+
+---
+
+## 5. Verification
+
+| Action   | Verified | Method                                  | Verified by | Date       |
+|----------|----------|-----------------------------------------|-------------|------------|
+| CA-001   | [Y/N]    | [Test / inspection / monitoring]        | [Oracle]    | [date]     |
+| PA-001   | [Y/N]    | [How we know it works fleet-wide]       | [Oracle]    | [date]     |
+
+---
+
+## 6. Lessons Captured
+
+> Cross-linked to Oracle knowledge base per Principle 1 (Nothing is Deleted).
+
+| Lesson                                                               | Saved to                                             |
+|----------------------------------------------------------------------|------------------------------------------------------|
+| [Lesson learned — actionable, transferable insight]                  | `ψ/memory/learnings/[date]_[slug].md`                |
+| [Second lesson]                                                      | arra knowledge base via `arra_learn()`               |
+
+---
+
+## 7. CAR Sign-off
+
+| Field          | Value              |
+|----------------|--------------------|
+| CAR author     | My Oracle               |
+| Review by      | [Your Name / Oracle]    |
+| Closed date    | [date]             |
+| Status         | Open / Closed      |

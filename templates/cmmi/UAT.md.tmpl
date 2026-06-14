@@ -1,0 +1,240 @@
+---
+doc_id: "UAT-{{PROJECT_NAME}}-001"
+type: UAT
+standard: lean-7-docs
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# User Acceptance Test Plan — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id                   | Author       | Change Summary                  | CR-id | PR/SHA |
+|---------|------------|--------------------------|--------------|---------------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -                        | My Oracle         | Initial scaffold                | -     | -      |
+
+---
+
+## 1. Test Plan Identifier
+
+UAT-{{PROJECT_NAME}}-001 — Version 1.0.0 — {{DATE}}
+
+---
+
+## 2. Introduction
+
+### 2.1 Purpose
+
+This document defines the user acceptance test plan for **{{PROJECT_NAME}}**. It describes the test approach, environment, entry/exit criteria, test cases, and sign-off procedure. Each test case maps one-to-one with a requirement in `docs/SRS.md`.
+
+### 2.2 Scope
+
+**In scope**: all functional requirements (REQ-{{REQ_ID_PREFIX}}-001 through REQ-{{REQ_ID_PREFIX}}-NNN) and non-functional requirements marked as "Must" in SRS-{{PROJECT_NAME}}-001.
+
+**Out of scope**: performance/load testing (covered separately by PERF suite), penetration testing, and infrastructure failover testing unless explicitly listed as UAT requirements.
+
+### 2.3 References
+
+| Document                        | Version | Location               |
+|---------------------------------|---------|------------------------|
+| SRS-{{PROJECT_NAME}}-001        | 1.0.0   | `docs/SRS.md`          |
+| SDD-{{PROJECT_NAME}}-001        | 1.0.0   | `docs/SDD.md`          |
+| UXUI-{{PROJECT_NAME}}-001       | 1.0.0   | `docs/UXUI.md`         |
+| Traceability                    | 1.0.0   | REQ-id column in this UAT |
+| IEEE 829-2008                   | -       | External standard      |
+
+---
+
+## 3. Test Items
+
+The following system components are under test:
+
+| Component       | Version / SHA   | Notes                                      |
+|-----------------|-----------------|--------------------------------------------|
+| [Component 1]   | [git SHA]       | [Brief scope note]                         |
+| [Component 2]   | [git SHA]       | [Brief scope note]                         |
+
+---
+
+## 4. Features to be Tested
+
+| REQ-id                           | Feature description                          | Test ID(s)                        |
+|----------------------------------|----------------------------------------------|-----------------------------------|
+| REQ-{{REQ_ID_PREFIX}}-001        | [Feature name]                               | TC-{{REQ_ID_PREFIX}}-001          |
+| REQ-{{REQ_ID_PREFIX}}-002        | [Feature name]                               | TC-{{REQ_ID_PREFIX}}-002          |
+| REQ-{{REQ_ID_PREFIX}}-NF-001     | Response time ≤200 ms (p95)                  | TC-{{REQ_ID_PREFIX}}-NF-001       |
+| REQ-{{REQ_ID_PREFIX}}-NF-004     | WCAG 2.2 AA accessibility                    | TC-{{REQ_ID_PREFIX}}-NF-004       |
+
+---
+
+## 5. Features Not to be Tested
+
+| Feature / Area               | Reason excluded                                       |
+|------------------------------|-------------------------------------------------------|
+| [Feature name]               | Out of scope for UAT phase; covered by unit tests     |
+| Infrastructure failover      | Handled by platform SLA (Vercel / Cloudflare)         |
+
+---
+
+## 6. Test Approach
+
+- **Execution**: Manual UAT executed by Your Name (product owner) or designated representative, with Oracle providing a staging environment URL.
+- **Automation**: Regression suite run via CI (`bun test` / `pytest`). Results attached as artifacts.
+- **Tools**: Browser (Chrome latest, Safari latest), axe-core browser extension for accessibility, curl/Postman for API tests.
+- **Environment**: Staging (see Section 7).
+
+---
+
+## 7. Test Environment
+
+| Attribute           | Value                                                  |
+|---------------------|--------------------------------------------------------|
+| Environment         | Staging                                                |
+| URL                 | [https://staging.{{PROJECT_NAME}}.example.com]         |
+| Database            | Staging instance — seeded with anonymized sample data  |
+| Auth accounts       | `uat-user@test.invalid` (standard), `uat-admin@test.invalid` (admin) |
+| Browser             | Chrome latest + Safari latest                          |
+| Mobile              | iOS Safari (375 px) + Android Chrome (390 px)          |
+| Validation spec     | `docs/val/environment-spec.md`                         |
+
+---
+
+## 8. Entry and Exit Criteria
+
+### 8.1 Entry Criteria
+
+- [ ] All SRS requirements at status "Approved"
+- [ ] SDD approved by lead Oracle
+- [ ] Staging deployment successful (CI green)
+- [ ] Test data seeded in staging DB
+- [ ] UAT test cases reviewed by Your Name
+
+### 8.2 Exit Criteria
+
+- [ ] All "Must" test cases: pass
+- [ ] Zero open P0/P1 defects
+- [ ] Accessibility scan: zero WCAG 2.2 AA violations
+- [ ] Your Name sign-off recorded in Section 12
+
+---
+
+## 9. Test Cases
+
+> Each test case follows IEEE 829-2008 structure: identifier, item, preconditions, input, steps, expected result, actual result, pass/fail.
+
+---
+
+### TC-{{REQ_ID_PREFIX}}-001 — [Test case title]
+
+| Field             | Value                                                          |
+|-------------------|----------------------------------------------------------------|
+| Test case ID      | TC-{{REQ_ID_PREFIX}}-001                                       |
+| REQ-id            | REQ-{{REQ_ID_PREFIX}}-001                                      |
+| Priority          | Must                                                           |
+| Preconditions     | User is logged in as `uat-user@test.invalid`. Staging is available. |
+| Input             | [Describe input data / actions]                                |
+| Steps             | 1. Navigate to [URL/screen]. <br>2. [Action]. <br>3. [Action]. |
+| Expected result   | [Precise observable outcome — specific text, state, data]      |
+| Actual result     | [Filled during execution]                                      |
+| Pass / Fail       | [Filled during execution]                                      |
+| Defect ref        | [If fail: link to GitHub issue]                                |
+| Executed by       | [Name]                                                         |
+| Execution date    | [Date]                                                         |
+| Notes             | [Any observations]                                             |
+
+---
+
+### TC-{{REQ_ID_PREFIX}}-002 — [Test case title]
+
+| Field             | Value                                                          |
+|-------------------|----------------------------------------------------------------|
+| Test case ID      | TC-{{REQ_ID_PREFIX}}-002                                       |
+| REQ-id            | REQ-{{REQ_ID_PREFIX}}-002                                      |
+| Priority          | Must / Should                                                  |
+| Preconditions     | [Starting state]                                               |
+| Input             | [Input data]                                                   |
+| Steps             | 1. [Step]. <br>2. [Step]. <br>3. [Step].                       |
+| Expected result   | [Observable outcome]                                           |
+| Actual result     | [Filled during execution]                                      |
+| Pass / Fail       | [Filled during execution]                                      |
+| Defect ref        | -                                                              |
+| Executed by       | [Name]                                                         |
+| Execution date    | [Date]                                                         |
+| Notes             | -                                                              |
+
+---
+
+### TC-{{REQ_ID_PREFIX}}-NF-001 — Response time (performance)
+
+| Field             | Value                                                          |
+|-------------------|----------------------------------------------------------------|
+| Test case ID      | TC-{{REQ_ID_PREFIX}}-NF-001                                    |
+| REQ-id            | REQ-{{REQ_ID_PREFIX}}-NF-001                                   |
+| Priority          | Must                                                           |
+| Preconditions     | Staging environment under representative load ([N] users).     |
+| Input             | Sustained [N] VU, 60 s duration, k6 script `tests/perf/load.js` |
+| Steps             | 1. Run `k6 run tests/perf/load.js`. <br>2. Record p95 response time. |
+| Expected result   | p95 ≤ 200 ms. Zero HTTP 5xx errors.                            |
+| Actual result     | [Filled during execution]                                      |
+| Pass / Fail       | [Filled during execution]                                      |
+| Defect ref        | -                                                              |
+| Executed by       | [Oracle / CI]                                                  |
+| Execution date    | [Date]                                                         |
+
+---
+
+### TC-{{REQ_ID_PREFIX}}-NF-004 — WCAG 2.2 AA accessibility
+
+| Field             | Value                                                                      |
+|-------------------|----------------------------------------------------------------------------|
+| Test case ID      | TC-{{REQ_ID_PREFIX}}-NF-004                                                |
+| REQ-id            | REQ-{{REQ_ID_PREFIX}}-NF-004                                               |
+| Priority          | Must                                                                        |
+| Preconditions     | Staging deployment live. axe-core browser extension installed.              |
+| Steps             | 1. Open each primary page in Chrome. <br>2. Run axe-core analysis. <br>3. Navigate entire UI by keyboard only. <br>4. Check colour contrast (tool: Who Can Use or Colour Contrast Analyser). |
+| Expected result   | Zero axe-core violations. All interactive elements reachable by keyboard. All text contrast ≥ 4.5:1. |
+| Actual result     | [Filled during execution]                                                   |
+| Pass / Fail       | [Filled during execution]                                                   |
+| Defect ref        | -                                                                           |
+| Executed by       | [Name]                                                                      |
+| Execution date    | [Date]                                                                      |
+
+---
+
+## 10. Suspension and Resumption Criteria
+
+**Suspension**: UAT is suspended if a P0 (system crash / data loss) defect is discovered. Testing resumes after the defect is fixed and the staging environment is re-deployed.
+
+**Resumption**: All previously passed test cases are re-executed for the affected feature area after a P0 fix.
+
+---
+
+## 11. Test Deliverables
+
+| Deliverable                  | Format         | Storage location                              |
+|------------------------------|----------------|-----------------------------------------------|
+| Completed UAT test results   | This document  | `docs/UAT.md` (executed + annotated)          |
+| Defect list                  | GitHub issues  | `gh issue list --label uat`                   |
+| Accessibility scan report    | axe-core JSON  | `docs/a11y-report-{{DATE}}.json`              |
+| Performance test report      | k6 HTML report | `docs/perf-report-{{DATE}}.html`              |
+| Sign-off record              | Section 12     | Committed to this document                    |
+
+---
+
+## 12. Sign-off Record
+
+UAT is considered complete when Your Name (product owner) or designated representative signs off below.
+
+| Field             | Value                                  |
+|-------------------|----------------------------------------|
+| Sign-off by       | [Name]                                 |
+| Role              | Product owner / designated rep         |
+| Date              | [Date]                                 |
+| Conditions        | All "Must" test cases passed. Zero P0/P1 open defects. |
+| Notes             | [Any exceptions or deferred items]     |
+
+> Committed to git as evidence of UAT completion per CMMI v3.0 Validation (VV) and Verification (VV) practice areas.
