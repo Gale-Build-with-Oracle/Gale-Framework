@@ -1,6 +1,6 @@
 # CI Template: Rust backend + Node/React frontend
 # Copy to: .github/workflows/ci.yml
-# Stacks: YourProject-Putaway, YourProject-example-picking, YourProject-example-partial, YourProject-RM-Remove, Planning, YourProject-example-npd, YourProject-Helpdesk
+# Stacks: any Rust service
 
 name: CI
 
