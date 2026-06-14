@@ -1,6 +1,6 @@
 # CI Template: Go backend + React frontend
 # Copy to: .github/workflows/ci.yml
-# Stacks: example-hr, YourProject-example-forms
+# Stacks: any Go service
 
 name: CI
 
