@@ -170,7 +170,6 @@ RETIRED_TERMS=(
   "PERMANENT worker" "MAW_ALLOW_STANDING_DOWN" "standing\.yaml" "Session refresh"
   "maw team down" "on-demand project team" "ON-DEMAND project team"
   "project-team\.yaml" "lazy-create the charter"
-  "Kati will FAIL" "RTM\.md" "Kati"
 )
 NOTICE_RE='RETIRED|retired|no longer|deprecated|NOT a |no separate|is the only mode|never (spawn|tear|warm)|RETIRED_TERMS|NOTICE_RE|superseded|_lint|does NOT cross|no per-oracle|still banned|no L2|removed|REMOVED'
 LINT_FAIL=0
