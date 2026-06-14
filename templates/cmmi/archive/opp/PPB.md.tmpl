@@ -1,0 +1,64 @@
+---
+doc_id: "PPB-{{PROJECT_NAME}}-001"
+type: PPB
+tier: 4
+category: future
+pa: QPM
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Process Performance Baseline — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author | Change Summary           | CR-id | PR/SHA |
+|---------|------------|--------|--------|--------------------------|-------|--------|
+| 0.1.0   | {{DATE}}   | -      | My Oracle   | PPB stub — L3 placeholder| -     | -      |
+
+---
+
+## 1. Purpose
+
+A Process Performance Baseline (PPB) establishes the statistical normal operating range of key sub-process metrics, enabling quantitative project management (CMMI L4 QPM). This document is a stub that will be populated once 30+ data points per metric are available.
+
+---
+
+## 2. Candidate Metrics for Baseline
+
+| Metric                           | Sub-process              | Data source                                | Data points available | Target (30+) |
+|----------------------------------|--------------------------|--------------------------------------------|----------------------|--------------|
+| PR cycle time (open → merge)     | Development              | GitHub API via `maw costs`                 | [N] (as of {{DATE}}) | ≥30          |
+| Defect detection rate (UAT)      | QA / Validation          | UAT sign-off records                       | [N]                  | ≥30          |
+| Requirements churn rate          | Requirements Mgmt        | SRS revision history counts                | [N]                  | ≥30          |
+| Test coverage (unit)             | Development              | CI coverage reports                        | [N]                  | ≥30          |
+| Post-release defect density      | Release / Maintenance    | GitHub issues post-release                 | [N]                  | ≥30          |
+
+---
+
+## 3. Statistical Baseline (Populate at Month 12)
+
+> Leave this section blank until ≥30 data points are available per metric.
+> Format: mean ± 1σ, UCL = mean + 3σ, LCL = max(0, mean − 3σ).
+
+| Metric                     | Mean | Std dev (σ) | UCL (mean+3σ) | LCL | Data points | Period        |
+|----------------------------|------|-------------|---------------|-----|-------------|---------------|
+| PR cycle time (days)       | -    | -           | -             | -   | -           | [YYYY to YYYY] |
+
+---
+
+## 4. Sub-process Capability Profiles (L4 target)
+
+[Populated at M12 appraisal. Each sub-process will have: baseline chart, control limits, and OPP objectives from `docs/opp/objectives.md`.]
+
+---
+
+## 5. References
+
+- `docs/CMMI-L3-audit-checklist.md` §8 — L4 readiness gate at month 12
+- `docs/opp/objectives.md` — OPP objectives (quantitative targets)
+- `docs/ma/gqm.md` — measurement definitions feeding this baseline
+- CMMI v3.0 OPP practice area

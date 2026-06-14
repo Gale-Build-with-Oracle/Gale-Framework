@@ -1,0 +1,110 @@
+{
+  "host": "local",
+  "port": 3456,
+  "oracleUrl": "http://localhost:47778",
+  "env": {},
+  "commands": {
+    "default": "claude --dangerously-skip-permissions --continue || claude --dangerously-skip-permissions",
+    "claude": "claude --dangerously-skip-permissions --continue || claude --dangerously-skip-permissions",
+    "codex": "codex-launch --dangerously-bypass-approvals-and-sandbox --dangerously-bypass-hook-trust -m gpt-5.5 -c reasoning_effort=high",
+    "codex-resume": "codex-launch --dangerously-bypass-approvals-and-sandbox --dangerously-bypass-hook-trust -m gpt-5.5 -c reasoning_effort=high",
+    "omx": "omx-launch --direct --madmax --high",
+    "omx-resume": "omx-launch --direct --madmax --high"
+  },
+  "sessions": {},
+  "triggers": [
+    {
+      "on": "pr_merged",
+      "action": "maw send my-oracle 'PR merged in {repo} \u2014 check if cleanup is needed'"
+    },
+    {
+      "on": "worktree_ready",
+      "action": "maw send my-oracle 'Worktree ready in {oracle} \u2014 awaiting QA'"
+    },
+    {
+      "on": "maw_done",
+      "action": "maw send my-oracle 'maw done completed \u2014 worktree cleaned'"
+    },
+    {
+      "on": "oracle_awake",
+      "action": "maw send my-oracle '{oracle} came online'"
+    }
+  ],
+  "node": "local",
+  "oracle": "my-oracle",
+  "namedPeers": [],
+  "agents": {
+    "my-oracle": "local",
+    "dev-oracle": "local",
+    "my-product": "my-oracle"
+  },
+  "peers": [],
+  "engines": {
+    "claude": {
+      "name": "claude",
+      "cmd": "claude",
+      "label": "Claude Code",
+      "processNames": [
+        "claude",
+        "claude-code",
+        "thclaude"
+      ],
+      "resume": {
+        "flag": "--resume",
+        "replaces": "--continue",
+        "quoteValue": true
+      },
+      "model": {
+        "flag": "--model",
+        "default": "sonnet"
+      },
+      "capabilities": [
+        "channels",
+        "resume",
+        "model",
+        "system-prompt-file"
+      ]
+    },
+    "codex": {
+      "name": "codex",
+      "cmd": "codex-launch --dangerously-bypass-approvals-and-sandbox --dangerously-bypass-hook-trust -m gpt-5.5 -c reasoning_effort=high",
+      "label": "Codex CLI",
+      "processNames": [
+        "codex"
+      ]
+    },
+    "omx": {
+      "name": "omx",
+      "cmd": "omx-launch --direct --madmax --high",
+      "label": "Oh My Codex",
+      "processNames": [
+        "omx",
+        "codex"
+      ]
+    },
+    "thclaws": {
+      "name": "thclaws",
+      "cmd": "thclaws",
+      "label": "thClaws",
+      "processNames": [
+        "thclaws"
+      ]
+    },
+    "opencode": {
+      "name": "opencode",
+      "cmd": "opencode",
+      "label": "OpenCode",
+      "processNames": [
+        "opencode"
+      ]
+    },
+    "aider": {
+      "name": "aider",
+      "cmd": "aider",
+      "label": "Aider",
+      "processNames": [
+        "aider"
+      ]
+    }
+  }
+}

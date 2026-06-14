@@ -1,0 +1,275 @@
+---
+doc_id: "SRS-{{PROJECT_NAME}}-001"
+type: SRS
+standard: lean-7-docs
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Software Requirements Specification — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id                   | Author       | Change Summary                  | CR-id | PR/SHA |
+|---------|------------|--------------------------|--------------|---------------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -                        | My Oracle         | Initial scaffold                | -     | -      |
+
+---
+
+## 1. Introduction
+
+### 1.1 Purpose
+
+This Software Requirements Specification describes the functional and non-functional requirements for the **{{PROJECT_NAME}}** system. It is the primary reference for design, implementation, and acceptance testing activities.
+
+### 1.2 Scope
+
+| Attribute       | Value                                             |
+|-----------------|---------------------------------------------------|
+| System name     | {{PROJECT_NAME}}                                  |
+| Version         | 1.0.0                                             |
+| Prepared by     | My Oracle on behalf of Your Name (<your-github-user>)       |
+| Intended readers| Development Oracle, QA, Your Name (product owner)      |
+| Date            | {{DATE}}                                          |
+
+**In scope**: [Describe features, modules, and integrations covered.]
+
+**Out of scope**: [Describe what this SRS explicitly does not address.]
+
+### 1.3 Definitions, Acronyms, and Abbreviations
+
+| Term        | Definition                                          |
+|-------------|-----------------------------------------------------|
+| REQ         | Requirement identifier (REQ-{{PROJECT_NAME}}-NNN)  |
+| CR          | Change Request                                      |
+| UC          | Use Case                                            |
+| API         | Application Programming Interface                   |
+| CMMI        | Capability Maturity Model Integration               |
+| IEEE        | Institute of Electrical and Electronics Engineers   |
+| SRS         | Software Requirements Specification (this document) |
+
+### 1.4 Overview
+
+This document is organized as follows:
+
+- Section 2: General description — product perspective, functions, user characteristics, constraints
+- Section 3: Specific requirements — functional, non-functional, external interface
+- Section 4: Verification — traceability summary linking each REQ to test method
+- Section 5: Appendices — use case diagrams, data dictionaries, open issues
+
+---
+
+## 2. General Description
+
+### 2.1 Product Perspective
+
+[Describe the system in context. How does it fit into the larger ecosystem? Include a simple context diagram (textual or Mermaid) showing external entities and system boundaries.]
+
+```mermaid
+graph LR
+    User(["End User"]) -->|HTTP| System["{{PROJECT_NAME}}"]
+    System -->|Query| DB[(Database)]
+    System -->|API| External["External Service"]
+```
+
+### 2.2 Product Functions
+
+High-level functions the system must perform:
+
+1. [Function 1 — brief description]
+2. [Function 2 — brief description]
+3. [Function 3 — brief description]
+
+### 2.3 User Characteristics
+
+| User Class       | Description                                     | Expected Frequency |
+|------------------|-------------------------------------------------|--------------------|
+| [Role name]      | [Brief description of role and technical level] | [Daily / Weekly]   |
+
+### 2.4 Constraints
+
+- **Technology constraints**: [Language, framework, platform restrictions]
+- **Regulatory constraints**: [PDPA, WCAG 2.2 AA, internal policy]
+- **Performance constraints**: [Response time budgets, throughput limits]
+- **Security constraints**: [Auth, encryption, data residency]
+
+### 2.5 Assumptions and Dependencies
+
+| ID   | Assumption / Dependency                                | Impact if False               |
+|------|--------------------------------------------------------|-------------------------------|
+| A-01 | [Assumption text]                                      | [Consequence]                 |
+| D-01 | [External dependency name + version]                   | [Consequence if unavailable]  |
+
+---
+
+## 3. Specific Requirements
+
+> Requirement IDs follow the pattern **REQ-{{REQ_ID_PREFIX}}-NNN**.
+> Each requirement carries: statement, rationale, verification method, priority, and status.
+
+### 3.1 Functional Requirements
+
+#### 3.1.1 [Feature Group — e.g., User Authentication]
+
+---
+
+**REQ-{{REQ_ID_PREFIX}}-001** — [Short title]
+
+| Field               | Value                                                     |
+|---------------------|-----------------------------------------------------------|
+| Statement           | The system shall [observable behavior + measurable outcome]. |
+| Rationale           | [Why this requirement exists]                             |
+| Priority            | Must / Should / Could / Won't (MoSCoW)                    |
+| Verification method | Test / Inspection / Demonstration / Analysis              |
+| UAT test ID         | UAT-{{REQ_ID_PREFIX}}-001                                 |
+| Status              | Draft                                                     |
+
+*Revision note*: Initial version {{DATE}}. No prior versions.
+
+---
+
+**REQ-{{REQ_ID_PREFIX}}-002** — [Short title]
+
+| Field               | Value                                                     |
+|---------------------|-----------------------------------------------------------|
+| Statement           | The system shall [observable behavior + measurable outcome]. |
+| Rationale           | [Why this requirement exists]                             |
+| Priority            | Must / Should / Could / Won't (MoSCoW)                    |
+| Verification method | Test / Inspection / Demonstration / Analysis              |
+| UAT test ID         | UAT-{{REQ_ID_PREFIX}}-002                                 |
+| Status              | Draft                                                     |
+
+*Revision note*: Initial version {{DATE}}. No prior versions.
+
+---
+
+#### 3.1.2 [Feature Group — add groups as needed]
+
+[Add REQ blocks following the same pattern above.]
+
+---
+
+### 3.2 Non-Functional Requirements
+
+#### 3.2.1 Performance
+
+**REQ-{{REQ_ID_PREFIX}}-NF-001** — Response time
+
+| Field               | Value                                                         |
+|---------------------|---------------------------------------------------------------|
+| Statement           | The system shall respond to 95% of API requests within 200 ms under a load of [N] concurrent users. |
+| Priority            | Must                                                          |
+| Verification method | Load test (tool: [k6 / Locust / JMeter])                     |
+| Status              | Draft                                                         |
+
+#### 3.2.2 Reliability
+
+**REQ-{{REQ_ID_PREFIX}}-NF-002** — Availability
+
+| Field               | Value                                                         |
+|---------------------|---------------------------------------------------------------|
+| Statement           | The system shall maintain an uptime of ≥99.5% measured monthly, excluding planned maintenance windows. |
+| Priority            | Must                                                          |
+| Verification method | Monitoring dashboard (tool: [Uptime Kuma / Cloudflare])       |
+| Status              | Draft                                                         |
+
+#### 3.2.3 Security
+
+**REQ-{{REQ_ID_PREFIX}}-NF-003** — Authentication
+
+| Field               | Value                                                         |
+|---------------------|---------------------------------------------------------------|
+| Statement           | All endpoints returning user data shall require a valid session token (JWT or equivalent). Unauthenticated requests shall receive HTTP 401. |
+| Priority            | Must                                                          |
+| Verification method | Automated security test (OWASP ZAP / manual penetration test) |
+| Status              | Draft                                                         |
+
+#### 3.2.4 Accessibility
+
+**REQ-{{REQ_ID_PREFIX}}-NF-004** — WCAG 2.2 AA
+
+| Field               | Value                                                         |
+|---------------------|---------------------------------------------------------------|
+| Statement           | All web interfaces shall conform to WCAG 2.2 Level AA success criteria. |
+| Priority            | Must                                                          |
+| Verification method | Automated axe-core scan + manual keyboard navigation test     |
+| Status              | Draft                                                         |
+
+#### 3.2.5 Maintainability
+
+**REQ-{{REQ_ID_PREFIX}}-NF-005** — Code quality
+
+| Field               | Value                                                         |
+|---------------------|---------------------------------------------------------------|
+| Statement           | All production code shall pass static analysis with zero errors. TypeScript strict mode enabled. Test coverage ≥80% on business logic. |
+| Priority            | Should                                                        |
+| Verification method | CI gate (lint + type-check + coverage report)                 |
+| Status              | Draft                                                         |
+
+---
+
+### 3.3 External Interface Requirements
+
+#### 3.3.1 User Interfaces
+
+- **UI standard**: Refer to `docs/UXUI.md` for visual design specification.
+- **Responsive targets**: Mobile 375 px, Tablet 768 px, Desktop 1440 px.
+- **Accessibility**: WCAG 2.2 AA (REQ-{{REQ_ID_PREFIX}}-NF-004).
+- **Touch targets**: Minimum 44 × 44 px per WCAG 2.5.8.
+
+#### 3.3.2 Hardware Interfaces
+
+[Describe any hardware dependencies — printers, barcode scanners, cameras, etc. State "None" if not applicable.]
+
+#### 3.3.3 Software Interfaces
+
+| External System   | Protocol / API         | Auth Method     | Data Format | SLA / Timeout  |
+|-------------------|------------------------|-----------------|-------------|----------------|
+| [System name]     | REST / GraphQL / SDK   | API key / OAuth | JSON        | 5 s timeout    |
+
+#### 3.3.4 Communications Interfaces
+
+[Network protocols, data formats, message queues, webhook schemas. State "None" if not applicable.]
+
+---
+
+## 4. Verification
+
+This section provides a traceability summary. The definitive acceptance trace is the `REQ-id` column in `docs/UAT.md`; no separate traceability matrix document is used in the lean 7-doc standard.
+
+| REQ-id                       | Verification Method | Test Document       | Status   |
+|------------------------------|---------------------|---------------------|----------|
+| REQ-{{REQ_ID_PREFIX}}-001    | Test                | UAT-{{REQ_ID_PREFIX}}-001 | Pending  |
+| REQ-{{REQ_ID_PREFIX}}-002    | Test                | UAT-{{REQ_ID_PREFIX}}-002 | Pending  |
+| REQ-{{REQ_ID_PREFIX}}-NF-001 | Load test           | PERF-001            | Pending  |
+| REQ-{{REQ_ID_PREFIX}}-NF-004 | Axe-core scan       | A11Y-001            | Pending  |
+
+---
+
+## 5. Appendices
+
+### 5.1 Use Case Diagrams
+
+[Insert Mermaid or linked diagram. Remove section if not applicable.]
+
+### 5.2 Data Dictionary
+
+| Field name      | Type    | Nullable | Constraints           | Description                  |
+|-----------------|---------|----------|-----------------------|------------------------------|
+| [field]         | string  | No       | max length: 255       | [description]                |
+
+### 5.3 Open Issues and TBDs
+
+| Issue ID | Description                                | Raised     | Owner      | Target date |
+|----------|--------------------------------------------|------------|------------|-------------|
+| TBD-001  | [Describe open question or assumption TBD] | {{DATE}}   | [Oracle]   | [date]      |
+
+### 5.4 References
+
+- IEEE 29148:2018 — Systems and Software Engineering: Life Cycle Processes — Requirements Engineering
+- IEEE 830-1998 — Recommended Practice for Software Requirements Specifications (legacy reference)
+- CMMI v3.0 — Requirements Development and Management (RDM)
+- `docs/CMMI-L3-audit-checklist.md` — organizational CMMI readiness plan

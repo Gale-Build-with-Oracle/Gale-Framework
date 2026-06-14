@@ -1,0 +1,84 @@
+---
+doc_id: "WEEKLY_STATUS-{{PROJECT_NAME}}-001"
+type: WEEKLY_STATUS
+tier: 2
+category: recurring
+pa: PMC
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Weekly Status Report — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author   | Change Summary            | CR-id | PR/SHA |
+|---------|------------|--------|----------|---------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle     | Initial status entry      | -     | -      |
+
+---
+
+## 1. Status at a Glance
+
+| Dimension        | Status               | Notes                                          |
+|------------------|----------------------|------------------------------------------------|
+| Schedule         | On track / At risk / Delayed | [1-line note]                        |
+| Budget / effort  | On track / Over / Under | [1-line note]                           |
+| Quality          | On track / At risk   | [1-line note]                                  |
+| Risks            | No new / [N] new     | See Section 5                                  |
+| Blockers         | None / [N] blockers  | See Section 6                                  |
+
+---
+
+## 2. This Week's Accomplishments
+
+| WBS-id | Task                          | Status     | PR / evidence                        |
+|--------|-------------------------------|------------|--------------------------------------|
+| [WBS]  | [Task name]                   | Completed  | [PR URL or commit SHA]               |
+| [WBS]  | [Task name]                   | In progress| [% complete estimate]                |
+
+---
+
+## 3. Next Week's Plan
+
+| WBS-id | Task                          | Owner      | Target date |
+|--------|-------------------------------|------------|-------------|
+| [WBS]  | [Task name]                   | [Oracle]   | [date]      |
+| [WBS]  | [Task name]                   | [Oracle]   | [date]      |
+
+---
+
+## 4. Schedule Variance
+
+| Milestone             | Planned date | Forecast date | Variance   | Corrective action needed |
+|-----------------------|--------------|---------------|------------|--------------------------|
+| [Milestone name]      | [date]       | [date]        | [+/- days] | [Yes / No]               |
+
+---
+
+## 5. Risk Status (summary)
+
+See `docs/RISK_REGISTER.md` for full register. Changes this week:
+
+- [Risk updated: RISK-NNN — likelihood changed from [X] to [Y] because...]
+- [New risk identified: [description]]
+- [Risk closed: RISK-NNN — reason]
+
+---
+
+## 6. Blockers and Issues
+
+| Blocker ID | Description                               | Owner      | Target resolution |
+|------------|-------------------------------------------|------------|-------------------|
+| BLK-001    | [Blocker description — specific]          | [Oracle]   | [date]            |
+
+---
+
+## 7. Decisions Required from Your Name
+
+| Item                                   | Context                               | Needed by |
+|----------------------------------------|---------------------------------------|-----------|
+| [Decision item]                        | [Brief context]                       | [date]    |

@@ -1,0 +1,41 @@
+# projects.yaml — generic starter registry for your fleet projects.
+#
+# Scripts, hooks, and workflows can derive routing from this file.
+# Replace placeholders before use.
+#
+# Schema per project:
+#   name:           GitHub repo basename or local project name
+#   repo:           GitHub repository slug
+#   owner_oracle:   Oracle/pane responsible for routing work
+#   lane:           heavyweight (branch→PR→merge) | lightweight (direct push allowed)
+#   guard:          hook-blocked | permissive
+#   family:         product | infra | oracle
+#   description:    Human-readable purpose
+#   status:         active | archived | decommissioned
+
+- name: my-product
+  repo: github.com/<your-github-user>/my-product
+  owner_oracle: my-oracle
+  lane: heavyweight
+  guard: hook-blocked
+  family: product
+  description: Example product repository using the branch → PR → merge workflow.
+  status: active
+
+- name: my-infra
+  repo: github.com/<your-github-user>/my-infra
+  owner_oracle: my-oracle
+  lane: lightweight
+  guard: permissive
+  family: infra
+  description: Example infrastructure/tooling repository using the lightweight workflow.
+  status: active
+
+- name: my-oracle
+  repo: github.com/<your-github-user>/my-oracle
+  owner_oracle: my-oracle
+  lane: lightweight
+  guard: permissive
+  family: oracle
+  description: Example oracle identity repository.
+  status: active

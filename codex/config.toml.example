@@ -1,0 +1,65 @@
+# Codex/OMX starter configuration. Copy to your Codex config location and edit.
+# Structure only: fill provider credentials locally; do not commit real secrets.
+
+notify = ["node", "$HOME/.codex/hooks/notify-hook.js"]
+model_reasoning_effort = "high"
+model_context_window = 250000
+approval_policy = "never"
+approvals_reviewer = "user"
+sandbox_mode = "danger-full-access"
+model = "gpt-5.5"
+suppress_unstable_features_warning = true
+plan_mode_reasoning_effort = "xhigh"
+
+[features]
+apps = false
+multi_agent = true
+child_agents_md = true
+hooks = true
+goals = true
+
+[tui]
+status_line = ["model-with-reasoning", "git-branch", "current-dir"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[projects."$HOME/ghq/github.com/<your-github-user>/my-product"]
+trust_level = "trusted"
+
+[projects."$HOME/ghq/github.com/<your-github-user>/my-oracle"]
+trust_level = "trusted"
+
+[mcp_servers.your-db-mcp]
+command = "$HOME/.codex/mcp/bin/node"
+args = ["$HOME/.codex/mcp/node_modules/mssql-mcp-server/dist/index.js"]
+startup_timeout_sec = 90
+
+[mcp_servers.your-db-mcp.env]
+DATABASE_URL = "# your-database-url-here"
+
+[mcp_servers.arra-oracle-v3]
+command = "$HOME/.bun/bin/bun"
+args = ["run", "$HOME/ghq/github.com/<your-github-user>/my-oracle/src/index.ts"]
+
+[mcp_servers.code-review-graph]
+command = "$HOME/.local/bin/code-review-graph"
+args = ["serve"]
+startup_timeout_sec = 60
+
+[mcp_servers.vector-search]
+command = "python3"
+args = ["$HOME/path/to/vector-search-mcp.py"]
+startup_timeout_sec = 60
+
+[mcp_servers.vector-search.env]
+PROVIDER_KEY = "# your-api-key-here"
+
+[shell_environment_policy.set]
+USE_OMX_EXPLORE_CMD = "0"
+OMX_LAUNCH_POLICY = "direct"
+OMX_AUTO_UPDATE = "defer"
+
+[agents]
+max_threads = 6
+max_depth = 2

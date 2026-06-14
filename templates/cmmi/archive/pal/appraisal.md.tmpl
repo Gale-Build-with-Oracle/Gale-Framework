@@ -1,0 +1,75 @@
+---
+doc_id: "QUARTERLY_APPRAISAL-{{PROJECT_NAME}}-001"
+type: QUARTERLY_APPRAISAL
+tier: 2
+category: recurring
+pa: OPF
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Process Appraisal — Quarterly — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author | Change Summary           | CR-id | PR/SHA |
+|---------|------------|--------|--------|--------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle   | Initial appraisal entry  | -     | -      |
+
+---
+
+## 1. Appraisal Scope
+
+| Attribute              | Value                                                 |
+|------------------------|-------------------------------------------------------|
+| Quarter                | [YYYY-Qn: YYYY-MM-DD to YYYY-MM-DD]                  |
+| Scope                  | My Oracle fleet — all active projects               |
+| Practice areas reviewed| CM, REQM/RDM, PMC/MC, PQA, MA, DAR, RSKM, IPM, OPD  |
+| Appraisal method       | SCAMPI-lite self-assessment using audit-checklist.md  |
+
+---
+
+## 2. Practice Area Ratings
+
+| Practice Area (v3.0 PA) | Previous level | Current level | Evidence                                  | Gap to L3            |
+|-------------------------|---------------|---------------|-------------------------------------------|----------------------|
+| CM                      | [N]           | [N]           | `docs/pal/cm-plan.md` + CI audits         | [None / Describe gap] |
+| RDM (REQM)              | [N]           | [N]           | RTM coverage across active projects       | [None / Describe gap] |
+| MC (PMC)                | [N]           | [N]           | Weekly status entries + CA log            | [None / Describe gap] |
+| PQA                     | [N]           | [N]           | Monthly process audit entries             | [None / Describe gap] |
+| MPM (MA)                | [N]           | [N]           | Monthly MA reports + GQM doc              | [None / Describe gap] |
+| DAR                     | [N]           | [N]           | Decision logs across projects             | [None / Describe gap] |
+| RSK (RSKM)              | [N]           | [N]           | Risk registers + monthly reviews          | [None / Describe gap] |
+| PLAN (IPM/PP)           | [N]           | [N]           | Tailoring records + project plans         | [None / Describe gap] |
+| PAD (OPD)               | [N]           | [N]           | PAL docs in `docs/pal/`                   | [None / Describe gap] |
+| PCM (OPF)               | [N]           | [N]           | This appraisal + improvement plan         | [None / Describe gap] |
+| OT                      | [N]           | [N]           | Competency matrix + training log          | [None / Describe gap] |
+| VV (VAL/VER)            | [N]           | [N]           | UAT sign-offs + peer review checklists    | [None / Describe gap] |
+
+---
+
+## 3. Key Improvements This Quarter
+
+- [Improvement 1 — what changed and measurable evidence]
+- [Improvement 2]
+
+---
+
+## 4. Action Plan for Next Quarter
+
+| Action                                     | Owner    | Target date | Success criterion                         |
+|--------------------------------------------|----------|-------------|-------------------------------------------|
+| [Process improvement action]               | [Oracle] | [date]      | [Measurable outcome]                      |
+| [Process improvement action]               | [Oracle] | [date]      | [Measurable outcome]                      |
+
+---
+
+## 5. Appraisal Sign-off
+
+| Role           | Name      | Signed | Date       |
+|----------------|-----------|--------|------------|
+| Appraisal lead | My Oracle      | Yes    | {{DATE}}   |
+| Product owner  | Your Name      | [Y/N]  | [date]     |

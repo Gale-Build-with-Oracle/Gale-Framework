@@ -1,0 +1,92 @@
+---
+doc_id: "PROCESS_AUDIT-{{PROJECT_NAME}}-001"
+type: PROCESS_AUDIT
+tier: 2
+category: recurring
+pa: PPQA
+project: "{{PROJECT_NAME}}"
+status: draft
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Process Audit Log — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author     | Change Summary          | CR-id | PR/SHA |
+|---------|------------|--------|------------|-------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | [Auditor]  | Initial audit entry     | -     | -      |
+
+---
+
+## 1. Audit Scope
+
+| Attribute      | Value                                      |
+|----------------|--------------------------------------------|
+| Period         | [YYYY-MM-01 to YYYY-MM-30]                 |
+| Processes audited | Requirements Management, Configuration Management, Project Monitoring |
+| Sampling method | [Full / Random sample of N items]         |
+| Work products reviewed | SRS, RTM, PR records, commit history  |
+
+---
+
+## 2. Process Audit Checklist
+
+### 2.1 Requirements Management (REQM / RDM)
+
+| Practice                                              | Compliant | Evidence                              | Finding |
+|-------------------------------------------------------|-----------|---------------------------------------|---------|
+| All REQ-ids assigned before work begins               | Yes / No / Partial | [git log / SRS.md]           | -       |
+| SRS updated when requirements change                  | Yes / No / Partial | [SRS revision history]        | -       |
+| RTM updated within 2 business days of code merge      | Yes / No / Partial | [RTM.md]                      | -       |
+| Bidirectional traceability maintained (REQ ↔ test)    | Yes / No / Partial | [RTM.md coverage column]      | -       |
+| CR doc created for each approved requirement change   | Yes / No / Partial | `docs/CHANGES/` contents      | -       |
+
+### 2.2 Configuration Management (CM)
+
+| Practice                                              | Compliant | Evidence                              | Finding |
+|-------------------------------------------------------|-----------|---------------------------------------|---------|
+| All changes made via PR (no direct push to main)      | Yes / No / Partial | `gh pr list --state merged` | -       |
+| Branch naming convention followed                     | Yes / No / Partial | `git branch -a`               | -       |
+| Release tags created for each version                 | Yes / No / Partial | `git tag -l`                  | -       |
+| CHANGELOG updated with each release                   | Yes / No / Partial | `docs/CHANGELOG.md`           | -       |
+| Worktrees cleaned up after merge                      | Yes / No / Partial | `git worktree list`           | -       |
+
+### 2.3 Project Monitoring and Control (PMC)
+
+| Practice                                              | Compliant | Evidence                              | Finding |
+|-------------------------------------------------------|-----------|---------------------------------------|---------|
+| Weekly status review conducted on schedule            | Yes / No / Partial | `docs/pmc/` status entries    | -       |
+| Risks reviewed this month                             | Yes / No / Partial | `docs/risk/` entries          | -       |
+| Corrective actions logged and tracked to closure      | Yes / No / Partial | `docs/pmc/corrective-actions.md` | -    |
+| Project plan updated to reflect actuals               | Yes / No / Partial | `docs/PROJECT_PLAN.md`        | -       |
+
+---
+
+## 3. Findings Summary
+
+| Finding ID | Severity | Description                                            | Affected process | NCR raised |
+|------------|----------|--------------------------------------------------------|------------------|------------|
+| F-001      | Minor / Major | [Finding description]                             | [REQM / CM / PMC] | [Yes / No] |
+
+---
+
+## 4. Non-Compliance References
+
+If Non-Compliance Reports (NCRs) were raised, reference them here. Full log: `docs/pqa/non-compliance.md`.
+
+| NCR-id   | Finding ref | Status     |
+|----------|-------------|------------|
+| NCR-NNN  | F-001       | Open       |
+
+---
+
+## 5. Auditor Sign-off
+
+| Field     | Value         |
+|-----------|---------------|
+| Auditor   | [Oracle name] |
+| Date      | {{DATE}}      |
+| Next audit| [YYYY-MM-01]  |

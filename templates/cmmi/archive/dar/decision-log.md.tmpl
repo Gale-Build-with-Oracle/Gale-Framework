@@ -1,0 +1,68 @@
+---
+doc_id: "DECISION_LOG-{{PROJECT_NAME}}-001"
+type: DECISION_LOG
+tier: 2
+category: recurring
+pa: DAR
+project: "{{PROJECT_NAME}}"
+status: active
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Organizational Decision Log — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author | Change Summary           | CR-id | PR/SHA |
+|---------|------------|--------|--------|--------------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle   | Initial scaffold         | -     | -      |
+
+---
+
+## 1. Purpose
+
+This log records significant fleet-level and organizational decisions that affect multiple projects, oracles, or the PAL itself. Trigger criteria for org-level DAR entries are defined in `docs/pal/dar-trigger-criteria.md`.
+
+Examples of org-level decisions: choosing a new tech stack, changing the fleet deployment platform, retiring a PA, adopting a new standard.
+
+---
+
+## 2. Organizational Decision Log
+
+### ORG-DEC-001 — [Fleet-level decision title]
+
+| Field               | Value                                                              |
+|---------------------|--------------------------------------------------------------------|
+| Decision ID         | ORG-DEC-001                                                        |
+| Date                | {{DATE}}                                                           |
+| Trigger             | [DAR trigger from criteria doc]                                    |
+| Context             | [1-3 sentences: what situation required this decision]             |
+| Selected option     | [Winner]                                                           |
+| Owner               | My Oracle / Your Name                                                        |
+| Status              | Decided / Superseded / Under review                                |
+| Affected projects   | [All / YourProject tier / Internal Tools tier / fleet-internal]            |
+
+#### Alternatives Considered
+
+| Option ID | Option                   | Description                                              |
+|-----------|--------------------------|----------------------------------------------------------|
+| OPT-A     | [Option A]               | [Description]                                            |
+| OPT-B     | [Option B]               | [Description]                                            |
+
+#### Evaluation Criteria and Weights
+
+| Criterion          | Weight | OPT-A | OPT-B | Winner    |
+|--------------------|--------|-------|-------|-----------|
+| [Criterion]        | [W]    | [S]   | [S]   | OPT-[A/B] |
+| [Criterion]        | [W]    | [S]   | [S]   |           |
+| **Weighted total** |        | [sum] | [sum] |           |
+
+#### Rationale and Consequences
+
+[Explain why this option was chosen and what fleet-wide impact it has.]
+
+---
+
+[Add new ORG-DEC-NNN entries above this line. Never delete prior entries — Principle 1: Nothing is Deleted.]

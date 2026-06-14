@@ -1,0 +1,94 @@
+---
+doc_id: "DECISION_LOG-{{PROJECT_NAME}}-001"
+type: DECISION_LOG
+tier: 1
+category: per_project
+pa: DAR
+project: "{{PROJECT_NAME}}"
+status: active
+owner: oracle
+created: "{{DATE}}"
+last_reviewed: "{{DATE}}"
+---
+
+# Decision Log — {{PROJECT_NAME}}
+
+## Revision History
+
+| Version | Date       | REQ-id | Author | Change Summary        | CR-id | PR/SHA |
+|---------|------------|--------|--------|-----------------------|-------|--------|
+| 1.0.0   | {{DATE}}   | -      | My Oracle   | Initial scaffold      | -     | -      |
+
+---
+
+## 1. Purpose
+
+This log records significant design and architecture decisions made during the {{PROJECT_NAME}} project, using the DAR (Decision Analysis and Resolution) approach from CMMI v3.0. Each entry documents alternatives considered, evaluation criteria with weights, and the selected option — ensuring decisions are traceable and auditable.
+
+DAR trigger criteria are defined in `docs/pal/dar-trigger-criteria.md`. Not every decision requires a DAR entry — only those meeting the trigger threshold (cost, risk, irreversibility, stakeholder impact).
+
+---
+
+## 2. Decision Log
+
+### DEC-001 — [Decision title]
+
+| Field               | Value                                                              |
+|---------------------|--------------------------------------------------------------------|
+| Decision ID         | DEC-{{REQ_ID_PREFIX}}-001                                          |
+| Date                | {{DATE}}                                                           |
+| Trigger             | [What prompted this decision — from `dar-trigger-criteria.md`]     |
+| Context             | [1-3 sentences describing the problem requiring a decision]        |
+| Selected option     | [Option name — bold winner]                                        |
+| Owner               | [Oracle / Your Name]                                                    |
+| Status              | Decided / Superseded / Under review                                |
+
+#### 2.1.1 Alternatives Considered
+
+| Option ID | Option name             | Description                                      |
+|-----------|-------------------------|--------------------------------------------------|
+| OPT-A     | [Option A name]         | [Brief description of this approach]             |
+| OPT-B     | [Option B name]         | [Brief description of this approach]             |
+| OPT-C     | [Option C name]         | [Brief description of this approach]             |
+
+#### 2.1.2 Evaluation Criteria and Weights
+
+| Criterion               | Weight (1-5) | OPT-A score (1-5) | OPT-B score (1-5) | OPT-C score (1-5) |
+|-------------------------|--------------|-------------------|-------------------|-------------------|
+| [Criterion name]        | [W]          | [S]               | [S]               | [S]               |
+| [Criterion name]        | [W]          | [S]               | [S]               | [S]               |
+| [Criterion name]        | [W]          | [S]               | [S]               | [S]               |
+| **Weighted total**      |              | [W×S sum]         | [W×S sum]         | [W×S sum]         |
+
+#### 2.1.3 Rationale
+
+[Explain why the selected option was chosen. Reference the weighted scores and any qualitative factors not captured in the table.]
+
+#### 2.1.4 Consequences
+
+- **Positive**: [What this decision enables]
+- **Trade-offs**: [What we give up or accept as a result]
+- **Follow-up actions**: [Any tasks created as a result of this decision]
+
+---
+
+### DEC-002 — [Decision title]
+
+| Field               | Value                        |
+|---------------------|------------------------------|
+| Decision ID         | DEC-{{REQ_ID_PREFIX}}-002    |
+| Date                | [date]                       |
+| Trigger             | [trigger]                    |
+| Selected option     | [option]                     |
+| Owner               | [owner]                      |
+| Status              | [status]                     |
+
+[Repeat the alternatives / criteria / rationale / consequences sub-sections above.]
+
+---
+
+## 3. References
+
+- `docs/pal/dar-trigger-criteria.md` — criteria that require a DAR entry
+- CMMI v3.0 DAR practice area
+- `docs/CMMI-L3-audit-checklist.md` §4.4 — DAR readiness requirements
