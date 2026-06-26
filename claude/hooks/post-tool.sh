@@ -13,7 +13,7 @@ INPUT=$(cat)
 COMMAND=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null)
 STDOUT=$(printf '%s' "$INPUT" | jq -r '.tool_output.stdout // ""' 2>/dev/null)
 
-# --- Code-ship verify nudge (non-blocking; Your Name 2026-06-05) ---
+# --- Code-ship verify nudge (non-blocking; Wind 2026-06-05) ---
 # Root pattern: "committed/merged CODE without running the changed function" hit
 # 4 of 7 recent sessions (rrr metrics error column). On a code-ship command,
 # remind to show the changed function actually RAN. Fires ONLY when real code
@@ -35,17 +35,17 @@ if echo "$COMMAND" | grep -qE '(^|;|&&|\|\|)[[:space:]]*(git[[:space:]]+(commit|
 fi
 
 # Only care about PR creation in worktrees
-echo "$COMMAND" | grep -qE '(maw pr|gh pr create)' || exit 0
-echo "$PWD" | grep -qE '\.wt-[0-9]+-' || exit 0
+if ! echo "$COMMAND" | grep -qE '(maw pr|gh pr create)'; then exit 0; fi
+if ! echo "$PWD" | grep -qE '(/agents/[^/]+|\.wt-[0-9]+-)'; then exit 0; fi
 
 PR_URL=$(echo "$STDOUT" | grep -oE 'https://github\.com/[^[:space:]]+/pull/[0-9]+' | head -1)
 [ -z "$PR_URL" ] && exit 0
 
 PR_NUM=$(echo "$PR_URL" | grep -oE '[0-9]+$')
-ORACLE_HOME=$(echo "$PWD" | grep -oE '[a-z]+-oracle' | head -1 || echo "my-oracle")
+ORACLE_HOME=$(echo "$PWD" | grep -oE '[a-z]+-oracle' | head -1 || echo "leaf")
 
 YLW='\033[1;33m'; RST='\033[0m'
 echo -e "${YLW}⚠️ PR #${PR_NUM} created. Notify main session:${RST}" >&2
-echo -e "${YLW}  maw hey <human>:${ORACLE_HOME} \"[wt] PR #${PR_NUM} ready. ${PR_URL}\"${RST}" >&2
+echo -e "${YLW}  maw hey wind:${ORACLE_HOME} \"[wt] PR #${PR_NUM} ready. ${PR_URL}\"${RST}" >&2
 
 exit 0
