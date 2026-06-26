@@ -20,17 +20,17 @@ PARTS=()
 # ─── SESSION START ──────────────────────────────────────────────────
 if [ "$EVENT" = "SessionStart" ]; then
   # Workflow reminder
-  PARTS+=("⚡ Workflow Reminder (3-layer ephemeral — Your Name directive 2026-06-13):\n  Product CR/BUG → gh issue create → maw workon <repo> <slug> (L2 spawns IN the project worktree) → L2 routes STRATEGY: SOLO|TEAM (TEAM → ephemeral OMX workers via maw team spawn --wt --engine omx --exec) → aggregate → ONE consolidated PR (Closes #N) → maw team shutdown → DONE-ping L1 → L1 /scrutinize → merge → Docker rebuild → L1 maw done <window> from OUTSIDE\n  Infra fix → L1 inline (lightweight lane) or maw workon for isolation\n  Claude LEADS (L1 + L2 orchestrator), OMX CODES (ephemeral L3). gh issues canonical — Linear mirrors automatically, never hand-create Linear issues.\n  ❌ No multi-project from one window\n  ❌ No cd to ghq paths directly\n  ❌ Secrets in .env only, never hardcode")
+  PARTS+=("⚡ Workflow Reminder (3-layer ephemeral — Wind directive 2026-06-13):\n  Product CR/BUG → gh issue create → maw workon <repo> <slug> (L2 spawns IN the project worktree) → L2 routes STRATEGY: SOLO|TEAM (TEAM → ephemeral OMX workers via maw team spawn --wt --engine omx --exec) → aggregate → ONE consolidated PR (Closes #N) → maw team shutdown → DONE-ping L1 → L1 /scrutinize → merge → Docker rebuild → L1 maw done <window> from OUTSIDE\n  Infra fix → L1 inline (lightweight lane) or maw workon for isolation\n  Claude LEADS (L1 + L2 orchestrator), OMX CODES (ephemeral L3). gh issues canonical — Linear mirrors automatically, never hand-create Linear issues.\n  ❌ No multi-project from one window\n  ❌ No cd to ghq paths directly\n  ❌ Secrets in .env only, never hardcode")
 
   # code-review-graph enforcement — if this repo has a graph, reviews/exploration
-  # MUST go through it (Your Name directive 2026-06-12: graph review is the default,
+  # MUST go through it (Wind directive 2026-06-12: graph review is the default,
   # hook-enforced not advisory). Cheap check: directory existence only.
   CRG_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
   if [ -d "$CRG_ROOT/.code-review-graph" ]; then
     PARTS+=("📊 CODE-REVIEW-GRAPH ACTIVE in this repo. MANDATORY for /scrutinize + code exploration: use the code-review-graph MCP tools FIRST (get_minimal_context → detect_changes/get_impact_radius, detail_level=\"minimal\", ≤5 graph calls) BEFORE any full-file Read sweep. Full-corpus reads in a graph-enabled repo = token waste = doctrine violation.")
   fi
 
-  # Ghost respawn-job guard — failed daemon jobs spray inert panes into the active tmux window (my-oracle#34)
+  # Ghost respawn-job guard — failed daemon jobs spray inert panes into the active tmux window (gale-oracle#34)
   JOBS_DIR="${CLAUDE_JOBS_DIR:-$HOME/.claude/jobs}"
   if [ -d "$JOBS_DIR" ]; then
     STATE_FILES=("$JOBS_DIR"/*/state.json)
@@ -98,7 +98,7 @@ if [ "$EVENT" = "SessionStart" ]; then
   # (read:false, never live-delivered). Surface every unread subject into context
   # FIRST (nothing hidden), THEN flip read:false→true in place (file kept on disk,
   # Principle 1 — Nothing is Deleted). SAFE: this inbox is oracle↔oracle/cron
-  # federation only; Your Name-the-human's directives arrive via the Claude chat, never
+  # federation only; Wind-the-human's directives arrive via the Claude chat, never
   # via maw inbox. awk rewrite (frontmatter-scoped, ~1ms/file) keeps it well inside
   # the SessionStart timeout even on a first-wake backlog.
   INBOX_DIR="$ORACLE_ROOT/ψ/inbox"
@@ -139,7 +139,7 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
     if [ -n "$WINDOW" ] && [ -n "$SESSION" ]; then
       # Count only IDLE non-leader panes (bare shell = finished/zombie worker).
       # Panes running an agent process (claude/codex/node/python) are ACTIVE tile
-      # workers — the doctrinal fan-out — and must NOT trigger the warning (my-oracle#30).
+      # workers — the doctrinal fan-out — and must NOT trigger the warning (gale-oracle#30).
       IDLE_PANES=$(tmux list-panes -t "${SESSION}:${WINDOW}" -F '#{pane_index} #{pane_current_command}' 2>/dev/null \
         | awk -v leader="$LEADER_PANE" '$1 != leader && $2 ~ /^(bash|zsh|sh|dash)$/' | wc -l | tr -d ' ')
       if [ "$IDLE_PANES" -gt 0 ]; then
@@ -161,12 +161,11 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
       EXTRA="Product repo (permissive): direct push OK."
     fi
     # Frontend/theme SOP detection by repo family
-    # Example: route repo families to a frontend/theme SOP. Replace these globs
-    # with your own product naming. (Generic placeholders — no real project names.)
     case "$REPO_NAME" in
-      YourProduct-*)   FRONTEND_SOP="/sop-frontend + /your-project-theme. DB → /your-db-skill." ;;
-      YourSite-*)      FRONTEND_SOP="/sop-frontend + /your-site-theme." ;;
-      *-erp|*-odoo)    FRONTEND_SOP="/sop-frontend (ERP/QWeb views)." ;;
+      NWFTH-*|nwfth-*)  FRONTEND_SOP="/sop-frontend + /nwf-theme. DB → /nwf-sql." ;;
+      BME-*)            FRONTEND_SOP="/sop-frontend + /nwf-theme. DB → /nwf-sql." ;;
+      Solution-Lab*|social-listening*|Line-webhook|Wind-Portfolio) FRONTEND_SOP="/sop-frontend + /sl-theme." ;;
+      odoo_*|odoo19-*)  FRONTEND_SOP="/sop-frontend (Odoo XML/QWeb views)." ;;
     esac
     # Also detect from file presence (catches repos not in the case list)
     if [ -z "$FRONTEND_SOP" ] && [ -n "$REPO_ROOT" ]; then
@@ -188,7 +187,7 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
     if [ -n "$WT_BRANCH" ] && [ "$WT_BRANCH" != "main" ] && [ "$WT_BRANCH" != "master" ]; then
       WT_HAS_COMMITS=$(git log origin/main..HEAD --oneline 2>/dev/null | head -1)
       if [ -n "$WT_HAS_COMMITS" ]; then
-        PARTS+=("🔴 YOU ARE IN A WORKTREE PANE. You MUST NOT merge PRs (hook-blocked). Your LAST action MUST be: maw hey <L1-oracle-pane> \"DONE: PR ready for /scrutinize + merge + maw done <window>\". Then STOP. Do NOT run maw done on your own window.")
+        PARTS+=("🔴 YOU ARE IN A WORKTREE/L2 PANE. You MUST NOT merge PRs (hook-blocked). Before DONE-ping, the L2/worktree orchestrator must run /rrr (or write a concise retrospective/lesson + oracle_learn) while this context exists. L3 OMX workers do NOT need /rrr in Wind-Framework; L2 aggregate /rrr is enough. Your LAST action MUST be: maw hey <L1-oracle-pane> \"DONE: PR ready for /scrutinize + live proof + merge + issue close + maw done <window>. L2 RRR done.\" Then STOP. Do NOT run maw done on your own window.")
       fi
     fi
     # Fan-out gate reminder: L2 MUST write strategy.json before any code edit.
@@ -200,6 +199,22 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
       ROUTE_WT=$(jq -r '.route // empty' "$STRATEGY_F" 2>/dev/null)
       if [ "$ROUTE_WT" = "TEAM" ]; then
         PARTS+=("⚡ strategy.json says TEAM — you MUST spawn OMX workers via maw team before any code edit. Edit/Write is hook-BLOCKED until workers exist. Override: printf '{\"justification\":\"...\"}' > .maw/solo-justified")
+      fi
+    fi
+  fi
+
+  # L2-PR-ready safety net — remind L1 to check on active worktree panes
+  # Catches idle-after-dispatch pattern (3 occurrences Jun 22-23, /fix-permanently)
+  if [ -n "${TMUX:-}" ]; then
+    _SESSION=$(tmux display-message -p '#{session_name}' 2>/dev/null || echo "")
+    _CUR_WIN=$(tmux display-message -p '#{window_name}' 2>/dev/null || echo "")
+    if [ -n "$_SESSION" ]; then
+      _WT_WINS=$(tmux list-windows -t "$_SESSION" -F '#{window_name}' 2>/dev/null \
+        | grep -v "^${_CUR_WIN}$" \
+        | grep -E 'NWFTH-|BME-|Planning-|NPD-|HR-Leave|FG-Label|Formsapp|SalesProspect' \
+        | head -3 | tr '\n' ', ' | sed 's/,$//')
+      if [ -n "$_WT_WINS" ]; then
+        PARTS+=("⚠️ ACTIVE L2 WORKTREE(s): ${_WT_WINS} — if L2 opened a PR, scrutinize + prove live behavior + merge NOW (L1 merge authority is IMMEDIATE). Before maw done, confirm DONE-ping says L2 RRR done or inspect/bounce L2 for /rrr. L3 worker /rrr is not required for Wind-Framework. After merge close linked issues if not auto-closed. Check: gh pr list --repo deachawatss/<repo> --head agents/2-<slug>")
       fi
     fi
   fi

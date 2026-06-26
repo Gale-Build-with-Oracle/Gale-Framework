@@ -13,7 +13,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash|Edit|Write|MultiEdit|mcp__your-db-mcp|mcp__your-db-mcp",
+        "matcher": "Bash|Edit|Write|MultiEdit|SendMessage|mcp__bme-mssql|mcp__nwfth-sql",
         "hooks": [
           {
             "type": "command",
@@ -93,15 +93,14 @@
     "cloudflare@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
-    "supabase@claude-plugins-official": true,
     "vercel@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "linear@claude-plugins-official": true,
-    "document-skills@anthropic-agent-skills": true
+    "document-skills@anthropic-agent-skills": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -111,9 +110,10 @@
       }
     }
   },
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "skipDangerousModePermissionPrompt": true,
   "theme": "light",
-  "teammateMode": "auto",
-  "skipAutoPermissionPrompt": true
+  "teammateMode": "in-process",
+  "skipAutoPermissionPrompt": true,
+  "model": "claude-opus-4-6[1m]"
 }

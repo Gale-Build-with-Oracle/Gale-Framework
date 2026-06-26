@@ -32,20 +32,33 @@ TOOL=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
 CMD=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null)
 
 # ─── ORCHESTRATOR GUARD ─────────────────────────────────────────────
-# Block direct edits from my-oracle-codex orchestrator panes
+# Block direct edits from gale-codex orchestrator panes
 if [ -n "${TMUX_PANE:-}" ] || [ -n "${TMUX:-}" ]; then
   PANE_TITLE=$(tmux display-message -p '#{pane_title}' 2>/dev/null || true)
-  if [[ "$PANE_TITLE" == *my-oracle-codex* ]]; then
+  if [[ "$PANE_TITLE" == *gale-codex* ]]; then
     case "$TOOL" in
       Edit|Write|MultiEdit|git-commit)
-        echo -e "${RED}BLOCKED: my-oracle-codex orchestrator must not edit/commit directly. Delegate to workers.${RST}" >&2
+        echo -e "${RED}BLOCKED: gale-codex orchestrator must not edit/commit directly. Delegate to workers.${RST}" >&2
         exit 2 ;;
       Bash)
         if printf '%s\n' "$CMD" | grep -Eq '(^|[;&|[:space:]])git[[:space:]]+commit([[:space:]]|$)'; then
-          echo -e "${RED}BLOCKED: my-oracle-codex orchestrator must not commit directly.${RST}" >&2
+          echo -e "${RED}BLOCKED: gale-codex orchestrator must not commit directly.${RST}" >&2
           exit 2
         fi ;;
     esac
+  fi
+fi
+
+# ─── WORKTREE SENDMESSAGE GATE ──────────────────────────────────────
+# L2 worktree sessions are standalone — SendMessage can't reach L1.
+# Block SendMessage from worktree panes and redirect to maw hey.
+if [ "$TOOL" = "SendMessage" ]; then
+  CWD_SM=$(pwd)
+  if [[ "$CWD_SM" == */agents/* ]]; then
+    _SM_TO=$(printf '%s' "$INPUT" | jq -r '.tool_input.to // ""' 2>/dev/null)
+    echo -e "${RED}BLOCKED: SendMessage cannot reach L1 from a worktree session (separate tmux session).${RST}" >&2
+    echo -e "${RED}Use from L2/worktree: run /rrr first, then maw hey <L1-oracle-pane> \"DONE: PR ready for /scrutinize + live proof + merge + issue close + maw done <window>. L2 RRR done.\"${RST}" >&2
+    exit 2
   fi
 fi
 
@@ -87,7 +100,7 @@ if [ "$TOOL" = "Bash" ]; then
     exit 2
   fi
 
-  # rm -rf — ALLOWED for cleanup (Your Name 2026-06-05: single-source-of-truth hygiene needs it),
+  # rm -rf — ALLOWED for cleanup (Wind 2026-06-05: single-source-of-truth hygiene needs it),
   # but BLOCK catastrophic targets where the delete is irreversible disaster.
   # Detect rm with both recursive+force (any short-flag order, or long flags).
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*rm[[:space:]]+(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r|-r[[:space:]]+-f|-f[[:space:]]+-r|--recursive[[:space:]].*--force|--force[[:space:]].*--recursive)'; then
@@ -125,7 +138,7 @@ if [ "$TOOL" = "Bash" ]; then
     exit 2
   fi
 
-  # Block direct push to main in YourProject repos
+  # Block direct push to main in NWFTH repos
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*git[[:space:]]+push[[:space:]]+(origin[[:space:]]+)?main([[:space:]]|$)'; then
     EFFECTIVE_DIR=""
     if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*cd[[:space:]]+'; then
@@ -190,7 +203,7 @@ if [ "$TOOL" = "Bash" ]; then
     echo "Soul-Brews-Studio" >> "$ORGS_CACHE"
   fi
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*gh[[:space:]]+pr[[:space:]]+create'; then
-    REPO=$(echo "$CMD" | grep -oE '--repo[[:space:]]+[^[:space:]]+' | awk '{print $2}' || true)
+    REPO=$(echo "$CMD" | grep -oE -- '--repo[[:space:]]+[^[:space:]]+' | awk '{print $2}' || true)
     if [ -n "$REPO" ]; then
       ORG=$(echo "$REPO" | cut -d/ -f1)
       if ! grep -qix "$ORG" "$ORGS_CACHE" 2>/dev/null; then
@@ -204,7 +217,7 @@ if [ "$TOOL" = "Bash" ]; then
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*gh[[:space:]]+pr[[:space:]]+merge'; then
     CWD_CHECK=$(pwd)
     if [[ "$CWD_CHECK" == */agents/* ]]; then
-      echo -e "${RED}BLOCKED: worktree sessions MUST NOT merge PRs (L1 only). DONE-ping L1 instead: maw hey <L1-pane> \"DONE: PR ready for /scrutinize + merge\"${RST}" >&2
+      echo -e "${RED}BLOCKED: worktree sessions MUST NOT merge PRs (L1 only). From L2/worktree, run /rrr first, then DONE-ping L1 instead: maw hey <L1-pane> \"DONE: PR ready for /scrutinize + live proof + merge + issue close + maw done <window>. L2 RRR done.\"${RST}" >&2
       exit 2
     fi
   fi
@@ -227,7 +240,7 @@ if [ "$TOOL" = "Bash" ]; then
     fi
   fi
 
-  # YourProject worktree enforcement — block direct commits on main
+  # NWFTH worktree enforcement — block direct commits on main
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*git[[:space:]]+commit'; then
     REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
     REPO_NAME=$(basename "$REPO_ROOT" 2>/dev/null || echo "")
@@ -239,10 +252,10 @@ if [ "$TOOL" = "Bash" ]; then
       fi
     fi
     # Fleet-sync reminder — doctrine fragment edits must propagate fleet-wide
-    if [ "$REPO_NAME" = "my-oracle" ] || [ "$REPO_NAME" = "Gale-Framework" ]; then
+    if [ "$REPO_NAME" = "gale-oracle" ] || [ "$REPO_NAME" = "Wind-Framework" ]; then
       STAGED=$(git diff --cached --name-only 2>/dev/null || echo "")
       if echo "$STAGED" | grep -qE '(doctrine/(core|claude|codex)\.md|oracle-build\.sh|oracle-.*-(claude|agents)\.md)'; then
-        echo -e "${YLW}⚡ DOCTRINE FILES STAGED: run \`my-oracle/scripts/fleet-sync.sh\` after this commit to propagate to all oracles.${RST}" >&2
+        echo -e "${YLW}⚡ DOCTRINE FILES STAGED: run \`gale-oracle/scripts/fleet-sync.sh\` after this commit to propagate to all oracles.${RST}" >&2
       fi
     fi
   fi
@@ -261,9 +274,29 @@ if [ "$TOOL" = "Bash" ]; then
     fi
   fi
 
-  # Warn: cd to ghq
-  if echo "$CMD" | grep -qE "(^|;|&&|\|\|)[[:space:]]*cd[[:space:]]+~/?(ghq|home/[^/]+/ghq)/github\.com/$(gh api user -q .login 2>/dev/null || echo '<your-github-user>')/"; then
-    echo -e "${YLW}⚠ Use 'maw workon <project>' instead of cd to ghq repos.${RST}" >&2
+  # BLOCK: cd to product repos (L1 must use maw workon).
+  # Exception: cd + docker compose (L1 rebuilds after merge per doctrine).
+  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*cd[[:space:]]+~/?(ghq|home/[^/]+/ghq)/github\.com/[^/]+/'; then
+    _CD_TARGET=$(echo "$CMD" | grep -oE 'cd[[:space:]]+[^;&|]+' | head -1 | sed 's/^cd[[:space:]]*//' | sed "s|^~|$HOME|" | sed 's/[[:space:]]*$//')
+    _CD_REPO=$(basename "$_CD_TARGET" 2>/dev/null)
+    # Walk up path components to find the repo name (cd might target a subdir)
+    _CD_WALK="$_CD_TARGET"
+    while [ -n "$_CD_WALK" ] && [ "$_CD_WALK" != "/" ]; do
+      _CD_CHECK=$(basename "$_CD_WALK")
+      if type is_product_repo >/dev/null 2>&1 && is_product_repo "$_CD_CHECK"; then
+        _CD_REPO="$_CD_CHECK"
+        break
+      fi
+      _CD_WALK=$(dirname "$_CD_WALK")
+    done
+    if type is_product_repo >/dev/null 2>&1 && is_product_repo "$_CD_REPO"; then
+      if echo "$CMD" | grep -qE 'docker[[:space:]]+compose'; then
+        echo -e "${YLW}⚡ L1 docker rebuild in product repo '${_CD_REPO}' — allowed (post-merge deploy).${RST}" >&2
+      else
+        echo -e "${RED}BLOCKED: cd to product repo '${_CD_REPO}'. Use: maw workon ${_CD_REPO} <slug>${RST}" >&2
+        exit 2
+      fi
+    fi
   fi
 
   # Warn: git branch -D
@@ -272,10 +305,35 @@ if [ "$TOOL" = "Bash" ]; then
   fi
 
   # Production DB guard for SQL CLI tools
-  if echo "$CMD" | grep -iqE "(sqlcmd|mssql-cli|osql).*YourProdDB"; then
+  if echo "$CMD" | grep -iqE "(sqlcmd|mssql-cli|osql).*TFCLIVE"; then
     if echo "$CMD" | grep -iqE '(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE)([^[:alnum:]_]|$)'; then
-      echo -e "${RED}BLOCKED: SQL CLI write targeting YourProdDB (production). Read-only.${RST}" >&2
+      echo -e "${RED}BLOCKED: SQL CLI write targeting TFCLIVE (production). Read-only.${RST}" >&2
       exit 2
+    fi
+  fi
+fi
+
+# ─── TEAM PR AGGREGATE GATE ──────────────────────────────────────────
+# TEAM L2s must prove the merged aggregate actually built/tested before opening
+# a PR. The edit gate above prevents TEAM from becoming hidden SOLO; this gate
+# prevents an unverified TEAM aggregate from entering the L1 review queue.
+if [ "$TOOL" = "Bash" ]; then
+  if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*(maw[[:space:]]+pr|gh[[:space:]]+pr[[:space:]]+create)\b'; then
+    CWD_NOW=$(pwd)
+    if [[ "$CWD_NOW" == */agents/* ]] && echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*gh[[:space:]]+pr[[:space:]]+create\b'; then
+      if ! echo "$CMD" | grep -qE 'REQ:[[:space:]]+(none|REQ-[A-Z][A-Z0-9]*-[0-9]+)' && ! echo "$CMD" | grep -qE -- '--body-file[[:space:]]+'; then
+        echo -e "${RED}BLOCKED: direct gh pr create from a worktree must include a REQ: line in the PR body.${RST}" >&2
+        echo -e "${RED}Use maw pr (auto-adds REQ: none) or pass --body with REQ: REQ-<PROJECT>-NNN / REQ: none. If using --body-file, that file must contain the REQ line.${RST}" >&2
+        exit 2
+      fi
+    fi
+    if [[ "$CWD_NOW" == */agents/* ]] && [ -f "$CWD_NOW/.maw/strategy.json" ]; then
+      ROUTE=$(jq -r '.route // empty' "$CWD_NOW/.maw/strategy.json" 2>/dev/null)
+      if [ "$ROUTE" = "TEAM" ] && [ ! -f "$CWD_NOW/.maw/aggregate-verified" ]; then
+        echo -e "${RED}BLOCKED: TEAM strategy PR requires .maw/aggregate-verified.${RST}" >&2
+        echo -e "${RED}Run aggregate lint/build/test on the merged branch, then: touch .maw/aggregate-verified${RST}" >&2
+        exit 2
+      fi
     fi
   fi
 fi
@@ -283,8 +341,8 @@ fi
 # ─── FAN-OUT GATE (anti-#157) ───────────────────────────────────────
 # When .maw/strategy.json says route:"TEAM", block code edits in L2 worktrees
 # until at least one OMX worker pane exists. Doctrine claimed this gate existed
-# since 2026-06-08; it didn't — L2s self-downgraded to SOLO 3+ times (my-oracle
-# 2026-06-11, my-oracle 2026-06-13). NOW it does.
+# since 2026-06-08; it didn't — L2s self-downgraded to SOLO 3+ times (leaf
+# 2026-06-11, erp 2026-06-13). NOW it does.
 #
 # Fires on: Edit, Write, MultiEdit (code edits that build a SOLO context)
 # Skips: Bash (needed for maw team spawn), Read (research is fine)
@@ -333,7 +391,7 @@ case "$TOOL" in
           "$PROJECT_ROOT"/*|"$PROJECT_ROOT") ;;
           /tmp/*|/private/tmp/*|"$HOME_ROOT"/.claude/*|"$HOME_ROOT"/.*) ;;
           "$HOME_ROOT"/Library/*) ;;
-          */ghq/github.com/$(gh api user -q .login)/*) ;;
+          */ghq/github.com/deachawatss/*|*/ghq/github.com/vibe-hub-co/*) ;;
           *)
             echo -e "${RED}BLOCKED: Editing outside project ($(basename "$PROJECT_ROOT")). Target: $(dirname "$FILE_ABS")${RST}" >&2
             exit 2 ;;
@@ -341,12 +399,54 @@ case "$TOOL" in
       fi
     fi
 
-    # Production DB guard: block setting YourProdDB as default in config
+    # L1 PRODUCT-CODE GATE: block editing product repo files on main branch.
+    # Uses the file's git context (not cwd) to catch cross-repo edits.
+    if [ -n "$FILE_PATH" ]; then
+      _FILE_DIR=$(dirname "$(realpath -m "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")")
+      _WALK="$_FILE_DIR"
+      while [ -n "$_WALK" ] && [ "$_WALK" != "/" ] && [ ! -d "$_WALK" ]; do
+        _WALK=$(dirname "$_WALK")
+      done
+      _FILE_REPO_ROOT=$(git -C "$_WALK" rev-parse --show-toplevel 2>/dev/null || echo "")
+      if [ -n "$_FILE_REPO_ROOT" ]; then
+        _FILE_REPO_NAME=$(basename "$_FILE_REPO_ROOT")
+        _FILE_BRANCH=$(git -C "$_FILE_REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+        if [ "$_FILE_BRANCH" = "main" ] || [ "$_FILE_BRANCH" = "master" ]; then
+          if type is_product_repo >/dev/null 2>&1 && is_product_repo "$_FILE_REPO_NAME"; then
+            _CWD_GATE=$(pwd)
+            _FILE_ABS_GATE=$(realpath -m "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
+            _REL_SUFFIX=${_FILE_ABS_GATE#"$_FILE_REPO_ROOT"/}
+            # Allow L1 to edit gitignored files (e.g. .env, .maw/) on main
+            if git -C "$_FILE_REPO_ROOT" check-ignore -q "$_FILE_ABS_GATE" 2>/dev/null; then
+              : # gitignored file — not tracked, safe to edit on main
+            elif [[ "$_CWD_GATE" == */"$_FILE_REPO_NAME"/agents/* ]]; then
+              # Session IS in a worktree of this repo — the file path is wrong (points to main copy).
+              _WT_ROOT=$(echo "$_CWD_GATE" | sed "s|/\(${_FILE_REPO_NAME}/agents/[^/]*\).*|/\1|")
+              echo -e "${RED}BLOCKED: File path points to main branch copy, but you're in a worktree.${RST}" >&2
+              echo -e "${YLW}Use worktree path: ${_WT_ROOT}/${_REL_SUFFIX}${RST}" >&2
+              exit 2
+            else
+              echo -e "${RED}BLOCKED: Editing product repo '${_FILE_REPO_NAME}' on main — no worktree.${RST}" >&2
+              echo -e "${RED}Use: maw workon ${_FILE_REPO_NAME} <slug>${RST}" >&2
+              exit 2
+            fi
+          fi
+        fi
+      fi
+    fi
+
+    # Production DB guard: block setting TFCLIVE as default in TRACKED config
+    # Gitignored files (.env) are excluded — they hold legitimate connection strings
     CONTENT=$(printf '%s' "$INPUT" | jq -r '.tool_input.new_string // .tool_input.content // ""' 2>/dev/null)
     if echo "$FILE_PATH" | grep -iqE '\.(yaml|yml|env|toml|json)$'; then
-      if echo "$CONTENT" | grep -iqE "(database|MSSQL_DATABASE).*YourProdDB"; then
-        echo -e "${RED}BLOCKED: Cannot set YourProdDB (production) as default database in config.${RST}" >&2
-        exit 2
+      FILE_DIR=$(dirname "$FILE_PATH" 2>/dev/null)
+      FILE_BASE=$(basename "$FILE_PATH" 2>/dev/null)
+      IS_GITIGNORED=$(git -C "$FILE_DIR" check-ignore -q "$FILE_PATH" 2>/dev/null && echo "yes" || echo "no")
+      if [ "$IS_GITIGNORED" = "no" ]; then
+        if echo "$CONTENT" | grep -iqE "(database|MSSQL_DATABASE).*TFCLIVE"; then
+          echo -e "${RED}BLOCKED: Cannot set TFCLIVE (production) as default database in tracked config.${RST}" >&2
+          exit 2
+        fi
       fi
     fi
 
@@ -355,14 +455,14 @@ esac
 
 # ─── MCP SQL GUARD ──────────────────────────────────────────────────
 case "$TOOL" in
-  mcp__your-db-mcp*|mcp__your-db-mcp*)
+  mcp__bme-mssql*|mcp__nwfth-sql*)
     SQL=$(printf '%s' "$INPUT" | jq -r '.tool_input.sql // ""' 2>/dev/null)
-    if echo "$SQL" | grep -iqE "YourProdDB"; then
+    if echo "$SQL" | grep -iqE "TFCLIVE"; then
       if echo "$SQL" | grep -iqE '^[[:space:]]*(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|EXEC|MERGE|GRANT|REVOKE)([^[:alnum:]_]|$)'; then
-        echo -e "${RED}BLOCKED: Write operation on YourProdDB (production). Read-only.${RST}" >&2
+        echo -e "${RED}BLOCKED: Write operation on TFCLIVE (production). Read-only.${RST}" >&2
         exit 2
       fi
-      if echo "$SQL" | grep -iqE '^[[:space:]]*USE[[:space:]]+.*YourProdDB'; then
+      if echo "$SQL" | grep -iqE '^[[:space:]]*USE[[:space:]]+.*TFCLIVE'; then
         echo -e "${RED}BLOCKED: Cannot switch to production database.${RST}" >&2
         exit 2
       fi

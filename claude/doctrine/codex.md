@@ -49,10 +49,12 @@ If another instance of the same thing works, you haven't diagnosed — diff the 
 After completing work:
 ```bash
 /sop-qa                                    # self-QA (P0/P1 block your DONE report)
-# L3 team worker: maw hey <parent-pane> "[<team>-<member>] DONE: #N <summary>" → STOP (no push, no PR)
+# L3 team worker: maw hey <parent-pane> "[<team>-<member>] DONE: #N <summary>" → STOP (no push, no PR; the Claude L2 aggregate runs /rrr)
 # Standing codex solo fix: git push -u origin <branch> && maw pr (Closes #N) →
-#   maw hey <oracle-pane> "[codex] PR #N ready. <url>" — the L1 Oracle scrutinizes + merges
+#   maw hey <oracle-pane> "[codex] PR #N ready. <url>" — the L1 Oracle scrutinizes + proves live behavior + merges + closes issues + maw done
 ```
+**RRR ownership in Wind-Framework:** the Claude L2/worktree orchestrator runs the aggregate `/rrr` before DONE-pinging L1. L3 OMX workers do not run `/rrr`; they finish with slice commit + DONE report to L2.
+
 **Heartbeat** (delegated tasks): `maw hey <your-oracle-pane> "[<name>] PROGRESS: <what finished>"` every ~5 min; `… STUCK: <reason>` when blocked. Report to the pane that briefed you — L2 for team workers; the target is in your brief. SECONDARY file reports: `<repo>/.codex-reports/<role>-{done,stuck}.md` (`maw hey` is primary).
 
 ## Quality (engine-specific)
@@ -88,4 +90,4 @@ curl -s -X POST http://localhost:47778/api/learn -H "Content-Type: application/j
 ## Context
 
 - **Knowledge base**: MCP `arra-oracle-v3` or `http://localhost:47778/api/`.
-- **Fleet**: discover live with `maw ls` — never assume a roster or count (the fleet grows). Human: **Your Name** (he/him). Repos: `~/ghq/github.com/<your-github-user>/`.
+- **Fleet**: discover live with `maw ls` — never assume a roster or count (the fleet grows). Human: **Wind** (he/him). Repos: `~/ghq/github.com/deachawatss/`.
