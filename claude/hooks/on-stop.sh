@@ -53,7 +53,7 @@ PY
         MSG="[AUTO-DONE] worktree session ended in ${WINDOW} (${REPO})."
         [ -n "$PR_NUMS" ] && MSG="$MSG Open PR(s): ${PR_NUMS}."
         [ "${COMMITS_AHEAD:-0}" -gt 0 ] && MSG="$MSG ${COMMITS_AHEAD} commit(s) ahead of main."
-        MSG="$MSG AUTO-DONE is a safety net; L2 RRR status unknown. L1 must inspect/bounce the L2 worktree for /rrr before maw done. Ready for /scrutinize + live proof + merge + issue close + maw done ${WINDOW} only after L2 RRR is confirmed."
+        MSG="$MSG AUTO-DONE is a safety net; L2 RRR status unknown. L1 must inspect/bounce the L2 worktree for /rrr before maw done. Ready for /sop-review + live proof + merge + issue close + maw done ${WINDOW} only after L2 RRR is confirmed."
         maw hey "$ORACLE_PANE" "$MSG" 2>/dev/null &
       fi
     fi

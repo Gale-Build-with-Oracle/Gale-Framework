@@ -5,7 +5,7 @@
 ## Revision History
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 1.0.0 | 2026-06-01 | My Oracle | Initial measurement approach |
+| 1.0.0 | 2026-06-01 | Gale | Initial measurement approach |
 
 ## Goal → Question → Metric (GQM)
 
@@ -14,20 +14,20 @@
 | Ship fast | How long from intake to merge? | **Cycle time** (intake → merge) | git/PR timestamps |
 | Ship correct | How often do defects escape to production? | **Defect-escape rate** (prod bugs ÷ merged PRs) | RISK.md CAR entries vs PR count |
 | Keep docs honest | Do non-exempt PRs carry their doc deltas? | **Doc-completeness** (% non-exempt PRs with required docs) | `/sop-qa` Phase 7.5 |
-| Keep review real | Is `/scrutinize` actually run before merge? | **Review coverage** (% merges with a scrutinize verdict) | PR comments |
+| Keep review real | Is `/sop-review` actually run before merge? | **Review coverage** (% merges with a sop-review verdict) | PR comments |
 | Keep docs cheap | Is doc work proportional to the diff? | **Doc/code line ratio** per PR (watch for churn spikes) | diff stats |
 
 ## How it's collected
 
 - **Cheap + automatic first.** Prefer numbers derivable from git, PRs, and `/sop-qa` output. No manual spreadsheets.
-- **Cadence**: reviewed monthly (see `QA.md`). A metric is only worth keeping if a number moving triggers an action.
-- **Owner**: My Oracle aggregates; Research Oracle assists on reporting (per fleet cadence).
+- **No scheduled reviews.** Metrics are checked when a problem surfaces (defect escaped, cycle time feels slow). A metric is only worth keeping if a number moving triggers an action.
+- **Owner**: Gale aggregates on demand.
 
 ## Acting on the numbers
 
 The point of measurement is the **feedback loop**, not the dashboard:
 - Cycle time climbing → look for a process bottleneck (review wait, doc churn).
-- Defect-escape rising → tighten `/sop-qa` or `/debug-mantra` discipline; write the CAR.
+- Defect-escape rising → tighten `/sop-qa` or `/sop-debug` discipline; write the CAR.
 - Doc/code ratio spiking → delta-discipline is slipping (full rewrites instead of deltas) — see `/sop-cmmi` §2.
 
 Targets and process-performance baselines are deferred until there are enough data points to be meaningful (don't invent baselines from noise).

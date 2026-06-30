@@ -57,7 +57,7 @@ if [ "$TOOL" = "SendMessage" ]; then
   if [[ "$CWD_SM" == */agents/* ]]; then
     _SM_TO=$(printf '%s' "$INPUT" | jq -r '.tool_input.to // ""' 2>/dev/null)
     echo -e "${RED}BLOCKED: SendMessage cannot reach L1 from a worktree session (separate tmux session).${RST}" >&2
-    echo -e "${RED}Use from L2/worktree: run /rrr first, then maw hey <L1-oracle-pane> \"DONE: PR ready for /scrutinize + live proof + merge + issue close + maw done <window>. L2 RRR done.\"${RST}" >&2
+    echo -e "${RED}Use from L2/worktree: run /rrr first, then maw hey <L1-oracle-pane> \"DONE: PR ready for /sop-review + live proof + merge + issue close + maw done <window>. L2 RRR done.\"${RST}" >&2
     exit 2
   fi
 fi
@@ -217,7 +217,7 @@ if [ "$TOOL" = "Bash" ]; then
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*gh[[:space:]]+pr[[:space:]]+merge'; then
     CWD_CHECK=$(pwd)
     if [[ "$CWD_CHECK" == */agents/* ]]; then
-      echo -e "${RED}BLOCKED: worktree sessions MUST NOT merge PRs (L1 only). From L2/worktree, run /rrr first, then DONE-ping L1 instead: maw hey <L1-pane> \"DONE: PR ready for /scrutinize + live proof + merge + issue close + maw done <window>. L2 RRR done.\"${RST}" >&2
+      echo -e "${RED}BLOCKED: worktree sessions MUST NOT merge PRs (L1 only). From L2/worktree, run /rrr first, then DONE-ping L1 instead: maw hey <L1-pane> \"DONE: PR ready for /sop-review + live proof + merge + issue close + maw done <window>. L2 RRR done.\"${RST}" >&2
       exit 2
     fi
   fi
@@ -327,6 +327,12 @@ if [ "$TOOL" = "Bash" ]; then
         exit 2
       fi
     fi
+    # SPEC: line advisory (P2 — TEAM tasks only, not blocking)
+    if [[ "$CWD_NOW" == */agents/* ]] && [ -f "$CWD_NOW/.maw/strategy.json" ] && grep -q '"TEAM"' "$CWD_NOW/.maw/strategy.json" 2>/dev/null; then
+      if ! echo "$CMD" | grep -qE 'SPEC:[[:space:]]+'; then
+        echo -e "${YLW}P2: TEAM task PR without SPEC: line. Design spec recommended — see /sop-design.${RST}" >&2
+      fi
+    fi
     if [[ "$CWD_NOW" == */agents/* ]] && [ -f "$CWD_NOW/.maw/strategy.json" ]; then
       ROUTE=$(jq -r '.route // empty' "$CWD_NOW/.maw/strategy.json" 2>/dev/null)
       if [ "$ROUTE" = "TEAM" ] && [ ! -f "$CWD_NOW/.maw/aggregate-verified" ]; then
@@ -340,9 +346,7 @@ fi
 
 # ─── FAN-OUT GATE (anti-#157) ───────────────────────────────────────
 # When .maw/strategy.json says route:"TEAM", block code edits in L2 worktrees
-# until at least one OMX worker pane exists. Doctrine claimed this gate existed
-# since 2026-06-08; it didn't — L2s self-downgraded to SOLO 3+ times (leaf
-# 2026-06-11, erp 2026-06-13). NOW it does.
+# until at least one OMX worker pane exists.
 #
 # Fires on: Edit, Write, MultiEdit (code edits that build a SOLO context)
 # Skips: Bash (needed for maw team spawn), Read (research is fine)
@@ -360,13 +364,59 @@ case "$TOOL" in
           else
             WORKER_COUNT=0
             if [ -n "${TMUX:-}" ]; then
-              WORKER_COUNT=$(tmux list-panes -a -F '#{pane_current_path}' 2>/dev/null | grep -c "^${CWD_NOW}/agents/" || echo 0)
+              _REPO_ROOT=$(git -C "$CWD_NOW" rev-parse --show-toplevel 2>/dev/null || echo "")
+              if [ -n "$_REPO_ROOT" ]; then
+                WORKER_COUNT=$(tmux list-panes -a -F '#{pane_current_path}' 2>/dev/null | grep -v "^${CWD_NOW}$" | grep -c "^${_REPO_ROOT}/agents/" 2>/dev/null || true)
+                WORKER_COUNT=${WORKER_COUNT:-0}; WORKER_COUNT=${WORKER_COUNT//[^0-9]/}
+              fi
             fi
             if [ "$WORKER_COUNT" -eq 0 ]; then
-              echo -e "${RED}BLOCKED: strategy.json says TEAM but no OMX workers spawned yet.${RST}" >&2
-              echo -e "${RED}Spawn workers first: maw team create <team> + maw team spawn <team> <role> --wt --engine omx --exec${RST}" >&2
-              echo -e "${RED}Override (rare): printf '{\"justification\":\"...\"}' > .maw/solo-justified${RST}" >&2
+              # Allow specs/ and .maw/ edits — L2 writes design specs BEFORE spawning workers
+              _EDIT_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // empty' 2>/dev/null)
+              if echo "$_EDIT_PATH" | grep -qE '(^|/)specs/|^\.maw/|/\.maw/|(/|^)CONTEXT\.md$'; then
+                : # specs + .maw + CONTEXT.md always allowed in TEAM pre-worker phase
+              else
+                echo -e "${RED}BLOCKED: strategy.json says TEAM but no OMX workers spawned yet.${RST}" >&2
+                echo -e "${RED}Spawn workers first: maw team create <team> + maw team spawn <team> <role> --wt --engine omx --exec${RST}" >&2
+                echo -e "${RED}Override (rare): printf '{\"justification\":\"...\"}' > .maw/solo-justified${RST}" >&2
+                exit 2
+              fi
+            fi
+          fi
+        fi
+      fi
+    fi
+    ;;
+esac
+
+# ─── AGENT-IN-TEAM GATE ────────────────────────────────────────────
+# Block Agent() calls with coding intent when strategy=TEAM and no OMX workers.
+# Agent() for research/review is advisory-only (yellow warning).
+# Agent() for coding (implement/fix/create/build/refactor) is hard-blocked.
+case "$TOOL" in
+  Agent)
+    CWD_NOW=$(pwd)
+    if [[ "$CWD_NOW" == */agents/* ]]; then
+      STRATEGY_FILE="$CWD_NOW/.maw/strategy.json"
+      if [ -f "$STRATEGY_FILE" ]; then
+        ROUTE=$(jq -r '.route // empty' "$STRATEGY_FILE" 2>/dev/null)
+        if [ "$ROUTE" = "TEAM" ]; then
+          WORKER_COUNT=0
+          if [ -n "${TMUX:-}" ]; then
+            _REPO_ROOT=$(git -C "$CWD_NOW" rev-parse --show-toplevel 2>/dev/null || echo "")
+            if [ -n "$_REPO_ROOT" ]; then
+              WORKER_COUNT=$(tmux list-panes -a -F '#{pane_current_path}' 2>/dev/null | grep -v "^${CWD_NOW}$" | grep -c "^${_REPO_ROOT}/agents/" 2>/dev/null || true)
+                WORKER_COUNT=${WORKER_COUNT:-0}; WORKER_COUNT=${WORKER_COUNT//[^0-9]/}
+            fi
+          fi
+          if [ "$WORKER_COUNT" -eq 0 ]; then
+            AGENT_PROMPT=$(printf '%s' "$INPUT" | jq -r '.tool_input.prompt // ""' 2>/dev/null)
+            if echo "$AGENT_PROMPT" | grep -qiE '(implement|fix|create file|write code|build|refactor|add feature|edit.*file|modify|update.*code)'; then
+              echo -e "${RED}BLOCKED: Agent() for CODING in TEAM context — use maw team spawn --wt --engine omx --exec instead.${RST}" >&2
+              echo -e "${RED}Agent() subagents are NOT a substitute for OMX workers.${RST}" >&2
               exit 2
+            else
+              echo -e "${YLW}⚡ Agent() in TEAM context with no OMX workers — OK for research/review only, NOT for coding.${RST}" >&2
             fi
           fi
         fi
@@ -416,9 +466,13 @@ case "$TOOL" in
             _CWD_GATE=$(pwd)
             _FILE_ABS_GATE=$(realpath -m "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
             _REL_SUFFIX=${_FILE_ABS_GATE#"$_FILE_REPO_ROOT"/}
-            # Allow L1 to edit gitignored files (e.g. .env, .maw/) on main
+            # Allow L1 to edit gitignored files (e.g. .env, .maw/) and ψ/ (vault symlink) on main
             if git -C "$_FILE_REPO_ROOT" check-ignore -q "$_FILE_ABS_GATE" 2>/dev/null; then
               : # gitignored file — not tracked, safe to edit on main
+            elif [[ "$_REL_SUFFIX" == ψ/* ]] || [[ "$_REL_SUFFIX" == .maw/* ]] || [[ "$_REL_SUFFIX" == .claude/* ]]; then
+              : # vault/meta files — not product code, safe to write on main
+            elif [[ "$_REL_SUFFIX" == *.md ]] || [[ "$_REL_SUFFIX" == docs/* ]]; then
+              : # docs/markdown — not product logic, safe to edit on main
             elif [[ "$_CWD_GATE" == */"$_FILE_REPO_NAME"/agents/* ]]; then
               # Session IS in a worktree of this repo — the file path is wrong (points to main copy).
               _WT_ROOT=$(echo "$_CWD_GATE" | sed "s|/\(${_FILE_REPO_NAME}/agents/[^/]*\).*|/\1|")

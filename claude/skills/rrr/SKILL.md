@@ -47,9 +47,19 @@ If found, extract:
 
 **Path**: `ψ/memory/retrospectives/YYYY-MM/DD/HH.MM_slug.md`
 
+**WORKTREE SAFETY**: In a git worktree (`agents/` path), ψ/ is NOT a vault symlink — it's a real directory that gets deleted by `maw done`. Resolve to the MAIN repo's ψ/ first:
+
 ```bash
-mkdir -p "ψ/memory/retrospectives/$(date +%Y-%m/%d)"
+# Resolve ψ to main worktree (vault symlink lives there, not in agent worktrees)
+_PSI_BASE="ψ"
+if [[ "$(pwd)" == */agents/* ]]; then
+  _MAIN_WT=$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //')
+  [ -n "$_MAIN_WT" ] && [ -d "$_MAIN_WT/ψ" ] && _PSI_BASE="$_MAIN_WT/ψ"
+fi
+mkdir -p "$_PSI_BASE/memory/retrospectives/$(date +%Y-%m/%d)"
 ```
+
+Use `$_PSI_BASE` instead of bare `ψ` for ALL file writes in this skill (retrospectives + learnings).
 
 Write immediately, no prompts. If pulse data was found, weave it into the narrative (don't add a separate dashboard). Include:
 - Session Summary — if pulse data exists, add one line: "Session #X of Y in this project (Z-day streak)"
@@ -62,7 +72,7 @@ Write immediately, no prompts. If pulse data was found, weave it into the narrat
 
 ### 3. Write Lesson Learned
 
-**Path**: `ψ/memory/learnings/YYYY-MM-DD_slug.md`
+**Path**: `$_PSI_BASE/memory/learnings/YYYY-MM-DD_slug.md` (uses the resolved `$_PSI_BASE` from step 2)
 
 ### 4. Oracle Sync
 
@@ -72,9 +82,9 @@ oracle_learn({ pattern: [lesson content], concepts: [tags], source: "rrr: REPO" 
 
 ### 5. Save
 
-Retro files are written to vault (`~/.oracle/ψ/memory/retrospectives/`).
+Retro files are written to the vault via `$_PSI_BASE` (resolved in step 2). In the main repo, ψ/ is a symlink to the vault. In worktrees, `$_PSI_BASE` resolves to the main repo's ψ/ so files survive `maw done`.
 
-**Do NOT `git add ψ/`** — it's a symlink to the vault. Vault files are shared state, not committed to repos.
+**Do NOT `git add ψ/`** — vault files are shared state, not committed to repos.
 
 ---
 
