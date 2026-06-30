@@ -469,7 +469,7 @@ See: `ψ/memory/learn/nwf-sql-database-schema.md`
 
 - **App test login** (all NWFTH projects): user `deachawat`, password from `$NWFTH_TEST_PASSWORD` (export locally — never commit the literal) at `http://localhost:<port>`. You ARE on the host — use `localhost`, never SSH to self.
 - **Deploy** (Docker NWFTH projects): `bash ~/ghq/github.com/deachawatss/gale-oracle/scripts/deploy-project.sh <project-path> <project-name>` — does `git pull` + `docker compose up --build` + health check + auto-rollback. Run from the main/home session after merge, not from a worktree.
-- **Merge gate**: NWFTH is production — direct push to `main` is hook-blocked, so open a PR. The owning oracle runs `/scrutinize` → self-merges (high risk = scrutinize harder, same merger; L1 is the only reviewer). Stack is MSSQL+Docker *for current projects* — still detect from the repo, never assume.
+- **Merge gate**: NWFTH is production — direct push to `main` is hook-blocked, so open a PR. The owning oracle runs `/sop-review` → self-merges (high risk = review harder, same merger; L1 is the only reviewer). Stack is MSSQL+Docker *for current projects* — still detect from the repo, never assume.
 
 ---
 

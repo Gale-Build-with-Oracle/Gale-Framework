@@ -5,8 +5,8 @@
 ## Revision History
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 1.0.0 | 2026-06-01 | My Oracle | Initial PQA cadence |
-| 1.0.1 | 2026-06-02 | My Oracle | High-risk row: `/scrutinize` before merge (QA Oracle only on escalation), replacing "QA Oracle / no merge without SHIP" |
+| 1.0.0 | 2026-06-01 | Gale | Initial PQA cadence |
+| 1.0.1 | 2026-06-02 | Gale | High-risk row: `/sop-review` before merge (Kati only on escalation), replacing "Kati / no merge without SHIP" |
 
 ## Per-change assurance (automatic, every PR)
 
@@ -17,26 +17,12 @@ The process is enforced at the point of work, not audited after the fact:
 | Code quality + security + a11y + perf | `/sop-qa` | P0/P1 block the PR |
 | Traceability thread (PR description carries its `REQ:` line) | `/sop-qa` Phase 7.5.1 | flagged (P2) |
 | Doc-sync freshness (`docs/.last-doc-sync` current at UAT/release) | `/sop-qa` Phase 7.5.2 release gate | **P1 blocks UAT/release** |
-| Independent review before merge | `/scrutinize` | no merge without a verdict |
-| High-risk (backend/API/DB/security) | `/scrutinize` (harder) | merge after a clean verdict; QA Oracle only on escalation (verdict inconclusive or Your Name asks) |
+| Independent review before merge | `/sop-review` | no merge without a verdict |
+| High-risk (backend/API/DB/security) | `/sop-review` (harder) | merge after a clean verdict; Kati only on escalation (verdict inconclusive or Wind asks) |
 | Root cause after an escaped defect | `/post-mortem` + RISK.md CAR | issue stays open until written |
 
-## Periodic assurance (cadence — lightweight)
+## Quality is enforced by gates, not audits
 
-| Activity | Frequency | Owner | Output |
-|---|---|---|---|
-| **Process audit** — sample N recent PRs: was the lifecycle followed (code-first, `REQ:` line, `/sop-qa`, `/scrutinize`)? Was `/doc-sync` run before each UAT/release? | Monthly | My Oracle | a short note in this file's audit log below; non-compliances become process fixes |
-| **Measurement review** — read `MEASUREMENT.md` numbers, act on movement | Monthly | My Oracle | actions, not a dashboard |
-| **Standard-process review** — is `PROCESS.md` still matching reality? | Quarterly | My Oracle | patch the org docs (Patterns over Intentions) |
+The per-change gates above ARE the assurance. No separate periodic audit is needed — the hooks and skills enforce the process at the point of work. If a gate is missing or weak, fix the gate (add a hook, tighten a skill), not schedule a review meeting.
 
-## Escalation
-
-A non-compliance is a **process** problem first, not a person problem. The fix is to make the right thing the easy/automatic thing (a gate, a reminder, a skill edit) — not another manual rule. Three repeats of the same friction → fix the root cause (parent CLAUDE.md Self-Evaluation Loop).
-
-## Audit log
-
-First audit due **2026-07-01** (monthly cadence anchored to the 2026-06-01 v1.0.0 start). Schedule a recurring reminder with `/schedule` (monthly) or a crontab ping to `01-my-oracle:my-oracle.1`; sample 5 recent PRs and record below.
-
-| Date | Sample | Finding | Action |
-|------|--------|---------|--------|
-| _(first monthly audit due 2026-07-01)_ | | | |
+**Three repeats of the same friction → fix the root cause** (a gate, a reminder, a skill edit) — not another manual rule. Non-compliance is a process problem, not a person problem.

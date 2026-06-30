@@ -5,15 +5,19 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "ANTHROPIC_CUSTOM_MODEL_OPTION": "claude-opus-4-6[1m]",
-    "ANTHROPIC_CUSTOM_MODEL_OPTION_NAME": "Opus 4.6 (1M context)"
+    "ANTHROPIC_CUSTOM_MODEL_OPTION_NAME": "Opus 4.6 (1M context)",
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-0",
+    "XDG_RUNTIME_DIR": "/run/user/1000"
   },
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "claude-opus-4-6[1m]",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash|Edit|Write|MultiEdit|SendMessage|mcp__bme-mssql|mcp__nwfth-sql",
+        "matcher": "Bash|Edit|Write|MultiEdit|SendMessage|Agent|mcp__bme-mssql|mcp__nwfth-sql",
         "hooks": [
           {
             "type": "command",
@@ -114,6 +118,5 @@
   "skipDangerousModePermissionPrompt": true,
   "theme": "light",
   "teammateMode": "in-process",
-  "skipAutoPermissionPrompt": true,
-  "model": "claude-opus-4-6[1m]"
+  "skipAutoPermissionPrompt": true
 }

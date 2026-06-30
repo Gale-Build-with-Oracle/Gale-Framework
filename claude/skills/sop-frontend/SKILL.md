@@ -1,6 +1,6 @@
 ---
 name: sop-frontend
-description: 'UX/UI rules — responsive, a11y, tables, forms, dashboards — plus an Impeccable-inspired design-refinement toolkit (context, detector, shape/craft, audit/critique, bolder/quieter, layout/typeset, harden/polish). Use for any frontend/UI work.'
+description: 'All-in-one UX/UI operating system — production frontend rules plus consolidated dogfood QA, adversarial user testing, sketch variants, one-off design artifacts, reference design systems, and DESIGN.md tokens. Use for any frontend/UI work.'
 ---
 # /sop-frontend — UX/UI Design Rules
 
@@ -16,15 +16,202 @@ MANDATORY for any frontend work across all projects.
 - **A11y**: alt on img, aria-label on icon buttons, linked labels, 4.5:1 contrast, logical focus order, skip link.
 - **NEVER**: Ship without empty/loading/error states. Hardcode colors. Tables without search+sort. Placeholder-as-label. Elements <44x44px.
 
+## Avoid the AI Aesthetic (MANDATORY)
+
+AI-generated UI has recognizable patterns. Avoid ALL of them:
+
+| AI Default | Why It's a Problem | Production Quality |
+|---|---|---|
+| Purple/indigo everything | Models default to "safe" palettes — every AI app looks identical | Use the project's actual color palette |
+| Excessive gradients | Add visual noise, clash with design systems | Flat or subtle gradients matching the design system |
+| Rounded everything (`rounded-2xl`) | Maximum rounding ignores the hierarchy of corner radii | Consistent border-radius from the design system |
+| Generic hero sections | Template-driven with no connection to actual content | Content-first layouts |
+| Lorem ipsum-style copy | Hides layout problems real content reveals (wrapping, overflow) | Realistic placeholder content |
+| Oversized padding everywhere | Equal generous padding destroys visual hierarchy | Consistent spacing scale |
+| Stock card grids | Uniform grids ignore information priority and scanning patterns | Purpose-driven layouts |
+| Shadow-heavy design | Layered shadows compete with content | Subtle or no shadows unless the design system specifies |
+
+**If it looks like "ChatGPT made this" — rework it.** Use the project's theme skill (`/nwf-theme`, `/sl-theme`, `/doctor-theme`) and the Reference Design Systems lane.
+
+## Component Architecture Rules
+
+### Composition Over Configuration
+
+```tsx
+// Good: Composable
+<Card>
+  <CardHeader><CardTitle>Tasks</CardTitle></CardHeader>
+  <CardBody><TaskList tasks={tasks} /></CardBody>
+</Card>
+
+// Bad: Over-configured
+<Card title="Tasks" headerVariant="large" content={<TaskList />} />
+```
+
+### Component Size Limit
+
+Components MUST stay under 200 lines. When a component grows past this, split it:
+- Extract subcomponents for distinct visual sections
+- Extract custom hooks for complex state/effects
+- Colocate tests, types, and hooks with the component
+
+### Data / Presentation Separation
+
+```tsx
+// Container: handles data
+function TaskListContainer() {
+  const { tasks, isLoading, error } = useTasks();
+  if (isLoading) return <TaskListSkeleton />;
+  if (error) return <ErrorState message="Failed to load tasks" />;
+  if (tasks.length === 0) return <EmptyState message="No tasks yet" />;
+  return <TaskList tasks={tasks} />;
+}
+
+// Presentation: handles rendering
+function TaskList({ tasks }: { tasks: Task[] }) {
+  return <ul role="list">{tasks.map(t => <TaskItem key={t.id} task={t} />)}</ul>;
+}
+```
+
+### State Management Decision Tree
+
+Choose the simplest approach that works:
+
+```
+Local state (useState)           → Component-specific UI state
+Lifted state                     → Shared between 2-3 siblings
+Context                          → Theme, auth, locale (read-heavy, write-rare)
+URL state (searchParams)         → Filters, pagination, shareable UI state
+Server state (React Query, SWR)  → Remote data with caching
+Global store (Zustand, Redux)    → Complex client state shared app-wide
+```
+
+No prop drilling deeper than 3 levels — introduce context or restructure.
+
+> **Quality backbone reference:** See `addy/frontend-ui-engineering` for full component patterns, accessibility checklist (WCAG 2.1 AA), and responsive design guidance.
+
 ## Project Theming
 
 Before writing any UI code, load the correct brand/theme skill:
 - NWFTH projects -> `/nwf-theme`
 - Solution Lab projects -> `/sl-theme`
-- Clinic / healthcare (YD Wellness) projects -> `/doctor-theme`
+- Clinic / healthcare (YD Wellness / Youngdo / doctor-branded social listening) projects -> `/doctor-theme`
 - No brand skill for the project? Gather brand context first (personality, palette, logo, audience) — never invent a brand silently.
 
-**Brand/theme skill boundary:** `/nwf-theme` and `/sl-theme` should stay broad — logo assets, official color anchors, and minimal brand text/conventions only. Do **not** push layout, component, token, typography, table/form/dashboard, animation, or "impeccable" design prescriptions into those theme skills. All UI/UX decisions and implementation quality belong here in `/sop-frontend` plus the target project's own design source of truth.
+**Brand/theme skill boundary:** `/nwf-theme`, `/sl-theme`, and `/doctor-theme` should stay broad — logo assets, official color anchors, and minimal brand text/conventions only. Do **not** push layout, component, token, typography, table/form/dashboard, animation, or "impeccable" design prescriptions into those theme skills. All UI/UX decisions and implementation quality belong here in `/sop-frontend` plus the target project's own design source of truth. If a healthcare app is hosted under a Solution Lab domain but the visible product brand is Youngdo/clinic, use `/doctor-theme`, not `/sl-theme`.
+
+## Consolidated UX/UI Operating System
+
+This skill now absorbs the operating procedures that used to require separate UX/design skills (`adversarial-ux-test`, `dogfood`, `sketch`, `claude-design`, `popular-web-designs`, and `design-md`). Do **not** stop at the baseline table/form/dashboard rules. For any UI work, choose the relevant lanes below and run them from inside `/sop-frontend`.
+
+### Lane picker
+
+| Need | Run this lane |
+|---|---|
+| "Is the app usable?" / live QA / find friction | **Dogfood Evidence QA** |
+| "This is not nice" / "grill it" / validate with a human lens | **Adversarial UX Test** + **Critique** |
+| "Show options" / "make it prettier" / before committing to one design | **Sketch Variants** |
+| Landing/deck/prototype/one-off visual artifact | **Design Artifact** |
+| "Make it like Linear/Stripe/Vercel/Notion" or needs real-world references | **Reference Design Systems** |
+| Need durable tokens/spec for agents/design consistency | **DESIGN.md Token Spec** |
+| Production implementation or PR review | **Audit → Harden → Polish** plus live proof |
+
+### Non-negotiable evidence loop
+
+Before declaring UI good, collect evidence instead of judging from a diff:
+1. Inspect actual repo context: `PRODUCT.md`, `DESIGN.md`, theme/tokens/global styles, component library, existing routes/screens, and brand skill.
+2. Run or open the real surface when possible; if local, use the project-approved command only. NWFTH/BME Docker surfaces stay Docker-first.
+3. Capture screenshots at desktop (1920×1080), tablet landscape (1024–1280), and mobile/narrow where relevant.
+4. Check browser console after navigation and after significant interactions. Silent JS errors are UX findings.
+5. Exercise the primary workflow, not just page chrome. Count clicks for the main job; >5 clicks is a red flag unless the domain truly requires it.
+6. Record evidence: URL/path, viewport, screenshot path, steps, expected/actual, console/network/a11y notes.
+
+### Dogfood Evidence QA lane
+
+Use for exploratory live-app testing. Workflow:
+1. Plan scope: pages, navigation, forms, tables, empty/error states, permissions, and the core user job.
+2. Explore with browser/screenshot tools: navigate, snapshot DOM, inspect visual layout, interact, scroll, keyboard-tab, submit valid/invalid forms.
+3. After every significant interaction, check console output and compare expected vs actual.
+4. Classify findings by severity and category:
+   - **Critical**: blocks core workflow, data loss, auth/security exposure.
+   - **High**: hides important data, breaks common flow, major accessibility failure.
+   - **Medium**: confusing interaction, visual defect, missing state, slow/janky path.
+   - **Low**: polish, copy, alignment, minor inconsistency.
+5. Report with screenshots and reproduction steps. De-duplicate; do not inflate issue count.
+
+### Adversarial UX Test lane
+
+Use when the interface technically works but may not feel usable or convincing. Inhabit one difficult realistic persona, then filter the rant into real product work.
+
+1. Define one hard persona: age/role, tech comfort, current workaround, the one job they need done, and what makes them give up.
+2. Test the persona's actual task, not a feature tour. Focus on first impression, terminology, navigation, readability, speed, errors, empty states, and recovery.
+3. Write the in-character rant: good, bad, ugly, exact quotes, verdict.
+4. Step out of character and apply the pragmatism filter:
+   - **RED: real UX bug** — a competent busy user would also suffer; fix it.
+   - **YELLOW: valid but lower priority** — real but edge/persona-specific; note it.
+   - **WHITE: persona noise** — resistance to digital, not a product problem; do not ticket.
+   - **GREEN: feature/request opportunity** — useful idea hidden in complaint; consider it.
+5. Convert only RED/GREEN into actionable tickets or fix tasks. Keep YELLOW in notes. Never ship raw persona complaints as engineering truth.
+
+### Sketch Variants lane
+
+Use before implementation when design direction is unclear.
+1. Ask or infer three inputs: desired feel, references/anti-references, and the single primary user action.
+2. Produce 2–3 variants, never just one. Variants must differ by design stance, not only color:
+   - density: compact vs airy vs ultra-dense
+   - emphasis: content-first vs action-first vs tool-first
+   - layout: table-first vs split-pane vs document-style
+   - aesthetic: utilitarian vs editorial vs premium vs playful
+3. Use realistic content, real states, and minimal interaction (click/toggle/filter/hover) so Wind can compare behavior, not static decoration.
+4. Verify each variant visually before presenting. If it visibly breaks, fix before showing.
+5. Present a head-to-head table and give an opinionated recommendation. Once Wind picks, consolidate — do not leave a pile of options.
+
+### Design Artifact lane
+
+Use for one-off HTML artifacts, prototypes, decks, component explorations, or motion studies.
+- Start from context, not vibes: read brand docs, screenshots, repo components/tokens, UI kit, copy docs, and constraints.
+- Decide artifact format: side-by-side visual board, clickable prototype, fixed 1920×1080 deck, component lab, or motion study.
+- Define a small local design system: colors, type, spacing, radii, shadows/elevation, motion posture, component treatment.
+- Avoid filler content, fake metrics, generic icon-card grids, stock hero sections, and decorative dashboards with invented numbers.
+- Verify file existence, syntax, console, key interaction, and primary viewport before saying done.
+- If the request is production code in an existing repo, implement in the repo stack and existing components; do not force a standalone artifact.
+
+### Reference Design Systems lane
+
+Use real-world references as vocabulary, not as cloning.
+- Match reference to purpose:
+  - developer tools/dashboards: Linear, Vercel, Supabase, Raycast, Sentry
+  - docs/content: Mintlify, Notion, Sanity, MongoDB
+  - marketing/landing: Stripe, Framer, Apple, SpaceX
+  - data-dense dashboards: Sentry, Kraken, Cohere, ClickHouse
+  - premium: Apple, BMW, Stripe, Superhuman, Revolut
+  - playful/friendly: PostHog, Figma, Lovable, Zapier, Miro
+- Extract principles: density, type posture, spacing rhythm, interaction model, surface treatment, contrast, and motion discipline.
+- Do **not** copy proprietary layouts, branded surfaces, exact command structures, or copyrighted content unless Wind owns/has rights to the source.
+- Transform the reference into the project's brand and use `nwf-theme` / `sl-theme` / `doctor-theme` anchors.
+
+### DESIGN.md Token Spec lane
+
+Use when the design needs to persist as machine-readable source of truth.
+1. Create or update `DESIGN.md` in the project root when Wind asks for design tokens/system spec or when multiple agents must reuse the same visual identity.
+2. YAML front matter carries normative tokens: colors, typography, rounded, spacing, and component entries.
+3. Markdown body carries rationale in canonical order: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts.
+4. Component variants are sibling entries (`button-primary-hover`), not nested pseudo-states.
+5. Quote hex colors and negative dimensions. Use token references like `{colors.primary}`.
+6. When Node/network is available, validate with `npx -y @google/design.md lint DESIGN.md`; fix broken refs and WCAG contrast warnings before using it as source of truth.
+
+### Integrated UI done-definition
+
+A UI task is **not DONE** until all applicable items are true:
+- Correct brand/theme skill was applied and visible product brand is not confused.
+- Real evidence exists: screenshots or live URL, viewport(s), console state, and workflow steps.
+- Technical audit passed or findings are explicitly triaged.
+- Design critique passed: hierarchy, information architecture, cognitive load, visual taste, persona fit, and anti-AI-slop check.
+- Adversarial/persona friction was considered for user-facing or high-friction flows.
+- Empty/loading/error/success/permission/long-content states are designed or explicitly out of scope.
+- Implementation uses project tokens/components where they exist; new one-off styles are justified.
+- Responsive/tablet/mobile behavior is verified for surfaces users actually use.
+- If production code changed: focused tests/build/lint ran, live proof collected, and PR/review process followed for product repos.
 
 ## Impeccable-Inspired Operating Model
 

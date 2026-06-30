@@ -5,20 +5,22 @@
 ## Revision History
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 1.0.0 | 2026-06-01 | My Oracle | Initial org standard process |
+| 1.0.0 | 2026-06-01 | Gale | Initial org standard process |
 
 ## 1. The defined lifecycle
 
-Every project — YourProject, Internal Tools, oracle, client — follows the same lifecycle. Stack and merge gate differ per repo; the *process* does not.
+Every project — NWFTH, Solution Lab, oracle, client — follows the same lifecycle. Stack and merge gate differ per repo; the *process* does not.
 
 ```
-PER PR:            intake → build (code-first) → /sop-qa → /scrutinize → merge → maw done
-                   (PR description carries its REQ: line — that is the PR's entire doc obligation)
+PER PR:            intake → design spec (TEAM tasks) → build (code-first) → /sop-qa → /sop-review → merge → maw done
+                   (TEAM: L2 writes specs/<N>-<slug>.md before spawning workers — 5-min design capture, not a gate)
+                   (SOLO: skip spec — config/typo/env only)
+                   (PR description carries its REQ: line + SPEC: line — that is the PR's traceability)
 AT STABILIZATION:  /doc-sync (Haiku swarm) → docs-only PR → marker advance
                    (MUST run before any UAT session and before any release/deploy)
 ```
 
-- **Code-first**: build and verify the change against the real command/UI. Docs transcribe decisions the code already made — and only once the feature settles.
+- **Code-first with design spec**: build and verify the change against the real command/UI. For TEAM tasks, L2 captures design intent in `specs/<N>-<slug>.md` before spawning workers (5-minute rule — if longer, split the issue). The spec is committed to the feature branch and feeds design context into `/doc-sync`. Docs transcribe decisions the code already made — and only once the feature settles.
 - **Docs at stabilization, by Haiku** (org tailoring ORG-DAR-001, 2026-06-05): `/doc-sync` reads merged PRs since the `docs/.last-doc-sync` marker and swarms Haiku to update SRS/UAT/CR (+RISK/UXUI) in ONE docs-only PR. `SDD.md` is regenerated on demand (ORG-DAR-002). Opus never writes docs. See `/sop-cmmi` + `/doc-sync`.
 - **Two quality gates**: `/sop-qa` per PR (REQ-line check, P2) and the `/sop-qa` release gate (doc-sync marker current, P1). There are no doc-before-code hook gates.
 
@@ -30,18 +32,18 @@ AT STABILIZATION:  /doc-sync (Haiku swarm) → docs-only PR → marker advance
 
 | Role | Who | Responsibility |
 |---|---|---|
-| **Orchestrator** | the Oracle that owns the task | Briefs the worker, monitors, closes: `/scrutinize` → merge → `maw done`. Stays orchestrator until done. |
+| **Orchestrator** | the Oracle that owns the task | Briefs the worker, monitors, closes: `/sop-review` → merge → `maw done`. Stays orchestrator until done. |
 | **Worker** | an Oracle or codex in a `maw workon` worktree | Builds the change, runs `/sop-qa`, opens the PR, reports back. Never self-merges product code. |
-| **Reviewer** | `/scrutinize` (+ QA Oracle for high-risk YourProject/Internal Tools) | Independent end-to-end review before merge. |
+| **Reviewer** | `/sop-review` (+ Kati for high-risk NWFTH/SL) | Independent end-to-end review before merge. |
 
 Full delegation mechanics: `/sop-delegation`.
 
 ## 4. Merge gate (per repo, not per doctrine)
 
-- **YourProject** (production): Your Name approves the merge; direct push to `main` is hook-blocked.
-- **Internal Tools**: dev oracle auto-merges after `/sop-qa` PASS.
+- **NWFTH** (production): Wind approves the merge; direct push to `main` is hook-blocked.
+- **Solution Lab internal**: dev oracle auto-merges after `/sop-qa` PASS.
 - **Infra / oracle repos**: self-merge (lightweight).
-- Risk classification (frontend/docs/config = low; backend/API/DB/security/cross-boundary = high → QA Oracle) lives in the fleet CLAUDE.md "Merge gate classification".
+- Risk classification (frontend/docs/config = low; backend/API/DB/security/cross-boundary = high → Kati) lives in the fleet CLAUDE.md "Merge gate classification".
 
 ## 5. Stack is detected, never assumed
 

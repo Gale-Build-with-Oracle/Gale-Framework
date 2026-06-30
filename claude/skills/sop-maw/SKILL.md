@@ -15,7 +15,7 @@ maw workon <repo> <slug>          # 3. per task: spawn the L2 IN the project wor
                                   #    (independent issues → N PARALLEL workon L2s — core ## Fan-Out → Parallel L2s)
 maw team spawn <slug> worker-N --wt --engine omx --exec --prompt "Issue #N: …"   # 4. L2 fans out ephemeral OMX workers
 maw team status <slug>            # 5. monitor on ~5-min cadence
-gh pr list                        # 6. review queue → /scrutinize → merge (L1 only)
+gh pr list                        # 6. review queue → /sop-review → merge (L1 only)
 maw done <window>                 # 7. cleanup — SERIALIZED, one window at a time (parallel
                                   #    maw done = shared-git lock corruption, 2026-04-12)
 ```
@@ -90,7 +90,7 @@ Prefer the lowest tier that works. Structured coordination → `/team-agents`; r
 - Split ownership BEFORE spawning — two writers on the same files conflict.
 - Every worker brief: exact repo path, issue #, write scope, verify step, report expectation.
 - `arra_search` before any work — include in every worker prompt.
-- NWFTH work still needs worktree + `/sop-qa` + `/scrutinize` before merge — multi-agent doesn't bypass the pipeline.
+- NWFTH work still needs worktree + `/sop-qa` + `/sop-review` before merge — multi-agent doesn't bypass the pipeline.
 - Aggregate gate: lint/build/test green on the merged branch → `touch .maw/aggregate-verified` → THEN `maw pr` (hook-blocked without the marker when `.maw/strategy.json` route is TEAM).
 - REQ traceability: `maw pr` always writes a PR body with `REQ: none` by default. For feature/behavior PRs, set `MAW_PR_REQ='REQ-<PROJECT>-NNN[, REQ-<PROJECT>-MMM]'` or write `.maw/req-line` before running `maw pr`; invalid REQ values fail before `gh pr create`.
 - `maw done <window>`: MUST target a window DIFFERENT from the caller.
@@ -160,18 +160,18 @@ Prefer the lowest tier that works. Structured coordination → `/team-agents`; r
 
 ### Merge Gate
 
-**The owning oracle's L1 pane runs `/scrutinize` and merges — worktree panes (L2) NEVER merge** (decided 2026-06-06: the L2 authored or aggregated the code; merge authority lives only in the permanent L1 pane). The L2 stops at PR(s) with `Closes #N` + DONE ping. Risk changes how hard L1 scrutinizes, NOT who merges. L1 is the only reviewer + merger (no escalation reviewer — Kati RETIRED 2026-06-11).
+**The owning oracle's L1 pane runs `/sop-review` and merges — worktree panes (L2) NEVER merge** (decided 2026-06-06: the L2 authored or aggregated the code; merge authority lives only in the permanent L1 pane). The L2 stops at PR(s) with `Closes #N` + DONE ping. Risk changes how hard L1 scrutinizes, NOT who merges. L1 is the only reviewer + merger (no escalation reviewer — Kati RETIRED 2026-06-11).
 
 | PR touches | Risk | L1 action |
 |-----------|------|--------|
-| Frontend only · Docs only · Config (non-security) · Deps-only | Low | quick `/scrutinize` → merge → notify owner |
-| Backend / API / DB / Rust / SQL · Security · Cross-boundary · P0/P1 bug | High | `/scrutinize` **harder** → merge |
+| Frontend only · Docs only · Config (non-security) · Deps-only | Low | quick `/sop-review` → merge → notify owner |
+| Backend / API / DB / Rust / SQL · Security · Cross-boundary · P0/P1 bug | High | `/sop-review` **harder** → merge |
 
-Infra/oracle repo direct-push is allowed only when the permanent L1 pane authored the verified change. If an L2/worktree pane authored or aggregated it, the worktree still opens a PR + DONE-pings and the permanent L1 pane runs `/scrutinize` + merge.
+Infra/oracle repo direct-push is allowed only when the permanent L1 pane authored the verified change. If an L2/worktree pane authored or aggregated it, the worktree still opens a PR + DONE-pings and the permanent L1 pane runs `/sop-review` + merge.
 
 ### Merge checklist (L1)
 1. Confirm the L2/worktree DONE-ping says `L2 RRR done` (or equivalent), or inspect the pane/worktree for a retrospective/lesson marker before cleanup; if missing, bounce back to L2 for `/rrr` before `maw done`. L3 OMX worker `/rrr` is not required in Wind-Framework; L2 aggregate `/rrr` is sufficient.
-2. `/scrutinize` the PR — trace the actual code path, not just the diff.
+2. `/sop-review` the PR — trace the actual code path, not just the diff.
 3. Prove the requested behavior works in the target context (`VERIFIED-LIVE: <command/UI/endpoint> → <observed output>`), not only with proxy tests.
 4. Verify the `/sop-qa` report via `gh pr view <URL> --comments` (product repos).
 5. CI green; no conflicting in-flight work.

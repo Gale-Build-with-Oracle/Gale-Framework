@@ -58,13 +58,13 @@ echo "Detected: $STACK"
 
 **Stack-specific phase applicability:**
 
-| Stack | Phase 1 (Live) | Phase 1.5 (UX) | Phase 3 (A11y) | Phase 5.3 (Types) | Phase 6 (Perf) | Phase 7 (DB) |
-|---|---|---|---|---|---|---|
-| Next.js / Frontend | Yes | Yes | Yes | Yes (TS) | Yes (Lighthouse) | If DB present |
-| Go backend | API only | Skip | Skip | Skip | API timing only | If DB present |
-| Rust backend | API only | Skip | Skip | Skip | API timing only | If DB present |
-| Python | API only | Skip | Skip | mypy instead | API timing only | If DB present |
-| Full-stack | Yes | Yes | Yes | Yes | Yes | Yes |
+| Stack | Phase 1 (Live) | Phase 1.5 (UX) | Phase 3 (A11y) | Phase 5.3 (Types) | Phase 6 (Perf) | Phase 6.5 (Launch) | Phase 7 (DB) |
+|---|---|---|---|---|---|---|---|
+| Next.js / Frontend | Yes | Yes | Yes | Yes (TS) | Yes (Lighthouse) | If deploying | If DB present |
+| Go backend | API only | Skip | Skip | Skip | API timing only | If deploying | If DB present |
+| Rust backend | API only | Skip | Skip | Skip | API timing only | If deploying | If DB present |
+| Python | API only | Skip | Skip | mypy instead | API timing only | If deploying | If DB present |
+| Full-stack | Yes | Yes | Yes | Yes | Yes | If deploying | Yes |
 
 **Output**: Tech stack identified, applicable phases noted, past findings loaded.
 
@@ -688,6 +688,92 @@ Target: Lighthouse Performance score ≥90.
 
 ---
 
+## Phase 6.5: Pre-Launch & Observability Gate
+
+**Applies to:** All production deployments. Run BEFORE `maw pr` for release-facing changes.
+
+### 6.5.1 Observability Verification (AUTOMATED)
+
+For any feature that adds endpoints, background jobs, or external integrations. Run these grep checks against changed files:
+
+```bash
+# Detect new endpoints/handlers in the diff
+CHANGED=$(git diff --name-only HEAD~1 | grep -iE '\.(ts|js|py|go|rs|rb)$')
+
+# 1. Structured logging — must use object/structured form, not string interpolation
+echo "--- Structured logging check ---"
+for f in $CHANGED; do
+  # Flag: console.log with template literals or string concat in route/handler files
+  grep -nE 'console\.(log|info|warn|error)\s*\(' "$f" 2>/dev/null | grep -E '`\$\{|" \+|'"'"' \+' && echo "P2: $f — use structured logger, not console.log with interpolation"
+done
+
+# 2. Secrets in logs — scan for accidental logging of sensitive vars
+echo "--- Secrets-in-logs check ---"
+for f in $CHANGED; do
+  grep -nEi '(log|print|console)\b.*\b(password|secret|token|api_key|apikey|credentials|auth_token)\b' "$f" 2>/dev/null && echo "P1: $f — potential secret in log output"
+done
+
+# 3. console.log debugging — no bare console.log in production code
+echo "--- Debug console.log check ---"
+for f in $CHANGED; do
+  grep -nE '^\s*console\.log\(' "$f" 2>/dev/null && echo "P2: $f — remove debug console.log before shipping"
+done
+
+# 4. TODO/FIXME in shipped code
+echo "--- TODO/FIXME check ---"
+for f in $CHANGED; do
+  grep -nEi '\b(TODO|FIXME|HACK|XXX)\b' "$f" 2>/dev/null && echo "P2: $f — resolve or remove before shipping"
+done
+```
+
+Checklist (verify after automated scan):
+- [ ] **Structured logging present:** JSON with stable event names, not string interpolation
+- [ ] **Correlation IDs:** Request ID generated/accepted at boundary and attached to every log line
+- [ ] **RED metrics** for new endpoints: Rate, Errors, Duration (p50/p95/p99)
+- [ ] **No secrets in logs:** Automated scan clean + manual spot-check
+- [ ] **Alerting rules** for user-facing symptoms (error rate, p99 latency), not causes (CPU, memory)
+
+**Severity:** P1 if secrets-in-logs found. P2 for other failures. Skip for frontend-only changes.
+
+### 6.5.2 Pre-Launch Checklist
+
+For release-facing deployments (not every PR — only when preparing to ship):
+
+**Code Quality:**
+- [ ] All tests pass (unit, integration, e2e)
+- [ ] Build succeeds with no warnings
+- [ ] Lint and type checking pass
+- [ ] No TODO comments that should be resolved before launch
+- [ ] No `console.log` debugging in production code
+
+**Infrastructure:**
+- [ ] Environment variables set in production
+- [ ] Database migrations applied (or ready)
+- [ ] Health check endpoint exists and responds
+- [ ] Logging and error reporting configured
+
+**Rollback Strategy:**
+- [ ] Feature flag configured (if applicable) — kill switch ready
+- [ ] Rollback plan documented (trigger conditions + steps)
+- [ ] Time-to-rollback estimated: feature flag <1 min, redeploy <5 min, DB rollback <15 min
+
+### 6.5.3 Rollout Decision Thresholds
+
+After deployment, monitor and use these thresholds to decide next action:
+
+| Metric | Advance (green) | Hold (yellow) | Roll back (red) |
+|--------|-----------------|---------------|-----------------|
+| Error rate | Within 10% of baseline | 10-100% above baseline | >2x baseline |
+| P95 latency | Within 20% of baseline | 20-50% above baseline | >50% above baseline |
+| Client JS errors | No new error types | New errors at <0.1% sessions | New errors at >0.1% sessions |
+| Business metrics | Neutral or positive | Decline <5% | Decline >5% |
+
+**Roll back immediately if:** error rate >2x baseline, p95 latency >50% above, user-reported issue spike, data integrity issues, or security vulnerability discovered.
+
+> **Quality backbone reference:** See `addy/shipping-and-launch` for full staged rollout sequence and `addy/observability-and-instrumentation` for RED/USE metrics, structured logging, and alerting rules.
+
+---
+
 ## Phase 7: Database & Data Integrity (ALCOA+)
 
 ### 7.1 Schema Checks (via bme-mssql MCP)
@@ -949,7 +1035,7 @@ Agent 2: Accessibility + UX (WCAG 2.2 AA + keyboard + contrast + ARIA + integrat
 Agent 3: Code Quality + Data (PII scan + type safety + error handling + dead code + ALCOA+ + migration safety + doc alignment)
 ```
 
-Main thread: Live testing (Phase 1) + UX/UI (Phase 1.5) + Performance (Phase 6) + Report assembly (Phase 8).
+Main thread: Live testing (Phase 1) + UX/UI (Phase 1.5) + Performance (Phase 6) + Pre-Launch & Observability (Phase 6.5, if deploying) + Report assembly (Phase 8).
 
 Merge all agent results into one unified report.
 

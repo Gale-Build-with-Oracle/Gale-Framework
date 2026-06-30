@@ -40,6 +40,10 @@ git add docs/
 # 1. Collect merged PR numbers, titles, REQ lines, and validation status.
 bash ~/ghq/github.com/deachawatss/Wind-Framework/scripts/doc-sync.sh --write-report
 
+# 1.5 The report now includes specs/ content automatically.
+#     Design specs provide the WHY behind each PR's changes.
+#     specs/<N>-*.md → matched to PRs by issue number from Closes #N.
+
 # 2. Read docs/.doc-sync/merged-prs.md.
 # REQ: none PRs are SKIPPED. Group the rest by REQ-id.
 ```
@@ -49,6 +53,9 @@ bash ~/ghq/github.com/deachawatss/Wind-Framework/scripts/doc-sync.sh --write-rep
 ```
 Agent(subagent_type: general-purpose, model: haiku,
       prompt: "Update docs/SRS.md for these merged PRs: <PR list + REQ lines + diff summaries>.
+               DESIGN CONTEXT: The merged-prs.md report includes specs/ content (design intent, 
+               decisions, rationale). Use this to write SRS sections that capture WHY, not just WHAT.
+               Design Decisions from specs → flow into RISK.md Decisions/DAR as ADR entries.
                Append new/amended REQ sections + Revision History rows in the existing format.
                Append/patch only — never rewrite untouched sections. Nothing else.")
 ```

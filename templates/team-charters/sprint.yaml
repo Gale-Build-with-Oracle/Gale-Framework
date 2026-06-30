@@ -28,7 +28,7 @@ description: "<one-line goal>"
 goal: "Close issues #N, #N, #N"
 # project: routes WORKER worktrees to the product repo's agents/ dir
 # while the orchestrator stays in its own worktree.
-project: <your-github-user>/<repo>
+project: deachawatss/<repo>
 
 members:
   # L2 orchestrator pane — usually ALREADY EXISTS (the `maw workon` pane that
@@ -58,7 +58,7 @@ members:
       Worker contract — Issue #<N>: <title>.
       - arra_search the topic FIRST
       - **You run in a FRESH per-project worktree — no warm pool, no carried-over state**
-      - Bug-labeled issue: /debug-mantra (reproduce, trace, falsify) BEFORE any fix code
+      - Bug-labeled issue: /sop-debug (reproduce, trace, falsify) BEFORE any fix code
       - Code ONLY your slice
       - Commit on your sub-branch
       - Verify (build/test/typecheck)
@@ -73,7 +73,7 @@ members:
       Worker contract — Issue #<N>: <title>.
       - arra_search the topic FIRST
       - **You run in a FRESH per-project worktree — no warm pool, no carried-over state**
-      - Bug-labeled issue: /debug-mantra (reproduce, trace, falsify) BEFORE any fix code
+      - Bug-labeled issue: /sop-debug (reproduce, trace, falsify) BEFORE any fix code
       - Code ONLY your slice
       - Commit on your sub-branch
       - Verify (build/test/typecheck)

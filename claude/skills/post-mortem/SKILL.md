@@ -31,7 +31,7 @@ Before writing a single line, confirm all four. If any are missing, list what's 
 - [ ] **Fix is identified** (PR / commit / branch pointer).
 - [ ] **Fix is validated** (the original repro now passes; the customer workload / failing test now succeeds).
 
-These map directly to `debug-mantra` steps 1–4. If you came in via `debug-mantra`, the breadcrumb ledger from step 4 is your raw material — pull from it.
+These map directly to `sop-debug` steps 1–4. If you came in via `sop-debug`, the breadcrumb ledger from step 4 is your raw material — pull from it.
 
 ## Structure
 
@@ -55,7 +55,7 @@ What changed and **why this change addresses the root cause** rather than hiding
 ### 6. How it was found
 Short. The debugging path:
 - What repro made it deterministic.
-- What tools cracked it (debugger, source tracing, knob enumeration, in-code instrumentation — the `debug-mantra` step 2 cascade).
+- What tools cracked it (debugger, source tracing, knob enumeration, in-code instrumentation — the `sop-debug` step 2 cascade).
 - Hypotheses tried and rejected, with the one-line reason each was rejected. (Pull from the breadcrumb ledger.)
 - The single experiment that confirmed the cause.
 

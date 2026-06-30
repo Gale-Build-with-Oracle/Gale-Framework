@@ -18,6 +18,7 @@ Use this as the default mental model for real software work. It is a checklist, 
 |---|---|---|
 | PRD / scope | Goal, users, MVP boundary, business logic, success criteria | `PROJECT_PLAN.md`, `SRS.md` |
 | UX/UI | Screens, flows, states, responsive behavior, usability | `UXUI.md` |
+| Design spec | Objective, key decisions, data model, API shape, UI flow, success criteria | `specs/<N>-<slug>.md` — created by L2 before worker spawn |
 | Design system / tokens | Reusable components, form/table/card patterns, brand tokens if the UI will grow | `UXUI.md` |
 | ADR / architecture | Framework, DB, schema, deployment model, auth, integrations, multi-tenant choice | `RISK.md` → Decisions/DAR; `SDD.md` snapshot when needed |
 | Infrastructure / pipeline | Git flow, CI/CD, deployment target, secrets, environment setup | `PROJECT_PLAN.md`, `RISK.md` |
@@ -47,6 +48,23 @@ All live in `docs/` at the project root. Create the set once with `scripts/init-
 | 7 | **UAT** | `docs/UAT.md` | Acceptance tests. Each test row carries a **REQ-id column** — that column IS the traceability (REQ → test). No separate RTM. |
 
 **Traceability** lives in UAT's REQ-id column — every test cites the requirement it proves. That single column answers "did we test what we built." Nothing more is needed.
+
+### `specs/` vs `docs/` — Different Artifacts, Different Purposes
+
+A project may have BOTH a `specs/` directory and a `docs/` directory. They are NOT duplicates:
+
+| | `specs/` (design intent) | `docs/` (CMMI compliance) |
+|---|---|---|
+| **When written** | BEFORE coding (by L2 via `/sop-design`) | AFTER stabilization (by Haiku via `/doc-sync`) |
+| **Who writes** | Developer (L2/L3) | Haiku subagent |
+| **Format** | Free-form spec per issue (`specs/42-user-roles.md`) | Structured 7-doc set (SRS, SDD, UAT...) |
+| **Purpose** | Guide implementation, capture WHY | Prove compliance, capture WHAT was built |
+| **Updates** | When design decisions change during build | At stabilization batch sync |
+| **Feeds into** | `/doc-sync` reads specs/ as design context | Final documentation artifacts |
+
+The relationship: `specs/` → feeds design intent into → `docs/` (via `/doc-sync`). Specs are the BRIDGE. They answer "why did we design it this way?" so docs can explain "what was built and why."
+
+**Never duplicate specs into docs.** `/doc-sync` reads both specs/ and PR diffs to generate docs. Writing the same content in both places creates the mismatch this system exists to prevent.
 
 ---
 
@@ -96,14 +114,108 @@ Rule of thumb: **scope every doc edit to the diff.** If a Haiku agent is rewriti
 
 ---
 
-## 3. Doc-Sync Mandate
+## 3. Definition of Done — Standing Quality Bar
+
+A standing, project-wide bar that every change must clear before it counts as done. Unlike acceptance criteria (which vary per task), the Definition of Done is the same every time.
+
+| | Acceptance Criteria | Definition of Done |
+|---|---|---|
+| Scope | Specific to one task | Every increment |
+| Changes | Different for each item | Fixed and reused |
+| Answers | "Did we build *this thing*?" | "Is it *ready*?" |
+
+### The Standing Checklist
+
+**Correctness:**
+- [ ] All acceptance criteria for the task are met
+- [ ] Code runs and behaves as intended, verified at runtime (not just compiled)
+- [ ] New behavior covered by tests that fail without the change and pass with it
+- [ ] Existing tests still pass; no regressions introduced
+
+**Quality:**
+- [ ] Code reveals intent through naming and structure
+- [ ] No duplicated business logic, dead code, or commented-out blocks
+- [ ] Changes are scoped to the task; no unrelated refactors
+- [ ] Linting and formatting pass
+
+**Integration:**
+- [ ] Change works with the rest of the system, not just in isolation
+- [ ] Database migrations, config changes, and feature flags accounted for
+
+**Documentation:**
+- [ ] PR description carries `REQ: REQ-<PROJECT>-NNN` or `REQ: none`
+- [ ] Public interfaces and APIs documented
+- [ ] Architectural decisions recorded in RISK.md Decisions/DAR section
+- [ ] Design spec exists in `specs/` for TEAM tasks and is current with implementation
+- [ ] PR description carries `SPEC: specs/<N>-<slug>.md` (TEAM tasks only)
+
+**Ship-readiness:**
+- [ ] Security implications reviewed for untrusted input, auth, or data handling
+- [ ] Observability in place for new critical paths (logs, metrics)
+- [ ] Rollback path exists for anything risky
+- [ ] Human has reviewed and approved before merge
+
+Apply per-task (Correctness + Quality), per-feature (+ Integration + Documentation), per-release (full checklist).
+
+---
+
+## 4. ADR — Architecture Decision Records
+
+ADRs capture the reasoning behind significant technical decisions. They live in the **RISK.md Decisions/DAR** section (Document 5 in the Seven Documents).
+
+### When to Write an ADR
+
+- Choosing a framework, library, or major dependency
+- Designing a data model or database schema
+- Selecting an authentication strategy
+- Deciding on an API architecture
+- Any decision expensive to reverse
+
+### ADR Format (inside RISK.md Decisions/DAR)
+
+```markdown
+### DAR-NNN: [Decision Title]
+
+**Status:** Accepted | Superseded by DAR-XXX | Deprecated
+**Date:** YYYY-MM-DD
+
+**Context:** [Requirements and constraints that led to this decision]
+
+**Decision:** [What we decided and why]
+
+**Alternatives Considered:**
+- [Alternative A] — Pros: ... / Cons: ... / Rejected because: ...
+- [Alternative B] — Pros: ... / Cons: ... / Rejected because: ...
+
+**Consequences:** [What follows from this decision — trade-offs accepted, capabilities gained, limitations imposed]
+```
+
+### ADR Lifecycle
+
+```
+PROPOSED → ACCEPTED → (SUPERSEDED or DEPRECATED)
+```
+
+Don't delete old ADRs — they capture historical context (Principle 1: Nothing is Deleted). When a decision changes, write a new DAR that references the superseded one.
+
+### Inline Documentation Standard
+
+- **Comment the WHY, not the WHAT.** Well-named identifiers already explain what. Only add comments when the reason is non-obvious: hidden constraints, workarounds, behavior that would surprise a reader.
+- **No commented-out code.** Git has history.
+- **Document known gotchas** inline where they matter — timing constraints, SSR traps, ordering dependencies.
+
+> **Quality backbone reference:** See `addy/documentation-and-adrs` for the full ADR methodology and `addy/references/definition-of-done` for the standing bar philosophy.
+
+---
+
+## 5. Doc-Sync Mandate
 
 Every feature PR carries its `REQ:` line (see §2) — that is the PR's ENTIRE doc obligation. `/doc-sync` MUST run before any UAT session and before any release/deploy; it routes the merged changes to docs:
 
 | Merged change (since marker) | Docs the `/doc-sync` Haiku swarm updates |
 |---|---|
 | New requirement | SRS (new REQ section) + UAT (test w/ REQ-id) |
-| Changed requirement | CR (CR-NNN row) + SRS (amend, keep old per §5) + UAT |
+| Changed requirement | CR (CR-NNN row) + SRS (amend, keep old per §7) + UAT |
 | UI change | UXUI + UAT |
 | Architecture/vendor decision | RISK (Decisions/DAR section) |
 | Post-incident fix | RISK (Corrective Actions/CAR section) |
@@ -116,7 +228,7 @@ Every feature PR carries its `REQ:` line (see §2) — that is the PR's ENTIRE d
 
 ---
 
-## 4. Lightweight Flows
+## 6. Lightweight Flows
 
 ### Change Request (CR)
 ```
@@ -124,7 +236,7 @@ Every feature PR carries its `REQ:` line (see §2) — that is the PR's ENTIRE d
 # The feature PR ships with `REQ: REQ-<PROJECT>-NNN` in its description.
 # At the next /doc-sync (pre-UAT / pre-release), the Haiku swarm:
 #   - appends a row to docs/CR.md:  | CR-NNN | date | REQ-id | reason | PR |
-#   - amends the REQ section in SRS (old text retained per §5)
+#   - amends the REQ section in SRS (old text retained per §7)
 #   - updates UAT as the change requires (SDD regenerates on demand)
 ```
 
@@ -149,7 +261,7 @@ Pairs with `/post-mortem` (the engineering RCA) — CAR is the project-doc recor
 
 ---
 
-## 5. Revision History (Principle 1 — Nothing is Deleted)
+## 7. Revision History (Principle 1 — Nothing is Deleted)
 
 Every doc under `docs/` carries a Revision History table at the top:
 
@@ -164,13 +276,14 @@ On a CR, the superseded requirement text moves to a `#### v1 — superseded` sub
 
 ---
 
-## 5b. The Org Layer — write once (this is what makes it genuine L3)
+## 7b. The Org Layer — write once (this is what makes it genuine L3)
 
 The 7 docs are **per-project**. CMMI L3 ("Defined") needs one more thing: a single **organizational** standard process every project tailors from — written ONCE for the fleet. The org-level TEMPLATES live in `Wind-Framework/templates/org/` and are COPIED (not symlinked) into each project's `docs/` by `init-project-docs.sh` as seed files — each project then tailors its own copy:
 
 | Doc | What it defines |
 |---|---|
 | `PROCESS.md` | The defined fleet SDLC (lifecycle, roles, merge gate, stack-detection) |
+| `SDLC_LIFECYCLE.md` | CMMI L3 process flow diagram with quality gates and traceability matrix |
 | `TAILORING.md` | How a project adapts the 7 docs to its size/shape (what may/may not be tailored) |
 | `MEASUREMENT.md` | The few metrics the fleet tracks (GQM) + the feedback loop |
 | `QA.md` | Process quality assurance — per-PR gates + the periodic audit cadence |
@@ -181,7 +294,7 @@ A project does NOT copy these. It references them and records its own tailoring 
 
 ---
 
-## 6. What Changed From the Old CMMI Skill
+## 8. What Changed From the Old CMMI Skill
 
 | Old | Now |
 |---|---|
@@ -198,7 +311,7 @@ A project does NOT copy these. It references them and records its own tailoring 
 
 ---
 
-## 7. Implementation Enforcement Audit
+## 9. Implementation Enforcement Audit
 
 When Wind reports that the `REQ:` → PR → `/doc-sync` lifecycle is not behaving like this design, treat it as a **doctrine/tooling/enforcement mismatch**, not as agent forgetfulness. Audit all three layers before proposing a fix:
 
@@ -212,7 +325,7 @@ Detailed audit recipe: `references/doc-sync-enforcement-audit.md`.
 
 ---
 
-## 8. Cross-References
+## 10. Cross-References
 
 - `/sop-qa` — the single quality gate. Runs after build, before `maw pr`. Includes doc-completeness.
 - `/nwf-doc` / `/sl-doc` — branded document *generation* (PDF/DOCX/PPTX/XLSX deliverables), distinct from these markdown specs.

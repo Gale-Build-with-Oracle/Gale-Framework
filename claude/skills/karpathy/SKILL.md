@@ -74,7 +74,7 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-> **In the Gale fleet**, translate Wind's task into testable acceptance criteria BEFORE writing code, not after — verifiable artifacts are what `/scrutinize` checks the PR against.
+> **In the Gale fleet**, translate Wind's task into testable acceptance criteria BEFORE writing code, not after — verifiable artifacts are what `/sop-review` checks the PR against.
 
 ---
 

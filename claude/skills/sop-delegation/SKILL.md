@@ -12,12 +12,12 @@ This is not Gale-only. **Any** Oracle that takes on a task follows the same shap
 
 | Role | Who | Does |
 |---|---|---|
-| **Orchestrator** | the Oracle that owns the task (the "main oracle") | Stays in her home session. Briefs the worker, monitors, then closes: `/scrutinize` → merge → `maw done`. |
+| **Orchestrator** | the Oracle that owns the task (the "main oracle") | Stays in her home session. Briefs the worker, monitors, then closes: `/sop-review` → merge → `maw done`. |
 | **Worker** | the Oracle (or codex) doing the build | Runs `maw workon <repo> <slug>` so the work lands in an **isolated worktree** (`maw workon` creates the worktree by default — that IS the `--wt` isolation), builds there, `/sop-qa`, `maw pr`, then reports the PR back and WAITS. |
 
-**The rule**: normal task → the worker does it in a `maw workon` worktree at the project location, never on `main`. The orchestrator Oracle stays orchestrator **until the task is finished** — she does NOT hand off mid-flight. Close order is always: worker reports PR ready → orchestrator runs **`/scrutinize`** → merges ANY tier (low or high) → **`maw done <window>`**. High risk means scrutinize harder, same merger — L1 is the only reviewer + merger (no escalation reviewer).
+**The rule**: normal task → the worker does it in a `maw workon` worktree at the project location, never on `main`. The orchestrator Oracle stays orchestrator **until the task is finished** — she does NOT hand off mid-flight. Close order is always: worker reports PR ready → orchestrator runs **`/sop-review`** → merges ANY tier (low or high) → **`maw done <window>`**. High risk means scrutinize harder, same merger — L1 is the only reviewer + merger (no escalation reviewer).
 
-When orchestrator and worker are the **same** Oracle on her **own** infra/oracle repo (meta, fleet kernel, docs), she may work in the permanent L1 pane and direct-push after focused verification. If she uses `maw workon`, the worktree pane still stops at PR + DONE-ping and the permanent L1 pane merges after `/scrutinize` — no worktree self-merge.
+When orchestrator and worker are the **same** Oracle on her **own** infra/oracle repo (meta, fleet kernel, docs), she may work in the permanent L1 pane and direct-push after focused verification. If she uses `maw workon`, the worktree pane still stops at PR + DONE-ping and the permanent L1 pane merges after `/sop-review` — no worktree self-merge.
 
 **Engine rule**: the L2 orchestrator is ALWAYS Claude (enforced in maw-js since 2026-06-05 — workon defaults to Claude regardless of caller engine). Do NOT pass `--codex`/`--engine` to the orchestrator pane; engine flags are worker-spawn-only (`maw team spawn <team> <role> --wt --engine omx --exec`). No `--claude` flag is needed.
 
@@ -55,6 +55,13 @@ Unknown name → ASK before delegating.
 
 1. Confirm parse with Wind (one short sentence, blocks)
 2. `gh issue create --repo deachawatss/<repo> --title "[CR|BUG] ..." --label CR|bug` — GitHub Issues is canonical. The issue number rides the PR description (`Closes #N`).
+
+### Issue Discipline (Vertical Slices + Prefactor)
+
+**Before creating implementation issues**, scan for prefactoring opportunities — structural improvements that make the planned changes easier. "Make the change easy, then make the easy change." Prefactors get their own issues and block the main slices.
+
+**Issues MUST be vertical slices** — each cuts through ALL integration layers end-to-end (schema + API + UI + tests). A completed slice is demoable or verifiable on its own. Do NOT create horizontal layer issues ("add migration for X", "add API for X", "add UI for X" separately).
+
 3. Write Task Brief at `~/ghq/github.com/deachawatss/<project>/TASK-<slug>.md` (template below)
 4. Route by OWNERSHIP: **another oracle's domain** → `maw hey wind:<owner>` — NEVER `maw workon` their repo from your session (head-oracle table: NWFTH→Leaf, SL→Bamboo, LINE→Line, trading→Sky; discover live via `maw ls`). **YOUR own domain** → `maw workon <repo> <slug>` from your session — you are the orchestrator; steps 2–4 still apply.
 5. Ack Wind: "Filed #N. Routed to <Oracle|window>. Will report when done."
@@ -93,6 +100,7 @@ Saved at `~/ghq/github.com/deachawatss/<PROJECT>/TASK-<slug>.md`:
 ```markdown
 # TASK-<slug>.md
 ## What            — 1-3 sentences
+## Design Spec     — specs/<N>-<slug>.md (L2 creates before worker spawn; skip for SOLO)
 ## Acceptance      — checklist
 ## File Ownership  — table (multi-Oracle only)
 ## API Contract    — backend writes shared types first; frontend reads, never modifies
@@ -121,17 +129,17 @@ Wind requests → Orchestrator classifies CR/REQ/BUG → GitHub issue (canonical
   → WORKTREE: worker maw workon → build → /sop-qa (self-QA) → fix until PASS
     → maw pr → gh pr comment (QA report)
     → maw hey wind:<orchestrator> "[wt] PR #N ready. <pr-url>" → WAIT
-  → ORCHESTRATOR SESSION: /scrutinize PR → merge per gate
+  → ORCHESTRATOR SESSION: /sop-review PR → merge per gate
     → maw done <worktree-window> (rescues ψ/, kills worktree)
     → report DONE to Wind in the active Discord/thread surface
   → Orchestrator: /post-mortem (bug PRs only, run by L1 after merge)
 ```
 
-The orchestrator stays orchestrator the WHOLE way — she does not hand the task off after briefing. She owns it through `/scrutinize` → merge → `maw done`.
+The orchestrator stays orchestrator the WHOLE way — she does not hand the task off after briefing. She owns it through `/sop-review` → merge → `maw done`.
 
 **Doc deltas are NOT per-feature-PR work.** Feature PRs carry only the `REQ:` traceability line. `/doc-sync` runs later at stabilization/release/UAT and opens one docs-only PR that updates SRS/UAT/CR from merged PR history; SDD is generated as a snapshot when needed.
 
-**Flavor A (PR)**: WORKTREE: build → `/sop-qa` → `maw pr` → tell orchestrator `maw hey wind:<orchestrator> "[wt] PR #N ready"` → WAIT. ORCHESTRATOR SESSION: `/scrutinize` → merge → `maw done <window>` (rescues ψ/) → report DONE.
+**Flavor A (PR)**: WORKTREE: build → `/sop-qa` → `maw pr` → tell orchestrator `maw hey wind:<orchestrator> "[wt] PR #N ready"` → WAIT. ORCHESTRATOR SESSION: `/sop-review` → merge → `maw done <window>` (rescues ψ/) → report DONE.
 
 **Flavor B (audit/no PR)**: do work → deliver report → WAIT. Main session: `maw done <window>` (rescues ψ/) → tell Gale DONE.
 
@@ -147,7 +155,7 @@ L1 is the only reviewer + merger — there is no escalation reviewer in the pipe
 - NWFTH project repos: worktree-only, NEVER direct main.
 - Non-NWFTH tooling repos: direct main allowed when verified from the permanent L1 pane; worktree panes still PR + DONE-ping.
 - Oracle family repos: direct push to main allowed only from the permanent L1 pane after focused verification; L2/worktree panes never self-merge.
-- PR before merge (project repos always; infra/oracle worktree panes too). The owning oracle runs `/scrutinize` → merges ANY tier after self-QA PASS (`/sop-qa`); high risk = scrutinize harder, same merger. L1 is the only reviewer + merger (no escalation reviewer).
+- PR before merge (project repos always; infra/oracle worktree panes too). The owning oracle runs `/sop-review` → merges ANY tier after self-QA PASS (`/sop-qa`); high risk = scrutinize harder, same merger. L1 is the only reviewer + merger (no escalation reviewer).
 - Report completion in the active Discord/thread surface; GitHub Issues/PRs remain canonical state, no retired Discord forum tracker ceremony.
 - Always specify theme/skill + include reference screenshots.
 - Review the result yourself (Playwright) before reporting done to Wind.

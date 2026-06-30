@@ -32,6 +32,40 @@ if echo "$COMMAND" | grep -qE '(^|;|&&|\|\|)[[:space:]]*(git[[:space:]]+(commit|
     YLW='\033[1;33m'; RST='\033[0m'
     echo -e "${YLW}🔬 Code shipped. Before declaring done: name the ONE function/line this change exists to make work, and show it EXECUTING (a real run/test of THAT function — not a stub, proxy, or symptom). 'shipped-without-running-the-changed-function' hit 4 of 7 recent sessions.${RST}" >&2
   fi
+  # Spec-update nudge: if specs/ exists in the project, remind to keep spec current
+  if [ -d "specs" ] && ls specs/*.md >/dev/null 2>&1; then
+    DIM='\033[2m'; RST='\033[0m'
+    echo -e "${DIM}💡 specs/ exists — if your implementation diverged from the spec, update specs/<N>.md first.${RST}" >&2
+  fi
+fi
+
+# --- Post-merge branch sweep (sop-debug Phase 7: stale agent branches) ---
+# After gh pr merge, sweep stale remote agent branches + fetch --prune.
+# Root cause: maw done only cleans ONE branch; delete_branch_on_merge may
+# be off or gh merge may not use --delete-branch. This catches leftovers.
+if echo "$COMMAND" | grep -qE 'gh[[:space:]]+pr[[:space:]]+merge'; then
+  sweep_repo=$(echo "$COMMAND" | grep -oE '\-\-repo[[:space:]]+[^[:space:]]+' | head -1 | awk '{print $2}')
+  if [ -z "$sweep_repo" ]; then
+    sweep_repo=$(gh repo view --json nameWithOwner -q '.nameWithOwner' 2>/dev/null || true)
+  fi
+  if [ -n "$sweep_repo" ]; then
+    repo_name=$(echo "$sweep_repo" | sed 's|.*/||')
+    repo_path="$HOME/ghq/github.com/$sweep_repo"
+    if [ -d "$repo_path" ]; then
+      (
+        git -C "$repo_path" fetch --prune 2>/dev/null
+        for br in $(git -C "$repo_path" branch -r --list 'origin/agents/*' --list 'origin/fix/*' --format='%(refname:short)' 2>/dev/null); do
+          short="${br#origin/}"
+          merged=$(gh pr list --repo "$sweep_repo" --head "$short" --state merged --json number --limit 1 -q '.[0].number' 2>/dev/null)
+          if [ -n "$merged" ]; then
+            git -C "$repo_path" push origin --delete "$short" 2>/dev/null
+            git -C "$repo_path" branch -D "$short" 2>/dev/null
+          fi
+        done
+        git -C "$repo_path" fetch --prune 2>/dev/null
+      ) &
+    fi
+  fi
 fi
 
 # Only care about PR creation in worktrees
@@ -42,10 +76,37 @@ PR_URL=$(echo "$STDOUT" | grep -oE 'https://github\.com/[^[:space:]]+/pull/[0-9]
 [ -z "$PR_URL" ] && exit 0
 
 PR_NUM=$(echo "$PR_URL" | grep -oE '[0-9]+$')
-ORACLE_HOME=$(echo "$PWD" | grep -oE '[a-z]+-oracle' | head -1 || echo "leaf")
+REPO=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "")
 
-YLW='\033[1;33m'; RST='\033[0m'
-echo -e "${YLW}⚠️ PR #${PR_NUM} created. Notify main session:${RST}" >&2
-echo -e "${YLW}  maw hey wind:${ORACLE_HOME} \"[wt] PR #${PR_NUM} ready. ${PR_URL}\"${RST}" >&2
+YLW='\033[1;33m'; GRN='\033[1;32m'; RST='\033[0m'
+
+# Auto-send DONE-ping to L1 oracle pane (SESSION:1.0 = L1 pane, same as on-stop.sh)
+SESSION=$(tmux display-message -p '#{session_name}' 2>/dev/null || echo "")
+WINDOW=$(tmux display-message -p '#{window_name}' 2>/dev/null || echo "")
+
+if [ -n "$SESSION" ]; then
+  ORACLE_PANE="${SESSION}:1.0"
+  MSG="[AUTO-PR-DONE] PR #${PR_NUM} opened in ${WINDOW} (${REPO}). ${PR_URL}. L2 /rrr status: check before maw done. Ready for /sop-review + live proof + merge + issue close + maw done ${WINDOW}."
+  maw hey "$ORACLE_PANE" "$MSG" 2>/dev/null &
+
+  mkdir -p .maw && touch .maw/done-pinged
+
+  # Enqueue to PR queue so maw fleet pr-queue catches it
+  QUEUE_DIR="${MAW_STATE_DIR:-${MAW_HOME:-$HOME/.maw}}"
+  mkdir -p "$QUEUE_DIR"
+  python3 - "$QUEUE_DIR/pr-queue.jsonl" "$SESSION" "$REPO" "$BRANCH" "$PR_NUM" <<'PY' 2>/dev/null || true
+import json, sys, time
+path, session, repo, branch, pr = sys.argv[1:]
+with open(path, "a", encoding="utf-8") as f:
+    f.write(json.dumps({"ts": int(time.time()*1000), "from": session, "repo": repo, "prNumbers": [int(pr)], "branch": branch, "status": "pending"}) + "\n")
+PY
+
+  echo -e "${GRN}✓ AUTO DONE-ping sent to L1 (${ORACLE_PANE}). PR #${PR_NUM} queued for /sop-review.${RST}" >&2
+else
+  ORACLE_HOME=$(echo "$PWD" | grep -oE '[a-z]+-oracle' | head -1 || echo "leaf")
+  echo -e "${YLW}⚠️ PR #${PR_NUM} created. Notify main session:${RST}" >&2
+  echo -e "${YLW}  maw hey wind:${ORACLE_HOME} \"DONE: PR #${PR_NUM} ready. ${PR_URL}\"${RST}" >&2
+fi
 
 exit 0

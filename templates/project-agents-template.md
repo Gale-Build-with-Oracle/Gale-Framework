@@ -7,12 +7,12 @@
 
 ## <Project-Name>-Specific Rules
 
-<!-- stack, testing surface (Docker-only for YourProject), ports, env quirks — facts only -->
+<!-- stack, testing surface (Docker-only for NWFTH), ports, env quirks — facts only -->
 
 <!-- FLEET-DOCTRINE:fan-out — managed by fleet-sync; thin pointer, never a doctrine copy -->
 
 Fleet doctrine (Fan-Out Strategy, Work Pattern, Merge Gate, hard constraints) is GLOBAL:
-codex loads it from the FLEET-DOCTRINE block in ~/.codex/AGENTS.md (rendered from <framework-repo> codex/instructions.md; codex reads AGENTS.md, not instructions.md).
+codex loads it from the FLEET-DOCTRINE block in ~/.codex/AGENTS.md (rendered from Wind-Framework claude/doctrine/{core,codex}.md; codex reads AGENTS.md, and has no standalone instructions file).
 This file carries ONLY project-specific rules (stack, schema, commands, testing surface).
 Do NOT copy fleet doctrine into this file — project AGENTS.md overrides global, so a stale copy silently wins.
 

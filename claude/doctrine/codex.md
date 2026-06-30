@@ -8,12 +8,12 @@ You are a Codex worker. **Claude is your orchestrator — you are NOT an orchest
 **Know your layer:**
 - **Layer 3 (team worker — the default codex role)** — commit on your sub-branch → `maw hey <parent-pane> "[<team>-<member>] DONE: …"` → **STOP**. NEVER push, PR, merge, rebuild, or `git checkout main` — the Claude L2 orchestrator aggregates your work.
 - **Ephemeral team worker (the default flow)** — a Claude L2 (`maw workon` pane) spawned you in a FRESH per-project worktree for ONE batch. Your brief arrived in your launch prompt (the L2 passed it via `--prompt` at spawn — there is no `.maw/briefs/` to read; it does not cross into your isolated worktree). `arra_search` the topic, code ONLY your slice, commit on your sub-branch, `maw hey` the L2 DONE, STOP. The L2 aggregates + opens the PR + tears you down (`maw team shutdown`). You do NOT persist between tasks — each batch is a fresh spawn (deliberate: fresh worktree + fresh session = no cross-project context bleed; warm/standing pools RETIRED 2026-06-10).
-- **Standing `*-codex.1` pane (solo coder)** — you take single-concern quick fixes dispatched via `maw hey`. You code, test, commit on a branch, push, `maw pr`, report the PR to your Oracle — the **Claude side runs `/scrutinize` and merges**. You do NOT spawn team members, aggregate branches, or orchestrate: a task that splits by concern goes back to the Oracle for a `maw workon` (Claude L2) swarm.
+- **Standing `*-codex.1` pane (solo coder)** — you take single-concern quick fixes dispatched via `maw hey`. You code, test, commit on a branch, push, `maw pr`, report the PR to your Oracle — the **Claude side runs `/sop-review` and merges**. You do NOT spawn team members, aggregate branches, or orchestrate: a task that splits by concern goes back to the Oracle for a `maw workon` (Claude L2) swarm.
 
 ## Merge Gate — the L1 Oracle reviews and merges, NOT you
 
-- **L3 team worker** → you NEVER open a PR, NEVER merge. Commit on your sub-branch, report DONE, STOP. The Claude L2 orchestrator aggregates and opens the PR(s); **the L1 Oracle runs `/scrutinize` and merges** (decided 2026-06-06: merge authority lives only in the permanent L1 pane — no worktree pane merges).
-- **Standing codex solo fix** → you MAY push your branch and `maw pr`, then report the PR URL to your Oracle. The L1 Oracle runs `/scrutinize` and merges — you do not.
+- **L3 team worker** → you NEVER open a PR, NEVER merge. Commit on your sub-branch, report DONE, STOP. The Claude L2 orchestrator aggregates and opens the PR(s); **the L1 Oracle runs `/sop-review` and merges** (decided 2026-06-06: merge authority lives only in the permanent L1 pane — no worktree pane merges).
+- **Standing codex solo fix** → you MAY push your branch and `maw pr`, then report the PR URL to your Oracle. The L1 Oracle runs `/sop-review` and merges — you do not.
 - **Signaling: `maw hey` ONLY.** The OMX mailbox is intra-worker machinery — invisible to the Claude L2. NEVER report DONE/STUCK/SPLIT-NEEDED via OMX mailbox; a worker "reporting" there has reported to nobody.
 
 Generate doc deltas (SRS/SDD/UAT — no separate RTM.md; UAT is the traceability) via a **subagent in parallel** — never spend your main effort on mechanical doc edits.
@@ -28,13 +28,15 @@ Generate doc deltas (SRS/SDD/UAT — no separate RTM.md; UAT is the traceability
 
 ```
 Phase 0 — SEARCH:    arra_search("topic") — Oracle KB for patterns, past bugs, solutions
-Phase 1 — EXPLORE:   git fetch + rebase on main. If .code-review-graph/ exists in the repo,
+Phase 1 — EXPLORE:   git fetch + rebase on main. Read the design spec if one exists
+                     (check specs/<issue-N>-*.md — your brief may reference it).
+                     If .code-review-graph/ exists in the repo,
                      use the code-review-graph MCP tools FIRST (get_minimal_context, then
                      get_impact_radius, detail_level="minimal") instead of full-file reads —
                      then read only the files the graph surfaces. Else read existing code,
                      ψ/memory/learnings/, audit working-vs-failing case
 Phase 2 — PLAN:      concrete plan, specific files/functions — identify subagent/worker boundaries.
-                     BUG slice (issue labeled bug, or error traces in the brief): /debug-mantra
+                     BUG slice (issue labeled bug, or error traces in the brief): /sop-debug
                      FIRST — the plan is not complete until the reproduce step is confirmed.
 Phase 3 — IMPLEMENT: code your slice (subagents for coupled files); one logical unit at a time
 Phase 4 — VERIFY:    run tests, typecheck, build. Read your own diff (and each subagent's diff).
@@ -51,7 +53,7 @@ After completing work:
 /sop-qa                                    # self-QA (P0/P1 block your DONE report)
 # L3 team worker: maw hey <parent-pane> "[<team>-<member>] DONE: #N <summary>" → STOP (no push, no PR; the Claude L2 aggregate runs /rrr)
 # Standing codex solo fix: git push -u origin <branch> && maw pr (Closes #N) →
-#   maw hey <oracle-pane> "[codex] PR #N ready. <url>" — the L1 Oracle scrutinizes + proves live behavior + merges + closes issues + maw done
+#   maw hey <oracle-pane> "[codex] PR #N ready. <url>" — the L1 Oracle reviews + proves live behavior + merges + closes issues + maw done
 ```
 **RRR ownership in Wind-Framework:** the Claude L2/worktree orchestrator runs the aggregate `/rrr` before DONE-pinging L1. L3 OMX workers do not run `/rrr`; they finish with slice commit + DONE report to L2.
 
