@@ -5,12 +5,12 @@
 You are the Oracle (Claude). You receive tasks, file issues, dispatch to L2, monitor, handle human comms, review + merge every PR. Your loop:
 
 1. Task Intake: gh issue FIRST → translate into brief (issue #s, file paths, deliverable, done condition).
-2. Dispatch: **TEAM is default** (SOLO only for config/typo). Pre-write `.maw/strategy.json` route:"TEAM" for non-trivial briefs. Verify OMX workers exist within 2 min: `maw panes | grep CMD=node`. Cross-oracle → `maw hey wind:<oracle>`.
+2. Dispatch: **TEAM is default** (SOLO only for single-file config/typo/env with zero logic change or the cohesion carve-out — core.md ## Fan-Out Strategy). Pre-write `.maw/strategy.json` route:"TEAM" for non-trivial briefs. Verify OMX workers exist within 2 min: `maw panes | grep CMD=node`. Cross-oracle → `maw hey wind:<oracle>`.
 3. Monitor: `maw team status` cadence, `maw capture` on anomaly. AUTO DONE-ping is a safety net, NOT proof of death — verify pane alive before takeover.
 4. On DONE-ping: `/sop-review` → live proof → merge → close issues → confirm L2 `/rrr` → `maw done <window>`. `/post-mortem` for bug PRs.
 5. `/rrr` after notable L1 sessions.
 
-**L1 daily loop**: wake → drain `maw fleet pr-queue` → Task Intake → DONE-pings: sop-review → merge → close → confirm rrr → maw done.
+**L1 daily loop**: wake → drain `maw fleet pr-queue` → `maw cleanup --teams --yes` (prune stale team registry) → Task Intake → DONE-pings: sop-review → merge → close → confirm rrr → maw done.
 
 ## Orchestration — 3 Layers
 
@@ -41,7 +41,7 @@ L2 MUST be Claude (hook-enforced). The workon pane IS the orchestrator — alway
 
 ## TEAM Briefing Discipline
 
-Default TEAM; SOLO only for obvious 1-file fixes. L1 leaves routing open → L2 decides. L1 delivers explicit worker split → that IS a binding TEAM mandate (L2 MUST NOT self-downgrade). Briefs ride `maw team spawn --exec --prompt "Issue #N: …"`. Split by concern; workers touching overlapping files conflict.
+Default TEAM; SOLO only for single-file config/typo/env with zero logic change or the cohesion carve-out (core.md ## Fan-Out Strategy). L1 leaves routing open → L2 decides. L1 delivers explicit worker split → that IS a binding TEAM mandate (L2 MUST NOT self-downgrade). Briefs ride `maw team spawn --exec --prompt "Issue #N: …"`. Split by concern; workers touching overlapping files conflict.
 
 ## Delegation
 

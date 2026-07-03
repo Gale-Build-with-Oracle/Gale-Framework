@@ -79,7 +79,7 @@ After merge of containerized code: `docker compose build --no-cache && docker co
 
 ## maw Command-Workflow
 
-`maw` is the only interface to tmux/agents — raw `tmux`/`ps`/`kill` hook-blocked. Full reference: `/sop-maw`.
+`maw` is the only interface to tmux/agents — raw `tmux` and `pkill`/`killall` of agent processes are hook-blocked; `ps`/bare `kill` are text-binding (use `maw panes` / `maw kill` / `maw cleanup --zombie-agents`). Full reference: `/sop-maw`.
 
 **Spawn**: `maw workon <repo> <slug>` (THE DEFAULT — task-scoped worktree, always Claude, auto project-scope injection). `maw team spawn <team> <role> --wt --engine omx --exec --prompt "Issue #N: …"` (ephemeral OMX worker). `maw wake <repo> --wt <slot>` (persistent worktree slot, opt-in).
 **Communicate**: `maw hey <target> "msg"` (signed inject). `maw capture <target>` (read pane output).
@@ -87,16 +87,16 @@ After merge of containerized code: `docker compose build --no-cache && docker co
 
 ## Fan-Out Strategy — TEAM is the DEFAULT (MANDATORY)
 
-**L2 DOES NOT CODE in product repos.** L2 researches, plans, spawns OMX workers, monitors, aggregates. Agent() subagents are NEVER a substitute for OMX workers (hook-blocked in TEAM context). **If L2 edits a source file, it has violated the architecture.**
+**L2 DOES NOT CODE on TEAM-routed work.** On a TEAM route L2 researches, plans, spawns OMX workers, monitors, aggregates. Agent() subagents are NEVER a substitute for OMX workers (hook-blocked in TEAM context). **If L2 edits a source file on a TEAM route, it has violated the architecture.** L2 codes directly ONLY on a recorded SOLO route.
 
-**Routing**: single-file config/typo/env with zero logic change → SOLO. Everything else → TEAM.
+**Routing**: single-file config/typo/env with zero logic change → SOLO. **Cohesion carve-out (2026-07-02):** cohesive work — ONE concern in 1-2 tightly-coupled files (e.g. a single-component UI change) — MAY route SOLO; L2 announces `STRATEGY: SOLO` + a one-line justification and records it (`.maw/strategy.json` `{"route":"SOLO","justification":"…"}`; `.maw/solo-justified` when overriding a pre-written TEAM). Quality comes from the spec + L1 review, not parallelism — reserve TEAM for SEPARABLE concerns. Everything else → TEAM. An explicit L1 worker split remains a binding TEAM mandate (L2 MUST NOT self-downgrade).
 
 | Route | When | How |
 |---|---|---|
-| **SOLO** | Config/typo/env only, zero logic change | `maw workon <repo> issue-N` → edit directly → PR → auto DONE-ping → L1 merges → `maw done` |
-| **TEAM** | **DEFAULT** — any logic/feature/bug/test/new-file | `maw workon <repo> <slug>` → L2 spawns OMX workers (`maw team spawn --wt --engine omx --exec --prompt "Issue #N: …"`, max 4) → workers commit sub-branches → L2 aggregates → ONE PR → `maw team shutdown` → auto DONE-ping → L1 merges → `maw done` |
+| **SOLO** | Config/typo/env zero-logic; OR cohesive single-concern work in 1-2 tightly-coupled files (recorded justification + spec) | `maw workon <repo> issue-N` → edit directly → PR → auto DONE-ping → L1 merges → `maw done` |
+| **TEAM** | **DEFAULT** — any logic/feature/bug/test/new-file | `maw workon <repo> <slug>` → L2 spawns OMX workers (`maw team create <slug>` → `maw team spawn <slug> <role> --wt --engine omx --exec --prompt "Issue #N: …"`, max 4) → workers commit sub-branches → L2 aggregates → ONE PR → `maw team shutdown` → auto DONE-ping → L1 merges → `maw done` |
 
-**Design spec (TEAM only):** L2 writes `specs/<N>-<slug>.md` (via `/sop-design`) BEFORE spawning workers. Workers receive the spec path in their `--prompt` brief. Skip for SOLO. The spec is committed to the feature branch and feeds into `/doc-sync` at stabilization.
+**Design spec:** L2 writes `specs/<N>-<slug>.md` (via `/sop-design`) BEFORE spawning workers or coding. TEAM: workers receive the spec path in their `--prompt` brief. Cohesion-SOLO: the L2 still writes the spec (quality = spec + L1 review, not parallelism). Skip only for config/typo/env SOLO. The spec is committed to the feature branch and feeds into `/doc-sync` at stabilization.
 
 **Strategy record (hook-enforced)**: L2 writes `.maw/strategy.json`. L1 MUST pre-write `route:"TEAM"` for non-trivial briefs. Pre-guard blocks Edit/Write/Agent-for-coding when TEAM + no workers. Override: `.maw/solo-justified`.
 
@@ -121,12 +121,12 @@ Default to prose. Bullets for genuinely multifaceted content only. State uncerta
 You are the Oracle (Claude). You receive tasks, file issues, dispatch to L2, monitor, handle human comms, review + merge every PR. Your loop:
 
 1. Task Intake: gh issue FIRST → translate into brief (issue #s, file paths, deliverable, done condition).
-2. Dispatch: **TEAM is default** (SOLO only for config/typo). Pre-write `.maw/strategy.json` route:"TEAM" for non-trivial briefs. Verify OMX workers exist within 2 min: `maw panes | grep CMD=node`. Cross-oracle → `maw hey wind:<oracle>`.
+2. Dispatch: **TEAM is default** (SOLO only for single-file config/typo/env with zero logic change or the cohesion carve-out — core.md ## Fan-Out Strategy). Pre-write `.maw/strategy.json` route:"TEAM" for non-trivial briefs. Verify OMX workers exist within 2 min: `maw panes | grep CMD=node`. Cross-oracle → `maw hey wind:<oracle>`.
 3. Monitor: `maw team status` cadence, `maw capture` on anomaly. AUTO DONE-ping is a safety net, NOT proof of death — verify pane alive before takeover.
 4. On DONE-ping: `/sop-review` → live proof → merge → close issues → confirm L2 `/rrr` → `maw done <window>`. `/post-mortem` for bug PRs.
 5. `/rrr` after notable L1 sessions.
 
-**L1 daily loop**: wake → drain `maw fleet pr-queue` → Task Intake → DONE-pings: sop-review → merge → close → confirm rrr → maw done.
+**L1 daily loop**: wake → drain `maw fleet pr-queue` → `maw cleanup --teams --yes` (prune stale team registry) → Task Intake → DONE-pings: sop-review → merge → close → confirm rrr → maw done.
 
 ## Orchestration — 3 Layers
 
@@ -157,7 +157,7 @@ L2 MUST be Claude (hook-enforced). The workon pane IS the orchestrator — alway
 
 ## TEAM Briefing Discipline
 
-Default TEAM; SOLO only for obvious 1-file fixes. L1 leaves routing open → L2 decides. L1 delivers explicit worker split → that IS a binding TEAM mandate (L2 MUST NOT self-downgrade). Briefs ride `maw team spawn --exec --prompt "Issue #N: …"`. Split by concern; workers touching overlapping files conflict.
+Default TEAM; SOLO only for single-file config/typo/env with zero logic change or the cohesion carve-out (core.md ## Fan-Out Strategy). L1 leaves routing open → L2 decides. L1 delivers explicit worker split → that IS a binding TEAM mandate (L2 MUST NOT self-downgrade). Briefs ride `maw team spawn --exec --prompt "Issue #N: …"`. Split by concern; workers touching overlapping files conflict.
 
 ## Delegation
 
