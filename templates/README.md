@@ -1,4 +1,4 @@
-# your-framework Templates
+# Gale-Framework Templates
 
 ## Active Templates
 

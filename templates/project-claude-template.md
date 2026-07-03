@@ -13,11 +13,11 @@
 ## Database
 
 <!-- DB name (dev vs prod), key tables/schema pointers, MCP tool to use
-     (e.g. example-sql; dev DEVDB; PRODDB READ-ONLY) -->
+     (e.g. your-db; dev DEV_DB; PROD_DB READ-ONLY) -->
 
 ## Development
 
-<!-- build/run/test commands; Acme testing surface is Docker only -->
+<!-- build/run/test commands; e.g. the testing surface may be Docker only -->
 
 ## Testing
 
@@ -25,7 +25,7 @@
 
 ## Theme / UI
 
-<!-- brand skill to invoke (/nwf-theme, /sl-theme, /doctor-theme) if frontend -->
+<!-- brand skill to invoke (your project's theme skill) if frontend -->
 
 ## Project-Specific Rules
 

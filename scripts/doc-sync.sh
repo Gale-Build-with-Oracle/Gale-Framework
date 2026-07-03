@@ -38,7 +38,7 @@ ROOT=$(git rev-parse --show-toplevel)
 cd "$ROOT"
 
 if [ ! -d docs ]; then
-  echo "P1: docs/ missing — run your-framework/scripts/init-project-docs.sh first" >&2
+  echo "P1: docs/ missing — run Gale-Framework/scripts/init-project-docs.sh first" >&2
   exit 1
 fi
 

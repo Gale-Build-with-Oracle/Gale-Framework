@@ -28,7 +28,7 @@ description: "<one-line goal>"
 goal: "Close issues #N, #N, #N"
 # project: routes WORKER worktrees to the product repo's agents/ dir
 # while the orchestrator stays in its own worktree.
-project: your-org/<repo>
+project: <your-github-user>/<repo>
 
 members:
   # L2 orchestrator pane — usually ALREADY EXISTS (the `maw workon` pane that

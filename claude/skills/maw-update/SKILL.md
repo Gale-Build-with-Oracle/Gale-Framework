@@ -7,7 +7,7 @@ description: 'Sync our forks of the 6 active Soul-Brews-Studio repos (maw-js, ar
 
 > "Fleet-wide upstream resync. Upstream first, our patches layer on top."
 
-Wind's stance (2026-04-19): when we fork from `Soul-Brews-Studio/*`, we track upstream as the source of truth. On conflicts we **take upstream** first, then re-apply our specific changes on top as new commits.
+the human's stance (2026-04-19): when we fork from `Soul-Brews-Studio/*`, we track upstream as the source of truth. On conflicts we **take upstream** first, then re-apply our specific changes on top as new commits.
 
 ## Usage
 
@@ -21,7 +21,7 @@ Wind's stance (2026-04-19): when we fork from `Soul-Brews-Studio/*`, we track up
 
 ## Scope — 4 tracked upstreams
 
-| Local (`your-org/`) | Upstream (`Soul-Brews-Studio/`) | Purpose |
+| Local (`<your-github-user>/`) | Upstream (`Soul-Brews-Studio/`) | Purpose |
 |---|---|---|
 | `maw-js` | `maw-js` | CLI backend + 64 bundled plugins |
 | `arra-oracle-v3` | `arra-oracle-v3` | Oracle MCP + knowledge layer |
@@ -35,7 +35,7 @@ Wind's stance (2026-04-19): when we fork from `Soul-Brews-Studio/*`, we track up
 - `maw-park`, `maw-rename`, `maw-bg`, `maw-shellenv`, `maw-cross-team-queue` — plugins absorbed into maw-js
 - `arra-mcp-installation-guide-oracle`, `indexer-pro`, `maw-studio-oracle` — reference-only, not runtime
 
-**Clone-not-fork pattern**: we do NOT use GitHub's "Fork" button. Instead: clone upstream → create fresh private repo under `your-org/` → set `origin=your-org/X`, `upstream=Soul-Brews-Studio/X` (read-only). See §"First-time setup" below.
+**Clone-not-fork pattern**: we do NOT use GitHub's "Fork" button. Instead: clone upstream → create fresh private repo under `<your-github-user>/` → set `origin=<your-github-user>/X`, `upstream=Soul-Brews-Studio/X` (read-only). See §"First-time setup" below.
 
 ## Step 0: Discover Repos
 
@@ -56,7 +56,7 @@ MISSING=()
 for entry in "${ALLOWLIST[@]}"; do
   local_name="${entry%%|*}"
   upstream_name="${entry##*|}"
-  repo="$HOME/ghq/github.com/your-org/$local_name"
+  repo="$HOME/ghq/github.com/<your-github-user>/$local_name"
   # submodule-aware: a submodule's .git is a FILE (gitdir pointer), not a dir
   if ! git -C "$repo" rev-parse --git-dir >/dev/null 2>&1; then
     MISSING+=("$local_name (upstream: $upstream_name)")
@@ -83,7 +83,7 @@ echo "== Guardrail audit =="
 FAIL=0
 for entry in "${ALLOWLIST[@]}"; do
   local_name="${entry%%|*}"
-  repo="$HOME/ghq/github.com/your-org/$local_name"
+  repo="$HOME/ghq/github.com/<your-github-user>/$local_name"
   git -C "$repo" rev-parse --git-dir >/dev/null 2>&1 || continue  # submodule-aware
 
   up_fetch=$(git -C "$repo" remote get-url upstream 2>/dev/null)
@@ -110,7 +110,7 @@ echo "  ✓ all upstream remotes are fetch-only; default push = origin on all"
 
 ```bash
 for name in "${REPOS[@]}"; do
-  REPO_PATH="$HOME/ghq/github.com/your-org/$name"
+  REPO_PATH="$HOME/ghq/github.com/<your-github-user>/$name"
   git -C "$REPO_PATH" fetch upstream --quiet 2>&1 | tail -1
 
   # maw-js tracks upstream/alpha (active dev branch); others track upstream/main
@@ -165,7 +165,7 @@ if [ "$name" = "maw-js" ]; then
     echo "  ⚠ maw-js: $BEHIND_ALPHA commits behind upstream/alpha"
     echo "  → Use worktree for merge: maw workon maw-js upstream-sync"
     echo "  → In worktree: git merge upstream/alpha --no-ff"
-    echo "  → FORK POLICY (Wind 2026-06-13): NO upstream PRs; our fixes live in the"
+    echo "  → FORK POLICY (the human 2026-06-13): NO upstream PRs; our fixes live in the"
     echo "    plugin layer (~/.maw/plugins → vendor/mpr-plugins); core divergences ONLY"
     echo "    per FORK_PATCHES.md. Re-apply any dropped TRUE-CORE patch after the merge."
     echo "  → Run: bun run test:all  (includes test/fork-divergence.test.ts — fails LOUDLY"
@@ -257,7 +257,7 @@ if [ "$name" = "maw-js" ] && [ -f FORK_PATCHES.md ]; then
 
   # bun link integrity (environment, not a patch)
   LINKED_PATH=$(readlink -f "$(which maw)" 2>/dev/null)
-  [[ "$LINKED_PATH" == *"your-org/maw-js"* ]] || { echo "    ⚠ BROKEN: global maw not linked to our repo ($LINKED_PATH)"; PATCH_FAIL=1; }
+  [[ "$LINKED_PATH" == *"<your-github-user>/maw-js"* ]] || { echo "    ⚠ BROKEN: global maw not linked to our repo ($LINKED_PATH)"; PATCH_FAIL=1; }
 
   if [ "$PATCH_FAIL" -gt 0 ]; then
     echo "    → STOP: re-apply missing patches from FORK_PATCHES.md (TRUE-CORE set) before declaring the sync done"
@@ -295,15 +295,15 @@ curl -s http://localhost:47778/api/health | grep -oE '"server":"[^"]+"'
 
 ```bash
 UPSTREAM_NAME="<repo-name>"
-LOCAL_PATH="$HOME/ghq/github.com/your-org/$UPSTREAM_NAME"
+LOCAL_PATH="$HOME/ghq/github.com/<your-github-user>/$UPSTREAM_NAME"
 
 git clone "https://github.com/Soul-Brews-Studio/${UPSTREAM_NAME}.git" "$LOCAL_PATH"
 cd "$LOCAL_PATH"
 git remote rename origin upstream
 git remote set-url --push upstream no_push_readonly_upstream
-gh repo create "your-org/$UPSTREAM_NAME" --private \
+gh repo create "<your-github-user>/$UPSTREAM_NAME" --private \
   --description "Fork of Soul-Brews-Studio/$UPSTREAM_NAME (clone-not-fork)"
-git remote add origin "https://github.com/your-org/${UPSTREAM_NAME}.git"
+git remote add origin "https://github.com/<your-github-user>/${UPSTREAM_NAME}.git"
 git push -u origin "$(git symbolic-ref --short HEAD)"
 git remote set-head upstream --auto
 ```

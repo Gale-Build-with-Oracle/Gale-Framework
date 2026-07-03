@@ -133,6 +133,6 @@ Borrowing over cloning | `Cow<'a, T>` | New Type Pattern | Enums for state machi
 After backend changes are committed and PR is created:
 1. Run `/sop-qa --security` (self-QA with security focus)
 2. Fix until PASS → `maw pr` → `gh pr comment` (QA report)
-3. Report to Gale: `maw hey wind:gale "[<my-name>] DONE: PR #N. Self-QA passed."`
+3. Report to Gale: `maw hey <host>:gale "[<my-name>] DONE: PR #N. Self-QA passed."`
 
 **Do NOT sit idle after pushing.** Full QA flow: `/sop-qa`.

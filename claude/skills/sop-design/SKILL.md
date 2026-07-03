@@ -48,7 +48,7 @@ Where will integration tests cross the codebase? Identify the fewest seams possi
 - [ ] Seam 1: [e.g., API endpoint POST /users — tests hit this boundary]
 - [ ] Seam 2: [e.g., DB query getAvailableLots — tests verify this returns correct data]
 
-If only one seam is needed, that's ideal. Confirm with Wind before writing design decisions.
+If only one seam is needed, that's ideal. Confirm with the human before writing design decisions.
 
 ## Design Decisions
 Key choices with rationale (these flow into RISK.md Decisions/DAR at doc-sync):
@@ -77,7 +77,7 @@ Testable conditions — reframed from vague requirements:
 
 ## Boundaries
 - **Always:** [non-negotiable constraints]
-- **Ask first:** [decisions that need Wind's input]
+- **Ask first:** [decisions that need the human's input]
 - **Never:** [explicit exclusions]
 
 ## Out of Scope
@@ -91,7 +91,7 @@ What this does NOT change (prevents scope creep).
 3. **Skip sections that don't apply.** Backend-only? Skip "UI Flow." No DB? Skip "Data Model." As short as possible.
 4. **Commit to feature branch.** The spec rides the PR into main. Permanent (Nothing is Deleted).
 5. **One spec per issue.** Each GitHub Issue gets ONE spec file. Never spec1/spec2/spec3.
-6. **CRs create new specs.** When Wind changes requirements → new CR issue (#45) → new spec (`specs/45-cr-slug.md`) with `Supersedes: SPEC-42 §Decision 1`. Old spec stays untouched.
+6. **CRs create new specs.** When the human changes requirements → new CR issue (#45) → new spec (`specs/45-cr-slug.md`) with `Supersedes: SPEC-42 §Decision 1`. Old spec stays untouched.
 7. **PR references the spec.** PR description carries `SPEC: specs/<N>-<slug>.md` alongside `REQ: REQ-<PROJECT>-NNN`.
 10. **Create CONTEXT.md if first spec.** When creating a project's first spec (no `specs/` directory yet), also create a `CONTEXT.md` at the project root — a pure domain glossary with terms from this feature. Format: `**Term**: definition. _Avoid_: synonym1, synonym2`. No implementation details — just shared vocabulary. See `matt/domain-modeling` for the full methodology.
 

@@ -4,13 +4,13 @@ description: 'New project onboarding checklist — repo creation, tier assignmen
 ---
 # /sop-new-project — New Project Onboarding
 
-## Step 1: Ask Wind for Classification
+## Step 1: Ask the human for Classification
 
-Before anything else, confirm these with Wind:
+Before anything else, confirm these with the human:
 
 ```
-1. Tier?  → Acme (strict) / Studio (preferred) / Oracle-tooling (unrestricted)
-2. Owner? → Leaf (Acme) / Bamboo (SL) / Sky (trading) / other
+1. Tier?  → Product (strict) / Internal (preferred) / Oracle-tooling (unrestricted)
+2. Owner? → which oracle owns this domain (discover the roster via `maw ls`)
 3. Stack? → Rust/Go/Node/Python + frontend framework
 4. Port?  → which port does the app run on?
 5. New or existing repo?
@@ -25,7 +25,7 @@ Then follow the tier-specific path below. **Do NOT mix paths.**
 Before writing any code, verify the project addresses all 7 mandatory concerns. Load the full reference:
 
 ```bash
-cat ~/ghq/github.com/your-org/gale-oracle/ψ/memory/reference-production-structure-checklist.md
+cat ~/ghq/github.com/<your-github-user>/gale-oracle/ψ/memory/reference-production-structure-checklist.md
 ```
 
 **Quick checklist** (framework folder names vary — the CONCERNS are universal):
@@ -46,30 +46,30 @@ For AI/RAG projects, add: retrieval components, agent layer, prompt management, 
 
 ---
 
-## Path A: Acme Project (Strict Tier)
+## Path A: Product Project (Strict Tier)
 
-**Owner**: Leaf | **Worktree**: mandatory | **QA**: `/sop-qa` self-QA | **Docs**: mandatory | **Discord**: 2 channels
+**Owner**: the product-domain oracle | **Worktree**: mandatory | **QA**: `/sop-qa` self-QA | **Docs**: mandatory | **Discord**: 2 channels
 
 ### A1. GitHub Repo
 
 **New repo**:
 ```bash
-gh repo create your-org/<repo-name> --private --description "<description>"
-ghq get your-org/<repo-name>
-cd ~/ghq/github.com/your-org/<repo-name>
+gh repo create <your-github-user>/<repo-name> --private --description "<description>"
+ghq get <your-github-user>/<repo-name>
+cd ~/ghq/github.com/<your-github-user>/<repo-name>
 git checkout -b main 2>/dev/null || true
 ```
 
 **Existing repo**:
 ```bash
 ghq get <repo-url>
-cd ~/ghq/github.com/your-org/<repo>
+cd ~/ghq/github.com/<your-github-user>/<repo>
 ```
 
 ### A2. Branch Protection
 
 ```bash
-gh api repos/your-org/<repo>/branches/main/protection -X PUT \
+gh api repos/<your-github-user>/<repo>/branches/main/protection -X PUT \
   -f "required_pull_request_reviews[required_approving_review_count]=0" \
   -F "enforce_admins=false" \
   -F "required_pull_request_reviews[dismiss_stale_reviews]=false"
@@ -95,7 +95,7 @@ No doctrine — the global `~/.claude/CLAUDE.md` already loads in every session.
 ### A5. Docs (the 7-doc standard — see `/sop-cmmi`)
 
 ```bash
-bash ~/ghq/github.com/your-org/gale-oracle/scripts/init-project-docs.sh --project-name <project>
+bash ~/ghq/github.com/<your-github-user>/gale-oracle/scripts/init-project-docs.sh --project-name <project>
 # Creates the 7 docs: PROJECT_PLAN, SRS, SDD, CR, RISK, UXUI, UAT
 ```
 Same 7 docs for every project — no tiers. Docs are written **after** the code (swarm Haiku), never before.
@@ -140,28 +140,28 @@ SDLC tracking runs through Linear (GitHub Issues sync — canonical source is `g
 ```bash
 # 1. Add this repo to the Linear GitHub-integration repo list
 #    (Linear Settings → Integrations → GitHub → Repositories — route to the
-#    Wind team; ONE Linear team for everything, slice by repo in views)
+#    the human team; ONE Linear team for everything, slice by repo in views)
 
 # 2. Record the mapping
-# In ~/ghq/github.com/your-org/gale-oracle/ψ/memory/linear-project-map.json:
-# set the repo's entry to { "team": "Wind", "synced": true }
+# In ~/ghq/github.com/<your-github-user>/gale-oracle/ψ/memory/linear-project-map.json:
+# set the repo's entry to { "team": "the human", "synced": true }
 ```
 
 ### A10. Deploy Integration
 
-Add to `~/ghq/github.com/your-org/gale-oracle/scripts/deploy-project.sh` PROJECT_MAP (or `deploy-webhook.ts` if webhook is used):
+Add to `~/ghq/github.com/<your-github-user>/gale-oracle/scripts/deploy-project.sh` PROJECT_MAP (or `deploy-webhook.ts` if webhook is used):
 
 ```typescript
-"your-org/<repo>": {
-  path: "$HOME/ghq/github.com/your-org/<repo>",
+"<your-github-user>/<repo>": {
+  path: "$HOME/ghq/github.com/<your-github-user>/<repo>",
   name: "<repo>",
 },
 ```
 
 ### A11. Fleet Integration
 
-1. **Project registry**: add entry to `your-framework/fleet/projects.yaml` (name, lane, guard, family, status)
-2. **Regenerate guards**: `bash your-framework/scripts/generate-guard-patterns.sh` (or fleet-sync does it)
+1. **Project registry**: add entry to `Gale-Framework/fleet/projects.yaml` (name, lane, guard, family, status)
+2. **Regenerate guards**: `bash Gale-Framework/scripts/generate-guard-patterns.sh` (or fleet-sync does it)
 3. **Fleet config**: add to `~/.config/maw/fleet/<N>-<oracle>.json`
 4. **Verify**: `is_product_repo <name>` returns 0 (sourced from `_generated-patterns.sh`)
 5. **Owner CLAUDE.md**: add to project registry table if maintained
@@ -169,14 +169,14 @@ Add to `~/ghq/github.com/your-org/gale-oracle/scripts/deploy-project.sh` PROJECT
 ### A12. Notify
 
 ```bash
-maw hey wind:leaf "New Acme project <name> onboarded. Port: <PORT>. Stack: <stack>. Tier: strict. Ready for maw workon."
-maw hey wind:gale "New Acme project <name> added to fleet. Owner: Leaf. Tier: strict."
+maw hey <host>:<owner> "New product project <name> onboarded. Port: <PORT>. Stack: <stack>. Tier: strict. Ready for maw workon."
+maw hey <host>:<head-oracle> "New product project <name> added to fleet. Owner: <owner>. Tier: strict."
 ```
 
 ### A13. Smoke Test
 
 ```bash
-bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.com/your-org/<repo> <PORT>
+bash ~/ghq/github.com/<your-github-user>/gale-oracle/scripts/smoke-test.sh ~/ghq/github.com/<your-github-user>/<repo> <PORT>
 # Must pass all checks before declaring onboarding complete
 ```
 
@@ -186,7 +186,7 @@ bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.co
 [ ] GitHub repo created/cloned (ghq)
 [ ] Branch protection on main
 [ ] AGENTS.md — Rule Zero + Karpathy + Docker + localhost + MSSQL
-[ ] CLAUDE.md — stack + dev + testing + /nwf-theme + worktree pipeline trigger
+[ ] CLAUDE.md — stack + dev + testing + theme skill + worktree pipeline trigger
 [ ] docs/ — 7-doc standard bootstrapped (PROJECT_PLAN/SRS/SDD/CR/RISK/UXUI/UAT)
 [ ] ψ/ — memory structure initialized
 [ ] Docker — docker-compose.yml with resource limits
@@ -197,15 +197,15 @@ bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.co
 [ ] Fleet config — <oracle>.json updated
 [ ] Guards — is_product_repo returns 0 for new name
 [ ] Owner CLAUDE.md — project in registry table
-[ ] Notifications — Leaf + Gale notified
+[ ] Notifications — owner + head-oracle notified
 [ ] Smoke test — all checks pass
 ```
 
 ---
 
-## Path B: Studio Project (Preferred Tier)
+## Path B: Internal Project (Preferred Tier)
 
-**Owner**: Bamboo | **Worktree**: preferred | **QA**: `/sop-qa` self-QA | **Docs**: optional | **Discord**: 1 channel
+**Owner**: the internal-domain oracle | **Worktree**: preferred | **QA**: `/sop-qa` self-QA | **Docs**: optional | **Discord**: 1 channel
 
 ### B1. GitHub Repo
 
@@ -232,10 +232,10 @@ Same as A3 but without MSSQL references. Use generic DB rules.
 http://localhost:<PORT>
 
 ## Theme
-invoke /sl-theme before any UI work
+invoke your project's theme skill before any UI work
 
 ## Docs
-invoke /sl-doc for documents
+invoke your project's document skill for documents
 
 ## Worktree Pipeline — DO NOT STOP AFTER COMMITTING
 
@@ -243,7 +243,7 @@ Your task is NOT done after `git commit`. You MUST continue through ALL steps be
 
 1. Run `/sop-qa` — fix all findings until PASS
 2. Push branch and create PR: `git push -u origin HEAD && gh pr create`
-3. Notify main session: `maw hey wind:<oracle> "[wt] PR #N ready. <url>"`
+3. Notify main session: `maw hey <host>:<oracle> "[wt] PR #N ready. <url>"`
 4. WAIT here — keep pane alive for `maw done` /rrr
 
 If `maw hey` fails, retry once, then print the PR URL and say "NOTIFICATION FAILED — main session needs manual alert".
@@ -275,20 +275,20 @@ Same as A10 (if Docker-based).
 ### B8. Fleet Integration
 
 1. **Tier table**: add to gale-oracle shared-claude.md preferred tier list
-2. **Fleet config**: add to `~/.config/maw/fleet/03-bamboo.json`
-3. **sop-enforce.sh**: add to Studio case pattern
+2. **Fleet config**: add to `~/.config/maw/fleet/<owner>.json`
+3. **sop-enforce.sh**: add to the internal-tier case pattern
 
 ### B9. Notify
 
 ```bash
-maw hey wind:bamboo "New SL project <name> onboarded. Port: <PORT>. Ready."
-maw hey wind:gale "New SL project <name> added. Owner: Bamboo. Tier: preferred."
+maw hey <host>:<owner> "New internal project <name> onboarded. Port: <PORT>. Ready."
+maw hey <host>:<head-oracle> "New internal project <name> added. Owner: <owner>. Tier: preferred."
 ```
 
 ### B10. Smoke Test
 
 ```bash
-bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.com/your-org/<repo> <PORT>
+bash ~/ghq/github.com/<your-github-user>/gale-oracle/scripts/smoke-test.sh ~/ghq/github.com/<your-github-user>/<repo> <PORT>
 ```
 
 ### B-Checklist
@@ -296,15 +296,15 @@ bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.co
 ```
 [ ] GitHub repo created/cloned
 [ ] AGENTS.md — Rule Zero + Karpathy + localhost
-[ ] CLAUDE.md — stack + /sl-theme + /sl-doc
+[ ] CLAUDE.md — stack + theme skill + document skill
 [ ] ψ/ — memory structure initialized
 [ ] CI/CD — GitHub Actions configured
 [ ] Discord — 1 channel, channel map updated
 [ ] Deploy — added (if Docker)
 [ ] Tier table — added to preferred list
-[ ] Fleet config — bamboo fleet config updated
+[ ] Fleet config — owner's fleet config updated
 [ ] sop-enforce.sh — pattern matches
-[ ] Notifications — Bamboo + Gale
+[ ] Notifications — owner + head-oracle
 [ ] Smoke test — passes
 ```
 
@@ -318,7 +318,7 @@ bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.co
 
 ```bash
 ghq get <repo-url>
-cd ~/ghq/github.com/your-org/<repo>
+cd ~/ghq/github.com/<your-github-user>/<repo>
 # Create minimal CLAUDE.md with stack info
 # AGENTS.md optional (recommended if Codex workers will touch it)
 ```
@@ -342,10 +342,10 @@ cd ~/ghq/github.com/your-org/<repo>
 
 | Don't | Do instead |
 |-------|-----------|
-| Skip classification — "I'll figure out the tier later" | Ask Wind first. Tier determines everything. |
+| Skip classification — "I'll figure out the tier later" | Ask the human first. Tier determines everything. |
 | Use `localhost` anywhere | Use `localhost` |
 | Copy AGENTS.md without customizing port/DB | Use the template, fill in project-specific values |
-| Skip Discord setup for Acme | Every Acme project gets 2 channels — QA results go there |
+| Skip Discord setup for product projects | Every product project gets 2 channels — QA results go there |
 | Skip `/sop-qa` setup | Dev oracles need QA checklist configured for new project |
 | Create project and forget sop-enforce.sh | If the hook doesn't recognize it, SOPs won't fire |
 | Skip ψ/ initialization | Oracle memory won't capture learnings from this project |

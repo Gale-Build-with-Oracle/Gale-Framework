@@ -85,7 +85,7 @@ When a candidate root cause surfaces, scrutinize it BEFORE testing.
 - Does it actually explain the symptom end-to-end? Walk it through.
 - What is the simplest **disproof**? Run that FIRST.
 - **Generate 3-5 ranked hypotheses**, not one. Single-hypothesis thinking anchors on the first plausible idea.
-- Show the ranked list to Wind before testing — cheap checkpoint, often reranks instantly.
+- Show the ranked list to the human before testing — cheap checkpoint, often reranks instantly.
 
 If the hypothesis survives disproof, it's real. If it dies, you saved yourself from chasing a phantom.
 

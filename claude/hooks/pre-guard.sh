@@ -100,7 +100,7 @@ if [ "$TOOL" = "Bash" ]; then
     exit 2
   fi
 
-  # rm -rf — ALLOWED for cleanup (Wind 2026-06-05: single-source-of-truth hygiene needs it),
+  # rm -rf — ALLOWED for cleanup (the human 2026-06-05: single-source-of-truth hygiene needs it),
   # but BLOCK catastrophic targets where the delete is irreversible disaster.
   # Detect rm with both recursive+force (any short-flag order, or long flags).
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*rm[[:space:]]+(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r|-r[[:space:]]+-f|-f[[:space:]]+-r|--recursive[[:space:]].*--force|--force[[:space:]].*--recursive)'; then
@@ -138,7 +138,7 @@ if [ "$TOOL" = "Bash" ]; then
     exit 2
   fi
 
-  # Block direct push to main in Acme repos
+  # Block direct push to main in product repos
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*git[[:space:]]+push[[:space:]]+(origin[[:space:]]+)?main([[:space:]]|$)'; then
     EFFECTIVE_DIR=""
     if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*cd[[:space:]]+'; then
@@ -240,7 +240,7 @@ if [ "$TOOL" = "Bash" ]; then
     fi
   fi
 
-  # Acme worktree enforcement — block direct commits on main
+  # Product-repo worktree enforcement — block direct commits on main
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*git[[:space:]]+commit'; then
     REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
     REPO_NAME=$(basename "$REPO_ROOT" 2>/dev/null || echo "")
@@ -252,7 +252,7 @@ if [ "$TOOL" = "Bash" ]; then
       fi
     fi
     # Fleet-sync reminder — doctrine fragment edits must propagate fleet-wide
-    if [ "$REPO_NAME" = "gale-oracle" ] || [ "$REPO_NAME" = "your-framework" ]; then
+    if [ "$REPO_NAME" = "gale-oracle" ] || [ "$REPO_NAME" = "Gale-Framework" ]; then
       STAGED=$(git diff --cached --name-only 2>/dev/null || echo "")
       if echo "$STAGED" | grep -qE '(doctrine/(core|claude|codex)\.md|oracle-build\.sh|oracle-.*-(claude|agents)\.md)'; then
         echo -e "${YLW}⚡ DOCTRINE FILES STAGED: run \`gale-oracle/scripts/fleet-sync.sh\` after this commit to propagate to all oracles.${RST}" >&2
@@ -305,9 +305,9 @@ if [ "$TOOL" = "Bash" ]; then
   fi
 
   # Production DB guard for SQL CLI tools
-  if echo "$CMD" | grep -iqE "(sqlcmd|mssql-cli|osql).*PRODDB"; then
+  if echo "$CMD" | grep -iqE "(sqlcmd|mssql-cli|osql).*PROD_DB"; then
     if echo "$CMD" | grep -iqE '(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE)([^[:alnum:]_]|$)'; then
-      echo -e "${RED}BLOCKED: SQL CLI write targeting PRODDB (production). Read-only.${RST}" >&2
+      echo -e "${RED}BLOCKED: SQL CLI write targeting PROD_DB (production). Read-only.${RST}" >&2
       exit 2
     fi
   fi
@@ -441,7 +441,8 @@ case "$TOOL" in
           "$PROJECT_ROOT"/*|"$PROJECT_ROOT") ;;
           /tmp/*|/private/tmp/*|"$HOME_ROOT"/.claude/*|"$HOME_ROOT"/.*) ;;
           "$HOME_ROOT"/Library/*) ;;
-          */ghq/github.com/your-org/*|*/ghq/github.com/second-org/*) ;;
+          # To allow edits to sibling repos under your own GitHub org(s), add a line like:
+          #   */ghq/github.com/YOUR_GH_ORG/*) ;;
           *)
             echo -e "${RED}BLOCKED: Editing outside project ($(basename "$PROJECT_ROOT")). Target: $(dirname "$FILE_ABS")${RST}" >&2
             exit 2 ;;
@@ -489,7 +490,7 @@ case "$TOOL" in
       fi
     fi
 
-    # Production DB guard: block setting PRODDB as default in TRACKED config
+    # Production DB guard: block setting PROD_DB as default in TRACKED config
     # Gitignored files (.env) are excluded — they hold legitimate connection strings
     CONTENT=$(printf '%s' "$INPUT" | jq -r '.tool_input.new_string // .tool_input.content // ""' 2>/dev/null)
     if echo "$FILE_PATH" | grep -iqE '\.(yaml|yml|env|toml|json)$'; then
@@ -497,8 +498,8 @@ case "$TOOL" in
       FILE_BASE=$(basename "$FILE_PATH" 2>/dev/null)
       IS_GITIGNORED=$(git -C "$FILE_DIR" check-ignore -q "$FILE_PATH" 2>/dev/null && echo "yes" || echo "no")
       if [ "$IS_GITIGNORED" = "no" ]; then
-        if echo "$CONTENT" | grep -iqE "(database|MSSQL_DATABASE).*PRODDB"; then
-          echo -e "${RED}BLOCKED: Cannot set PRODDB (production) as default database in tracked config.${RST}" >&2
+        if echo "$CONTENT" | grep -iqE "(database|MSSQL_DATABASE).*PROD_DB"; then
+          echo -e "${RED}BLOCKED: Cannot set PROD_DB (production) as default database in tracked config.${RST}" >&2
           exit 2
         fi
       fi
@@ -509,14 +510,14 @@ esac
 
 # ─── MCP SQL GUARD ──────────────────────────────────────────────────
 case "$TOOL" in
-  mcp__example-sql*|mcp__example-sql*)
+  mcp__your-db*)
     SQL=$(printf '%s' "$INPUT" | jq -r '.tool_input.sql // ""' 2>/dev/null)
-    if echo "$SQL" | grep -iqE "PRODDB"; then
+    if echo "$SQL" | grep -iqE "PROD_DB"; then
       if echo "$SQL" | grep -iqE '^[[:space:]]*(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|EXEC|MERGE|GRANT|REVOKE)([^[:alnum:]_]|$)'; then
-        echo -e "${RED}BLOCKED: Write operation on PRODDB (production). Read-only.${RST}" >&2
+        echo -e "${RED}BLOCKED: Write operation on PROD_DB (production). Read-only.${RST}" >&2
         exit 2
       fi
-      if echo "$SQL" | grep -iqE '^[[:space:]]*USE[[:space:]]+.*PRODDB'; then
+      if echo "$SQL" | grep -iqE '^[[:space:]]*USE[[:space:]]+.*PROD_DB'; then
         echo -e "${RED}BLOCKED: Cannot switch to production database.${RST}" >&2
         exit 2
       fi

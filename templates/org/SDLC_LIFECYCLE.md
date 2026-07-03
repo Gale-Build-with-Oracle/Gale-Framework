@@ -11,7 +11,7 @@
 ```
 ┌──────────────┐    ┌─────────────┐    ┌────────────────┐    ┌──────────────┐
 │  REQUIREMENTS │───▶│   DESIGN    │───▶│ IMPLEMENTATION │───▶│ VERIFICATION │
-│  Wind → Gale  │    │ L2 Oracle   │    │   Worktree     │    │   /sop-qa    │
+│  the human → Gale  │    │ L2 Oracle   │    │   Worktree     │    │   /sop-qa    │
 │  gh issue     │    │ specs/*.md  │    │   Code + PR    │    │  QA Report   │
 └──────────────┘    └─────────────┘    └────────────────┘    └──────┬───────┘
                                                                     │
@@ -28,7 +28,7 @@
 
 | Process Area | How Oracle Fleet Implements It |
 |-------------|-------------------------------|
-| **REQM** (Requirements Management) | Wind → Gale CR routing (`/sop-cr-routing`). Task Briefs with acceptance criteria. SRS.md per project. |
+| **REQM** (Requirements Management) | the human → Gale CR routing (`/sop-cr-routing`). Task Briefs with acceptance criteria. SRS.md per project. |
 | **PP** (Project Planning) | `PROJECT_PLAN.md` template. Milestone tracking in ψ/. Delegation via `/sop-delegation`. |
 | **PMC** (Project Monitoring & Control) | Heartbeat protocol (5-min progress). `maw peek`/`maw capture` for live monitoring. |
 | **CM** (Configuration Management) | Git + worktrees. `maw workon` for isolation. Safety hooks block direct main. Fleet-propagate for config sync. |
@@ -40,11 +40,11 @@
 | Process Area | How Oracle Fleet Implements It |
 |-------------|-------------------------------|
 | **RD** (Requirements Development) | SRS.md (functional), SDD.md (technical). Doc-update mandate enforced per PR. |
-| **TS** (Technical Solution) | Dev oracle architecture decisions. `/example-sql` for DB schema. `/acme-theme` for UI. |
+| **TS** (Technical Solution) | Dev oracle architecture decisions. `/sop-backend` for DB schema; the project's theme skill for UI. |
 | **PI** (Product Integration) | Worktree → PR → review → merge → deploy. Docker compose orchestrates services. |
 | **VER** (Verification) | `/sop-qa` self-QA. CI/CD (GitHub Actions). `smoke-test.sh` health checks. |
 | **VAL** (Validation) | UAT.md test cases. Docker-based testing on the dev server (`<DEV_SERVER_IP>`). |
-| **OPF** (Organizational Process Focus) | Shared-claude.md (fleet-wide rules). `/sop-acme` (universal pipeline). Skills as codified processes. |
+| **OPF** (Organizational Process Focus) | Fleet doctrine (CLAUDE.md / AGENTS.md, fleet-wide rules). `/sop-maw` (universal pipeline). Skills as codified processes. |
 | **OPD** (Organizational Process Definition) | This document. SOPs as skills. SDLC phases mapped to oracle workflow. |
 | **OT** (Organizational Training) | Oracle KB (7000+ docs via arra_search). ψ/memory/learnings/. Cross-oracle knowledge sharing. |
 | **IPM** (Integrated Project Management) | Gale orchestration. `maw team` for multi-agent coordination. Fleet-propagate for consistency. |

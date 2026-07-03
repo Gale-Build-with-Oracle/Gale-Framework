@@ -90,7 +90,7 @@ Prefer the lowest tier that works. Structured coordination → `/team-agents`; r
 - Split ownership BEFORE spawning — two writers on the same files conflict.
 - Every worker brief: exact repo path, issue #, write scope, verify step, report expectation.
 - `arra_search` before any work — include in every worker prompt.
-- Acme work still needs worktree + `/sop-qa` + `/sop-review` before merge — multi-agent doesn't bypass the pipeline.
+- Product work still needs worktree + `/sop-qa` + `/sop-review` before merge — multi-agent doesn't bypass the pipeline.
 - Aggregate gate: lint/build/test green on the merged branch → `touch .maw/aggregate-verified` → THEN `maw pr` (hook-blocked without the marker when `.maw/strategy.json` route is TEAM).
 - REQ traceability: `maw pr` always writes a PR body with `REQ: none` by default. For feature/behavior PRs, set `MAW_PR_REQ='REQ-<PROJECT>-NNN[, REQ-<PROJECT>-MMM]'` or write `.maw/req-line` before running `maw pr`; invalid REQ values fail before `gh pr create`.
 - `maw done <window>`: MUST target a window DIFFERENT from the caller.
@@ -160,7 +160,7 @@ Prefer the lowest tier that works. Structured coordination → `/team-agents`; r
 
 ### Merge Gate
 
-**The owning oracle's L1 pane runs `/sop-review` and merges — worktree panes (L2) NEVER merge** (decided 2026-06-06: the L2 authored or aggregated the code; merge authority lives only in the permanent L1 pane). The L2 stops at PR(s) with `Closes #N` + DONE ping. Risk changes how hard L1 scrutinizes, NOT who merges. L1 is the only reviewer + merger (no escalation reviewer — Kati RETIRED 2026-06-11).
+**The owning oracle's L1 pane runs `/sop-review` and merges — worktree panes (L2) NEVER merge** (decided 2026-06-06: the L2 authored or aggregated the code; merge authority lives only in the permanent L1 pane). The L2 stops at PR(s) with `Closes #N` + DONE ping. Risk changes how hard L1 scrutinizes, NOT who merges. L1 is the only reviewer + merger (no escalation reviewer).
 
 | PR touches | Risk | L1 action |
 |-----------|------|--------|
@@ -170,7 +170,7 @@ Prefer the lowest tier that works. Structured coordination → `/team-agents`; r
 Infra/oracle repo direct-push is allowed only when the permanent L1 pane authored the verified change. If an L2/worktree pane authored or aggregated it, the worktree still opens a PR + DONE-pings and the permanent L1 pane runs `/sop-review` + merge.
 
 ### Merge checklist (L1)
-1. Confirm the L2/worktree DONE-ping says `L2 RRR done` (or equivalent), or inspect the pane/worktree for a retrospective/lesson marker before cleanup; if missing, bounce back to L2 for `/rrr` before `maw done`. L3 OMX worker `/rrr` is not required in your-framework; L2 aggregate `/rrr` is sufficient.
+1. Confirm the L2/worktree DONE-ping says `L2 RRR done` (or equivalent), or inspect the pane/worktree for a retrospective/lesson marker before cleanup; if missing, bounce back to L2 for `/rrr` before `maw done`. L3 OMX worker `/rrr` is not required in Gale-Framework; L2 aggregate `/rrr` is sufficient.
 2. `/sop-review` the PR — trace the actual code path, not just the diff.
 3. Prove the requested behavior works in the target context (`VERIFIED-LIVE: <command/UI/endpoint> → <observed output>`), not only with proxy tests.
 4. Verify the `/sop-qa` report via `gh pr view <URL> --comments` (product repos).
@@ -191,7 +191,7 @@ Infra/oracle repo direct-push is allowed only when the permanent L1 pane authore
 | Nuclear | `maw stop` | ALL sessions (DANGEROUS) |
 
 ### Post-merge retro survival
-The L2/worktree must finish aggregate `/rrr` (or at minimum write a concise retrospective/lesson and call `oracle_learn`) **before** it DONE-pings L1 as ready for `maw done`: PR(s) ready → L2 `/rrr` while the worktree context still exists → `maw hey <L1> "DONE: ... L2 RRR done ..."` → `mkdir -p .maw && touch .maw/done-pinged` → STOP. L1 treats L2 `RRR done` as a closeout precondition; if an AUTO-DONE ping arrives without it, L1 must inspect/bounce before cleanup. L3 OMX workers only report slice DONE to L2; L2 aggregate `/rrr` is enough for your-framework. `maw done` removes the L2 worktree immediately, so retro after cleanup is impossible.
+The L2/worktree must finish aggregate `/rrr` (or at minimum write a concise retrospective/lesson and call `oracle_learn`) **before** it DONE-pings L1 as ready for `maw done`: PR(s) ready → L2 `/rrr` while the worktree context still exists → `maw hey <L1> "DONE: ... L2 RRR done ..."` → `mkdir -p .maw && touch .maw/done-pinged` → STOP. L1 treats L2 `RRR done` as a closeout precondition; if an AUTO-DONE ping arrives without it, L1 must inspect/bounce before cleanup. L3 OMX workers only report slice DONE to L2; L2 aggregate `/rrr` is enough for Gale-Framework. `maw done` removes the L2 worktree immediately, so retro after cleanup is impossible.
 
 ## Worktree Naming
 
@@ -201,7 +201,7 @@ The L2/worktree must finish aggregate `/rrr` (or at minimum write a concise retr
 | Branch | `agents/<N>-<slug>` |
 | tmux window | `<oracle>-<slug>` |
 
-Session: `NN-<oracle>`. Target alias: short name — `maw hey wind:leaf` routes to `02-leaf:leaf-oracle`.
+Session: `NN-<oracle>`. Target alias: short name — `maw hey <host>:<oracle>` routes to that oracle's window (e.g. `02-<oracle>:<oracle>-oracle`).
 
 ## Storage Locations
 
@@ -219,7 +219,7 @@ Session: `NN-<oracle>`. Target alias: short name — `maw hey wind:leaf` routes 
 
 ## Event Triggers
 
-Config file (persistent, fleet-wide): `pr_merged`, `worktree_ready`, `maw_done`, `oracle_awake` → all notify gale. Session-scoped: `maw on <oracle> idle --once "maw hey wind:gale '...'"`.
+Config file (persistent, fleet-wide): `pr_merged`, `worktree_ready`, `maw_done`, `oracle_awake` → all notify gale. Session-scoped: `maw on <oracle> idle --once "maw hey <host>:gale '...'"`.
 
 ## Misc Operational Notes
 

@@ -6,7 +6,7 @@ description: 'CR recognition → route to the right oracle → write the brief �
 
 ## General Orchestration Pattern (ALL Oracles)
 
-This is not Gale-only. **Any** Oracle that takes on a task follows the same shape — only the routing table below (who gets Acme vs SL) is Gale's head-Oracle job.
+This is not Gale-only. **Any** Oracle that takes on a task follows the same shape — only the routing table below (which domain goes to which oracle) is the head-Oracle's job.
 
 **Two roles, never collapsed into one:**
 
@@ -23,38 +23,34 @@ When orchestrator and worker are the **same** Oracle on her **own** infra/oracle
 
 ## CR Pattern Recognition (autonomous trigger)
 
-When Wind describes a feature/change/bug for an EXISTING project, recognize as a CR and route through SDLC chain WITHOUT asking permission. The downstream chain (dev → `/sop-qa` self-QA → PR → merge) is autonomous. **Doc conversion (md→DOCX/PPTX) is NOT part of this chain.**
+When the human describes a feature/change/bug for an EXISTING project, recognize as a CR and route through SDLC chain WITHOUT asking permission. The downstream chain (dev → `/sop-qa` self-QA → PR → merge) is autonomous. **Doc conversion (md→DOCX/PPTX) is NOT part of this chain.**
 
 **Triggers**:
-| Wind says... | Parse |
+| the human says... | Parse |
 |---|---|
 | "hey for `<project>` I want / I need / can you / let's add / let's implement `<X>`" | CR feature |
 | "for `<project>`, `<X>` doesn't / breaks / should `<Y>`" | BUG |
 | "change `<X>` to `<Y>` in `<project>`" / "remove" / "instead of" | CR change/removal/replacement |
 
-**NOT a CR** (keep conversation): "what does X do?", "explain Y", "should we maybe", "I'm thinking", "thanks/cool". If ambiguous → ASK Wind: "Reading this as a CR for `<project>` (feature: `<X>`). Confirm?"
+**NOT a CR** (keep conversation): "what does X do?", "explain Y", "should we maybe", "I'm thinking", "thanks/cool". If ambiguous → ASK the human: "Reading this as a CR for `<project>` (feature: `<X>`). Confirm?"
 
 ## Project Name Resolution
 
-| Wind says | Repo | Tier |
+Maintain your own shorthand→repo→tier map (this is instance-specific). Example shape:
+
+| the human says | Repo | Tier |
 |---|---|---|
-| bulk-picking | example-picking | Acme |
-| partial-picking | example-partial | Acme |
-| putaway | example-putaway | Acme |
-| run-creation | example-run | Acme |
-| example-hr | example-hr | Acme |
-| example-label | example-label | Acme |
-| wind-diary, blog, diary | wind-diary | SL |
-| portfolio | example-portfolio | SL |
-| structura | example-structura | SL |
-| example-social, social | example-social | SL |
+| the warehouse app | YourProduct-Warehouse | product |
+| the label app | YourProduct-Label | product |
+| leave requests | internal-hr-leave | internal |
+| my portfolio | personal-portfolio | internal |
 
 Unknown name → ASK before delegating.
 
 ## Routing Decision Tree
 
-1. Confirm parse with Wind (one short sentence, blocks)
-2. `gh issue create --repo your-org/<repo> --title "[CR|BUG] ..." --label CR|bug` — GitHub Issues is canonical. The issue number rides the PR description (`Closes #N`).
+1. Confirm parse with the human (one short sentence, blocks)
+2. `gh issue create --repo <your-github-user>/<repo> --title "[CR|BUG] ..." --label CR|bug` — GitHub Issues is canonical. The issue number rides the PR description (`Closes #N`).
 
 ### Issue Discipline (Vertical Slices + Prefactor)
 
@@ -62,40 +58,40 @@ Unknown name → ASK before delegating.
 
 **Issues MUST be vertical slices** — each cuts through ALL integration layers end-to-end (schema + API + UI + tests). A completed slice is demoable or verifiable on its own. Do NOT create horizontal layer issues ("add migration for X", "add API for X", "add UI for X" separately).
 
-3. Write Task Brief at `~/ghq/github.com/your-org/<project>/TASK-<slug>.md` (template below)
-4. Route by OWNERSHIP: **another oracle's domain** → `maw hey wind:<owner>` — NEVER `maw workon` their repo from your session (head-oracle table: Acme→Leaf, SL→Bamboo, LINE→Line, trading→Sky; discover live via `maw ls`). **YOUR own domain** → `maw workon <repo> <slug>` from your session — you are the orchestrator; steps 2–4 still apply.
-5. Ack Wind: "Filed #N. Routed to <Oracle|window>. Will report when done."
+3. Write Task Brief at `~/ghq/github.com/<your-github-user>/<project>/TASK-<slug>.md` (template below)
+4. Route by OWNERSHIP: **another oracle's domain** → `maw hey <host>:<owner>` — NEVER `maw workon` their repo from your session (each product domain has an owning oracle; discover the roster live via `maw ls`). **YOUR own domain** → `maw workon <repo> <slug>` from your session — you are the orchestrator; steps 2–4 still apply.
+5. Ack the human: "Filed #N. Routed to <Oracle|window>. Will report when done."
 6. Monitor through pipeline. Surface only blockers.
-7. On completion: report DONE to Wind — gh issue closes via the PR's `Closes #N`; Linear mirrors automatically.
+7. On completion: report DONE to the human — gh issue closes via the PR's `Closes #N`; Linear mirrors automatically.
 
-**Multi-issue? Analyze independence FIRST (Parallel L2s — Wind directive 2026-06-13)**: issues with DISJOINT files/modules each get their OWN concurrent `maw workon` L2 (no single-L2 queue); coupled/overlapping-file issues go to ONE L2. PRs land in parallel; L1 merges sequentially (rebase between); `maw done` one window at a time. Full rule: core.md ## Fan-Out Strategy → Parallel L2s.
+**Multi-issue? Analyze independence FIRST (Parallel L2s — the human directive 2026-06-13)**: issues with DISJOINT files/modules each get their OWN concurrent `maw workon` L2 (no single-L2 queue); coupled/overlapping-file issues go to ONE L2. PRs land in parallel; L1 merges sequentially (rebase between); `maw done` one window at a time. Full rule: core.md ## Fan-Out Strategy → Parallel L2s.
 
 **Routing — SOLO or TEAM (one question, per L2)**: can one person do this in under 30 minutes, in 1-2 files, with no research? YES → SOLO (`maw workon <repo> issue-N`, the worktree pane codes it directly — no workers). NO or unsure → TEAM: `maw workon <repo> <slug>` → the L2 (Claude, in the project worktree) spawns ephemeral OMX workers, one issue each, max 4: `maw team create <slug>` + `maw team spawn <slug> worker-N --wt --engine omx --exec --prompt "Issue #N: <title>. <slice>"` (brief baked at spawn — `.maw/briefs/` does NOT cross the worker's isolated worktree). 1-2-line follow-ups via `maw hey <member>`. Workers commit sub-branches → L2 aggregates → ONE consolidated PR with all `Closes #N` → `maw team shutdown` → DONE-ping. Ephemeral is the ONLY mode — standing/warm pools RETIRED 2026-06-10 (a warm session idling outside a project loads the WRONG context). Full contract: core.md ## Fan-Out Strategy.
 
-**Break the autonomous flow** (escalate to Wind) when: project repo missing, tier ambiguous, UI/UX needs design discussion, CR conflicts with in-flight work.
+**Break the autonomous flow** (escalate to the human) when: project repo missing, tier ambiguous, UI/UX needs design discussion, CR conflicts with in-flight work.
 
 ## Delegation Pattern (the ONLY correct flow)
 
 ### Pre-Delegation
 - `maw preflight` — verify target oracle health before dispatching
-- `maw dispatch "task description"` — auto-route to best Oracle by domain (alternative to manual `maw hey wind:<oracle>`)
+- `maw dispatch "task description"` — auto-route to best Oracle by domain (alternative to manual `maw hey <host>:<oracle>`)
 - `maw assign --issue N <oracle>` — route GitHub issue directly
 
 `maw workon` spawns the worktree window in **the calling session**. So the orchestrator Oracle must NEVER run `maw workon` directly when delegating — the worktree would land in HER session, not the worker's. Always:
 
 ```bash
-maw hey wind:<oracle> "First run: maw workon <repo> <slug>  (spawns your worktree window). I'll send the task brief to that window next. Follow the lifecycle closer."
+maw hey <host>:<oracle> "First run: maw workon <repo> <slug>  (spawns your worktree window). I'll send the task brief to that window next. Follow the lifecycle closer."
 ```
 
 The worker Oracle runs `maw workon` from HER home base → worktree spawns in HER session. The orchestrator only runs `maw workon` directly when SHE is also the worker (her own infra/oracle repo).
 
-`maw workon <repo> <slug>` takes a positional **slug**. The L2 orchestrator is ALWAYS Claude (default engine); do NOT pass `--codex`/`--engine` to the orchestrator pane — engine flags are worker-spawn-only. It does NOT take a `--prompt` flag — deliver the task brief to the spawned worktree window with `maw hey wind:<window-name> "<task>"` once it is up.
+`maw workon <repo> <slug>` takes a positional **slug**. The L2 orchestrator is ALWAYS Claude (default engine); do NOT pass `--codex`/`--engine` to the orchestrator pane — engine flags are worker-spawn-only. It does NOT take a `--prompt` flag — deliver the task brief to the spawned worktree window with `maw hey <host>:<window-name> "<task>"` once it is up.
 
 `maw done` MUST target a window DIFFERENT from the caller (fork preflight refuses self-target, exit 2). Run from HOME BASE, never from inside the worktree.
 
 ## Task Brief (template)
 
-Saved at `~/ghq/github.com/your-org/<PROJECT>/TASK-<slug>.md`:
+Saved at `~/ghq/github.com/<your-github-user>/<PROJECT>/TASK-<slug>.md`:
 
 ```markdown
 # TASK-<slug>.md
@@ -115,23 +111,23 @@ Routing: bug fix = no Task Brief. Single-Oracle feature = light brief. Multi-Ora
 
 ## Delegation Checklist (in EVERY task brief)
 
-**Prompt shape rule for Acme/project repos**: every delegation instructs `maw workon <repo> <slug>` as the FIRST step (the worker then works inside that worktree). NEVER write "clone the repo" / "cd into the repo" / "commit to main" for Acme/project prompts.
+**Prompt shape rule for product/project repos**: every delegation instructs `maw workon <repo> <slug>` as the FIRST step (the worker then works inside that worktree). NEVER write "clone the repo" / "cd into the repo" / "commit to main" for product/project prompts.
 
-**Non-Acme tooling repos** (`Gale-Oracle`, `*-oracle`, `oracle`, `maw-js`, `maw-ui`, plugins): do not force the Acme pipeline by habit. Direct Codex work, subagents, or `$team-agents`; commit and push directly when hooks/repo policy allow.
+**Infra/tooling repos** (`*-oracle`, `maw-js`, `maw-ui`, plugins): do not force the product pipeline by habit. Direct Codex work, subagents, or `$team-agents`; commit and push directly when hooks/repo policy allow.
 
-Every Acme/project prompt MUST include: (1) what+acceptance, (2) `maw pr` rule with `MAW_PR_REQ='REQ-<PROJECT>-NNN'` for feature/behavior PRs or `REQ: none` only for true refactor/chore, (3) self-QA via `/sop-qa`, (4) Task Brief path, (5) use localhost (you ARE on localhost), (6) port, (7) theme/skill, (8) heartbeat 5-min, (9) lifecycle closer, (10) **no `git add -A` or `git add .`** — stage by name only. Acme test creds: `/nwf-sql`.
+Every product/project prompt MUST include: (1) what+acceptance, (2) `maw pr` rule with `MAW_PR_REQ='REQ-<PROJECT>-NNN'` for feature/behavior PRs or `REQ: none` only for true refactor/chore, (3) self-QA via `/sop-qa`, (4) Task Brief path, (5) use localhost (you ARE on localhost), (6) port, (7) theme/skill, (8) heartbeat 5-min, (9) lifecycle closer, (10) **no `git add -A` or `git add .`** — stage by name only. App test creds: from your project's secrets store, never committed.
 
 ## Lifecycle / Full Pipeline
 
 ```
-Wind requests → Orchestrator classifies CR/REQ/BUG → GitHub issue (canonical)
-  → maw hey wind:<worker> (worktree+PR prompt)
+the human requests → Orchestrator classifies CR/REQ/BUG → GitHub issue (canonical)
+  → maw hey <host>:<worker> (worktree+PR prompt)
   → WORKTREE: worker maw workon → build → /sop-qa (self-QA) → fix until PASS
     → maw pr → gh pr comment (QA report)
-    → maw hey wind:<orchestrator> "[wt] PR #N ready. <pr-url>" → WAIT
+    → maw hey <host>:<orchestrator> "[wt] PR #N ready. <pr-url>" → WAIT
   → ORCHESTRATOR SESSION: /sop-review PR → merge per gate
     → maw done <worktree-window> (rescues ψ/, kills worktree)
-    → report DONE to Wind in the active Discord/thread surface
+    → report DONE to the human in the active Discord/thread surface
   → Orchestrator: /post-mortem (bug PRs only, run by L1 after merge)
 ```
 
@@ -139,7 +135,7 @@ The orchestrator stays orchestrator the WHOLE way — she does not hand the task
 
 **Doc deltas are NOT per-feature-PR work.** Feature PRs carry only the `REQ:` traceability line. `/doc-sync` runs later at stabilization/release/UAT and opens one docs-only PR that updates SRS/UAT/CR from merged PR history; SDD is generated as a snapshot when needed.
 
-**Flavor A (PR)**: WORKTREE: build → `/sop-qa` → `maw pr` → tell orchestrator `maw hey wind:<orchestrator> "[wt] PR #N ready"` → WAIT. ORCHESTRATOR SESSION: `/sop-review` → merge → `maw done <window>` (rescues ψ/) → report DONE.
+**Flavor A (PR)**: WORKTREE: build → `/sop-qa` → `maw pr` → tell orchestrator `maw hey <host>:<orchestrator> "[wt] PR #N ready"` → WAIT. ORCHESTRATOR SESSION: `/sop-review` → merge → `maw done <window>` (rescues ψ/) → report DONE.
 
 **Flavor B (audit/no PR)**: do work → deliver report → WAIT. Main session: `maw done <window>` (rescues ψ/) → tell Gale DONE.
 
@@ -152,13 +148,13 @@ L1 is the only reviewer + merger — there is no escalation reviewer in the pipe
 ## CRITICAL Rules
 
 - NO GSD. Devs build directly from Task Briefs.
-- Acme project repos: worktree-only, NEVER direct main.
-- Non-Acme tooling repos: direct main allowed when verified from the permanent L1 pane; worktree panes still PR + DONE-ping.
+- Product project repos: worktree-only, NEVER direct main.
+- Infra/tooling repos: direct main allowed when verified from the permanent L1 pane; worktree panes still PR + DONE-ping.
 - Oracle family repos: direct push to main allowed only from the permanent L1 pane after focused verification; L2/worktree panes never self-merge.
 - PR before merge (project repos always; infra/oracle worktree panes too). The owning oracle runs `/sop-review` → merges ANY tier after self-QA PASS (`/sop-qa`); high risk = scrutinize harder, same merger. L1 is the only reviewer + merger (no escalation reviewer).
 - Report completion in the active Discord/thread surface; GitHub Issues/PRs remain canonical state, no retired Discord forum tracker ceremony.
 - Always specify theme/skill + include reference screenshots.
-- Review the result yourself (Playwright) before reporting done to Wind.
+- Review the result yourself (Playwright) before reporting done to the human.
 - **Anti-pattern (Gale-side)**: "the diff looks obvious, I'll just merge" — still run `/sop-qa` self-QA before merge.
 - **NEVER touch `Soul-Brews-Studio/*`** — no issues, PRs, comments, pushes. Read-only allowed.
 - **NEVER include**: "run GSD", "/gsd:*", model profiles, planning instructions.

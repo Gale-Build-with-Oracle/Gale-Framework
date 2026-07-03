@@ -94,7 +94,7 @@ try:
     print(f'  Vectors: {vcount} ({v.get(\"collection\",\"?\")})')
     if isinstance(total,int) and isinstance(vcount,int) and total>vcount:
         gap=total-vcount
-        print(f'  ⚠ EMBEDDING GAP: {gap} docs missing vectors — run: cd ~/ghq/github.com/your-org/arra-oracle-v3 && bun src/scripts/index-model.ts bge-m3 --incremental')
+        print(f'  ⚠ EMBEDDING GAP: {gap} docs missing vectors — run: cd ~/ghq/github.com/<your-github-user>/arra-oracle-v3 && bun src/scripts/index-model.ts bge-m3 --incremental')
         print(f'  ⚠ NEVER use --full unless collection is corrupt. NEVER kill a running reindex (corrupts LanceDB).')
     print(f'  Stale: {d.get(\"is_stale\",\"?\")}')
 except: print('  UNREACHABLE — oracle-http may be down')
@@ -235,7 +235,7 @@ bash ~/.claude/skills/team-agents/scripts/doctor.sh 2>&1
 
 echo ""
 echo "=== Orphan worktrees (all oracle repos) ==="
-for repo in ~/ghq/github.com/your-org/*-oracle/; do
+for repo in ~/ghq/github.com/<your-github-user>/*-oracle/; do
     WTS=$(git -C "$repo" worktree list 2>/dev/null | grep -v "$(basename $repo)" | grep -v "\[main\]" | grep -v "\[master\]")
     if [ -n "$WTS" ]; then
         echo "  $(basename $repo): $WTS"
@@ -245,7 +245,7 @@ echo "  (none = clean)"
 
 echo ""
 echo "=== Stale mailbox teams ==="
-ls ~/ghq/github.com/your-org/gale-oracle/ψ/memory/mailbox/teams/ 2>/dev/null || echo "  (none)"
+ls ~/ghq/github.com/<your-github-user>/gale-oracle/ψ/memory/mailbox/teams/ 2>/dev/null || echo "  (none)"
 ```
 
 If `--fix` and stale tasks found:
@@ -259,7 +259,7 @@ bash ~/.claude/skills/team-agents/scripts/doctor.sh --fix 2>&1
 
 ```bash
 echo "=== Oracle repo git status ==="
-for repo in ~/ghq/github.com/your-org/*-oracle/; do
+for repo in ~/ghq/github.com/<your-github-user>/*-oracle/; do
     NAME=$(basename "$repo")
     STATUS=$(git -C "$repo" status --short 2>/dev/null | wc -l)
     BRANCH=$(git -C "$repo" branch --show-current 2>/dev/null)
