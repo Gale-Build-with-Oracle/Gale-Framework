@@ -9,7 +9,7 @@
 
 ## 1. The defined lifecycle
 
-Every project — NWFTH, Solution Lab, oracle, client — follows the same lifecycle. Stack and merge gate differ per repo; the *process* does not.
+Every project — product, internal, oracle, client — follows the same lifecycle. Stack and merge gate differ per repo; the *process* does not.
 
 ```
 PER PR:            intake → design spec (TEAM tasks) → build (code-first) → /sop-qa → /sop-review → merge → maw done
@@ -34,16 +34,16 @@ AT STABILIZATION:  /doc-sync (Haiku swarm) → docs-only PR → marker advance
 |---|---|---|
 | **Orchestrator** | the Oracle that owns the task | Briefs the worker, monitors, closes: `/sop-review` → merge → `maw done`. Stays orchestrator until done. |
 | **Worker** | an Oracle or codex in a `maw workon` worktree | Builds the change, runs `/sop-qa`, opens the PR, reports back. Never self-merges product code. |
-| **Reviewer** | `/sop-review` (+ Kati for high-risk NWFTH/SL) | Independent end-to-end review before merge. |
+| **Reviewer** | `/sop-review` | Independent end-to-end review before merge. |
 
 Full delegation mechanics: `/sop-delegation`.
 
 ## 4. Merge gate (per repo, not per doctrine)
 
-- **NWFTH** (production): Wind approves the merge; direct push to `main` is hook-blocked.
-- **Solution Lab internal**: dev oracle auto-merges after `/sop-qa` PASS.
+- **Product** (production): the human approves the merge; direct push to `main` is hook-blocked.
+- **Internal**: dev oracle auto-merges after `/sop-qa` PASS.
 - **Infra / oracle repos**: self-merge (lightweight).
-- Risk classification (frontend/docs/config = low; backend/API/DB/security/cross-boundary = high → Kati) lives in the fleet CLAUDE.md "Merge gate classification".
+- Risk classification (frontend/docs/config = low; backend/API/DB/security/cross-boundary = high → scrutinize harder) lives in the fleet CLAUDE.md "Merge gate classification".
 
 ## 5. Stack is detected, never assumed
 

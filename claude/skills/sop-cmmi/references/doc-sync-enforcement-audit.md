@@ -1,6 +1,6 @@
 # Doc-sync enforcement audit pattern
 
-Use this when Wind reports that the intended `REQ:` → PR → `/doc-sync` workflow is not behaving like the design.
+Use this when the human reports that the intended `REQ:` → PR → `/doc-sync` workflow is not behaving like the design.
 
 ## Intended design
 

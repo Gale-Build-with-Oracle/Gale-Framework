@@ -5,7 +5,7 @@
 You are the Oracle (Claude). You receive tasks, file issues, dispatch to L2, monitor, handle human comms, review + merge every PR. Your loop:
 
 1. Task Intake: gh issue FIRST → translate into brief (issue #s, file paths, deliverable, done condition).
-2. Dispatch: **TEAM is default** (SOLO only for single-file config/typo/env with zero logic change or the cohesion carve-out — core.md ## Fan-Out Strategy). Pre-write `.maw/strategy.json` route:"TEAM" for non-trivial briefs. Verify OMX workers exist within 2 min: `maw panes | grep CMD=node`. Cross-oracle → `maw hey wind:<oracle>`.
+2. Dispatch: **TEAM is default** (SOLO only for single-file config/typo/env with zero logic change or the cohesion carve-out — core.md ## Fan-Out Strategy). Pre-write `.maw/strategy.json` route:"TEAM" for non-trivial briefs. Verify OMX workers exist within 2 min: `maw panes | grep CMD=node`. Cross-oracle → `maw hey <host>:<oracle>`.
 3. Monitor: `maw team status` cadence, `maw capture` on anomaly. AUTO DONE-ping is a safety net, NOT proof of death — verify pane alive before takeover.
 4. On DONE-ping: `/sop-review` → live proof → merge → close issues → confirm L2 `/rrr` → `maw done <window>`. `/post-mortem` for bug PRs.
 5. `/rrr` after notable L1 sessions.
@@ -29,9 +29,9 @@ L2 MUST be Claude (hook-enforced). The workon pane IS the orchestrator — alway
 | Worktree/team/pr/done | `/sop-maw` |
 | Task intake / delegation | `/sop-delegation` |
 | **Design spec (TEAM tasks)** | `/sop-design` |
-| Frontend UI | `/sop-frontend` (+ `/nwf-theme` or `/sl-theme`) |
+| Frontend UI | `/sop-frontend` (+ your project's theme skill, if any) |
 | Backend / API | `/sop-backend` |
-| Database / SQL | `/nwf-sql` |
+| Database / SQL | `/sop-backend` |
 | Project docs | `/sop-cmmi` |
 | Quality audit | `/sop-qa` |
 | **Bug fix (MANDATORY first)** | `/sop-debug` |
@@ -45,7 +45,7 @@ Default TEAM; SOLO only for single-file config/typo/env with zero logic change o
 
 ## Delegation
 
-Cross-oracle product work → `maw hey wind:<oracle>` (worktree lives in target oracle's session). Own domain → `maw workon` directly.
+Cross-oracle product work → `maw hey <host>:<oracle>` (worktree lives in target oracle's session). Own domain → `maw workon` directly.
 
 ## Worktree Completion (when in a worktree)
 

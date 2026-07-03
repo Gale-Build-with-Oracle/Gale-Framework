@@ -20,10 +20,10 @@ PARTS=()
 # ─── SESSION START ──────────────────────────────────────────────────
 if [ "$EVENT" = "SessionStart" ]; then
   # Workflow reminder
-  PARTS+=("⚡ Workflow Reminder (3-layer ephemeral — Wind directive 2026-06-13):\n  Product CR/BUG → gh issue create → maw workon <repo> <slug> (L2 spawns IN the project worktree) → L2 routes STRATEGY: SOLO|TEAM (TEAM → ephemeral OMX workers via maw team spawn --wt --engine omx --exec) → aggregate → ONE consolidated PR (Closes #N) → maw team shutdown → DONE-ping L1 → L1 /sop-review → merge → Docker rebuild → L1 maw done <window> from OUTSIDE\n  Infra fix → L1 inline (lightweight lane) or maw workon for isolation\n  Claude LEADS (L1 + L2 orchestrator), OMX CODES (ephemeral L3). gh issues canonical — Linear mirrors automatically, never hand-create Linear issues.\n  ❌ No multi-project from one window\n  ❌ No cd to ghq paths directly\n  ❌ Secrets in .env only, never hardcode")
+  PARTS+=("⚡ Workflow Reminder (3-layer ephemeral — the human directive 2026-06-13):\n  Product CR/BUG → gh issue create → maw workon <repo> <slug> (L2 spawns IN the project worktree) → L2 routes STRATEGY: SOLO|TEAM (TEAM → ephemeral OMX workers via maw team spawn --wt --engine omx --exec) → aggregate → ONE consolidated PR (Closes #N) → maw team shutdown → DONE-ping L1 → L1 /sop-review → merge → Docker rebuild → L1 maw done <window> from OUTSIDE\n  Infra fix → L1 inline (lightweight lane) or maw workon for isolation\n  Claude LEADS (L1 + L2 orchestrator), OMX CODES (ephemeral L3). gh issues canonical — Linear mirrors automatically, never hand-create Linear issues.\n  ❌ No multi-project from one window\n  ❌ No cd to ghq paths directly\n  ❌ Secrets in .env only, never hardcode")
 
   # code-review-graph enforcement — if this repo has a graph, reviews/exploration
-  # MUST go through it (Wind directive 2026-06-12: graph review is the default,
+  # MUST go through it (the human directive 2026-06-12: graph review is the default,
   # hook-enforced not advisory). Cheap check: directory existence only.
   CRG_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
   if [ -d "$CRG_ROOT/.code-review-graph" ]; then
@@ -98,7 +98,7 @@ if [ "$EVENT" = "SessionStart" ]; then
   # (read:false, never live-delivered). Surface every unread subject into context
   # FIRST (nothing hidden), THEN flip read:false→true in place (file kept on disk,
   # Principle 1 — Nothing is Deleted). SAFE: this inbox is oracle↔oracle/cron
-  # federation only; Wind-the-human's directives arrive via the Claude chat, never
+  # federation only; the human-the-human's directives arrive via the Claude chat, never
   # via maw inbox. awk rewrite (frontmatter-scoped, ~1ms/file) keeps it well inside
   # the SessionStart timeout even on a first-wake backlog.
   INBOX_DIR="$ORACLE_ROOT/ψ/inbox"
@@ -162,9 +162,7 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
     fi
     # Frontend/theme SOP detection by repo family
     case "$REPO_NAME" in
-      NWFTH-*|nwfth-*)  FRONTEND_SOP="/sop-frontend + /nwf-theme. DB → /nwf-sql." ;;
-      BME-*)            FRONTEND_SOP="/sop-frontend + /nwf-theme. DB → /nwf-sql." ;;
-      Solution-Lab*|social-listening*|Line-webhook|Wind-Portfolio) FRONTEND_SOP="/sop-frontend + /sl-theme." ;;
+      YourProduct-*)    FRONTEND_SOP="/sop-frontend + your project's theme skill." ;;
       odoo_*|odoo19-*)  FRONTEND_SOP="/sop-frontend (Odoo XML/QWeb views)." ;;
     esac
     # Also detect from file presence (catches repos not in the case list)
@@ -187,7 +185,7 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
     if [ -n "$WT_BRANCH" ] && [ "$WT_BRANCH" != "main" ] && [ "$WT_BRANCH" != "master" ]; then
       WT_HAS_COMMITS=$(git log origin/main..HEAD --oneline 2>/dev/null | head -1)
       if [ -n "$WT_HAS_COMMITS" ]; then
-        PARTS+=("🔴 YOU ARE IN A WORKTREE/L2 PANE. You MUST NOT merge PRs (hook-blocked). Before DONE-ping, the L2/worktree orchestrator must run /rrr (or write a concise retrospective/lesson + oracle_learn) while this context exists. L3 OMX workers do NOT need /rrr in Wind-Framework; L2 aggregate /rrr is enough. Your LAST action MUST be: maw hey <L1-oracle-pane> \"DONE: PR ready for /sop-review + live proof + merge + issue close + maw done <window>. L2 RRR done.\" Then STOP. Do NOT run maw done on your own window.")
+        PARTS+=("🔴 YOU ARE IN A WORKTREE/L2 PANE. You MUST NOT merge PRs (hook-blocked). Before DONE-ping, the L2/worktree orchestrator must run /rrr (or write a concise retrospective/lesson + oracle_learn) while this context exists. L3 OMX workers do NOT need /rrr in Gale-Framework; L2 aggregate /rrr is enough. Your LAST action MUST be: maw hey <L1-oracle-pane> \"DONE: PR ready for /sop-review + live proof + merge + issue close + maw done <window>. L2 RRR done.\" Then STOP. Do NOT run maw done on your own window.")
       fi
     fi
     # Fan-out gate reminder: L2 MUST write strategy.json before any code edit.
@@ -211,10 +209,10 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
     if [ -n "$_SESSION" ]; then
       _WT_WINS=$(tmux list-windows -t "$_SESSION" -F '#{window_name}' 2>/dev/null \
         | grep -v "^${_CUR_WIN}$" \
-        | grep -E 'NWFTH-|BME-|Planning-|NPD-|HR-Leave|FG-Label|Formsapp|SalesProspect' \
+        | grep -E 'YourProduct-' \
         | head -3 | tr '\n' ', ' | sed 's/,$//')
       if [ -n "$_WT_WINS" ]; then
-        PARTS+=("⚠️ ACTIVE L2 WORKTREE(s): ${_WT_WINS} — if L2 opened a PR, /sop-review + prove live behavior + merge NOW (L1 merge authority is IMMEDIATE). Before maw done, confirm DONE-ping says L2 RRR done or inspect/bounce L2 for /rrr. L3 worker /rrr is not required for Wind-Framework. After merge close linked issues if not auto-closed. Check: gh pr list --repo deachawatss/<repo> --head agents/2-<slug>")
+        PARTS+=("⚠️ ACTIVE L2 WORKTREE(s): ${_WT_WINS} — if L2 opened a PR, /sop-review + prove live behavior + merge NOW (L1 merge authority is IMMEDIATE). Before maw done, confirm DONE-ping says L2 RRR done or inspect/bounce L2 for /rrr. L3 worker /rrr is not required for Gale-Framework. After merge close linked issues if not auto-closed. Check: gh pr list --repo <your-github-user>/<repo> --head agents/2-<slug>")
       fi
     fi
   fi

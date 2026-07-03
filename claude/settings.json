@@ -17,7 +17,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash|Edit|Write|MultiEdit|SendMessage|Agent|mcp__bme-mssql|mcp__nwfth-sql",
+        "matcher": "Bash|Edit|Write|MultiEdit|SendMessage|Agent|mcp__your-db",
         "hooks": [
           {
             "type": "command",

@@ -6,11 +6,11 @@ description: 'The lean project doc standard — ONE flat 7-doc set for EVERY pro
 
 > One standard. Every project. Seven documents. Code first, docs after.
 
-This replaces the old 35-doc, 4-tier, gate-enforced CMMI machine. There are no phases, no `.maw/phase.json`, no doc-before-code hook gates, no per-project tiers. Every project — NWFTH, Solution Lab, oracle, client — keeps the **same seven documents**. That is the whole standard.
+This replaces the old 35-doc, 4-tier, gate-enforced CMMI machine. There are no phases, no `.maw/phase.json`, no doc-before-code hook gates, no per-project tiers. Every project — product, internal, oracle, client — keeps the **same seven documents**. That is the whole standard.
 
 ---
 
-## 0. Software Delivery Lifecycle Checklist (Wind-approved 2026-06-24)
+## 0. Software Delivery Lifecycle Checklist (the human-approved 2026-06-24)
 
 Use this as the default mental model for real software work. It is a checklist, not a heavy phase gate: adopt the parts that fit the project, explicitly mark what is deferred/out of scope, and keep the seven-doc standard lean.
 
@@ -70,7 +70,7 @@ The relationship: `specs/` → feeds design intent into → `docs/` (via `/doc-s
 
 ## 2. The Flow — Code Per-PR, Docs at Stabilization (MANDATORY)
 
-*(Tailoring decision 2026-06-05, Wind-approved — replaces the per-PR docs-in-same-PR mandate. Rationale: per-PR doc edits chased moving designs across the implement→pivot→polish cycle and produced mismatch; batch sync writes docs once, against settled behavior.)*
+*(Tailoring decision 2026-06-05, the human-approved — replaces the per-PR docs-in-same-PR mandate. Rationale: per-PR doc edits chased moving designs across the implement→pivot→polish cycle and produced mismatch; batch sync writes docs once, against settled behavior.)*
 
 ```
 PER FEATURE PR (seconds):
@@ -232,7 +232,7 @@ Every feature PR carries its `REQ:` line (see §2) — that is the PR's ENTIRE d
 
 ### Change Request (CR)
 ```
-# Wind: "change X to Y"
+# the human: "change X to Y"
 # The feature PR ships with `REQ: REQ-<PROJECT>-NNN` in its description.
 # At the next /doc-sync (pre-UAT / pre-release), the Haiku swarm:
 #   - appends a row to docs/CR.md:  | CR-NNN | date | REQ-id | reason | PR |
@@ -241,7 +241,7 @@ Every feature PR carries its `REQ:` line (see §2) — that is the PR's ENTIRE d
 ```
 
 ### Decision Analysis (DAR) — record significant choices
-Trigger: choosing a framework / DB / cloud service, picking between architectures with different long-term cost, or any choice Wind flags as significant.
+Trigger: choosing a framework / DB / cloud service, picking between architectures with different long-term cost, or any choice the human flags as significant.
 ```
 # In docs/RISK.md → Decisions/DAR section, append a row:
 # | date | DAR-NNN | decision | alternatives | criteria | choice | rationale | PR |
@@ -278,7 +278,7 @@ On a CR, the superseded requirement text moves to a `#### v1 — superseded` sub
 
 ## 7b. The Org Layer — write once (this is what makes it genuine L3)
 
-The 7 docs are **per-project**. CMMI L3 ("Defined") needs one more thing: a single **organizational** standard process every project tailors from — written ONCE for the fleet. The org-level TEMPLATES live in `Wind-Framework/templates/org/` and are COPIED (not symlinked) into each project's `docs/` by `init-project-docs.sh` as seed files — each project then tailors its own copy:
+The 7 docs are **per-project**. CMMI L3 ("Defined") needs one more thing: a single **organizational** standard process every project tailors from — written ONCE for the fleet. The org-level TEMPLATES live in `Gale-Framework/templates/org/` and are COPIED (not symlinked) into each project's `docs/` by `init-project-docs.sh` as seed files — each project then tailors its own copy:
 
 | Doc | What it defines |
 |---|---|
@@ -301,7 +301,7 @@ A project does NOT copy these. It references them and records its own tailoring 
 | 35 documents, 4 tiers | **7 documents, 1 flat standard** |
 | 8-phase state machine + `.maw/phase.json` | **None** — no phase tracking |
 | 7 hook gates (G1–G7) blocking edits | **None** — gates retired (`/sop-qa` is the only check) |
-| Per-project tier rules (NWFTH vs SL) | **Same 7 docs for every project** |
+| Per-project tier rules (per tier) | **Same 7 docs for every project** |
 | RTM as a standalone doc | **REQ-id column inside UAT** |
 | Risk Register + DECISION-LOG + CAR (3 docs) | **One `RISK.md`, three sections** |
 | Doc-first (docs before code) | **Code-first (docs after, via Haiku swarm)** |
@@ -313,7 +313,7 @@ A project does NOT copy these. It references them and records its own tailoring 
 
 ## 9. Implementation Enforcement Audit
 
-When Wind reports that the `REQ:` → PR → `/doc-sync` lifecycle is not behaving like this design, treat it as a **doctrine/tooling/enforcement mismatch**, not as agent forgetfulness. Audit all three layers before proposing a fix:
+When the human reports that the `REQ:` → PR → `/doc-sync` lifecycle is not behaving like this design, treat it as a **doctrine/tooling/enforcement mismatch**, not as agent forgetfulness. Audit all three layers before proposing a fix:
 
 1. **Doctrine** — canonical rules say feature PRs carry `REQ:` and docs are batch-synced later.
 2. **Tooling** — the actual PR creation path (`maw pr`, wrapper scripts, `gh pr create` helpers) writes the `REQ:` line, not only `Closes #N`.
@@ -328,7 +328,7 @@ Detailed audit recipe: `references/doc-sync-enforcement-audit.md`.
 ## 10. Cross-References
 
 - `/sop-qa` — the single quality gate. Runs after build, before `maw pr`. Includes doc-completeness.
-- `/nwf-doc` / `/sl-doc` — branded document *generation* (PDF/DOCX/PPTX/XLSX deliverables), distinct from these markdown specs.
+- A branded document-*generation* skill (PDF/DOCX/PPTX/XLSX deliverables), if your project ships one, is distinct from these markdown specs.
 - `/sop-maw` — worktree, PR, merge, cleanup.
 - `/post-mortem` — engineering RCA (pairs with the CAR section of RISK.md).
 - `/sop-delegation` — the delegation + orchestration pipeline (same for every project; merge gate and stack are per-repo, not per-doctrine). Uses this same 7-doc standard.

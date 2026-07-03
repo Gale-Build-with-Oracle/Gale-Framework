@@ -9,7 +9,7 @@ Autonomous pending-task executor for ANY oracle. Housekeeping is DONE without as
 
 ## Philosophy
 
-Principle 3 (External Brain, Not Command) — surface and resolve what's obviously pending so Wind doesn't have to manage housekeeping. Ambiguous or risky → report it with a route, don't act.
+Principle 3 (External Brain, Not Command) — surface and resolve what's obviously pending so the human doesn't have to manage housekeeping. Ambiguous or risky → report it with a route, don't act.
 
 ## Step 0: Harvest SESSION pending (MANDATORY FIRST)
 

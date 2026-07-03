@@ -6,7 +6,7 @@
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
 | 1.0.0 | 2026-06-01 | Gale | Initial PQA cadence |
-| 1.0.1 | 2026-06-02 | Gale | High-risk row: `/sop-review` before merge (Kati only on escalation), replacing "Kati / no merge without SHIP" |
+| 1.0.1 | 2026-06-02 | Gale | High-risk row: `/sop-review` before merge, replacing the prior separate escalation-reviewer rule |
 
 ## Per-change assurance (automatic, every PR)
 
@@ -18,7 +18,7 @@ The process is enforced at the point of work, not audited after the fact:
 | Traceability thread (PR description carries its `REQ:` line) | `/sop-qa` Phase 7.5.1 | flagged (P2) |
 | Doc-sync freshness (`docs/.last-doc-sync` current at UAT/release) | `/sop-qa` Phase 7.5.2 release gate | **P1 blocks UAT/release** |
 | Independent review before merge | `/sop-review` | no merge without a verdict |
-| High-risk (backend/API/DB/security) | `/sop-review` (harder) | merge after a clean verdict; Kati only on escalation (verdict inconclusive or Wind asks) |
+| High-risk (backend/API/DB/security) | `/sop-review` (harder) | merge after a clean verdict; escalate only when the verdict is inconclusive or the human asks |
 | Root cause after an escaped defect | `/post-mortem` + RISK.md CAR | issue stays open until written |
 
 ## Quality is enforced by gates, not audits

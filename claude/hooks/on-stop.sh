@@ -20,7 +20,7 @@ if [[ "$CWD" == */agents/* ]] && command -v maw >/dev/null 2>&1; then
   WINDOW=$(tmux display-message -p '#{window_name}' 2>/dev/null || echo "")
   if [ -n "$SESSION" ]; then
     ORACLE_PANE="${SESSION}:1.0"
-    REPO=$(echo "$CWD" | grep -oP 'deachawatss/\K[^/]+(?=/agents)' || echo "unknown")
+    REPO=$(echo "$CWD" | grep -oP '<your-github-user>/\K[^/]+(?=/agents)' || echo "unknown")
     BRANCH=$(git branch --show-current 2>/dev/null || echo "")
     DONE_MARKER="$CWD/.maw/done-pinged"
     # Skip if the pane already sent a manual DONE-ping (marker file exists)
@@ -29,7 +29,7 @@ if [[ "$CWD" == */agents/* ]] && command -v maw >/dev/null 2>&1; then
     fi
     if [ -n "$BRANCH" ]; then
       # Check for open PRs
-      PR_NUMS=$(gh pr list --repo "deachawatss/${REPO}" --head "$BRANCH" --state open --json number -q '.[].number' 2>/dev/null | tr '\n' ' ')
+      PR_NUMS=$(gh pr list --repo "<your-github-user>/${REPO}" --head "$BRANCH" --state open --json number -q '.[].number' 2>/dev/null | tr '\n' ' ')
       # Check for commits ahead of main (catches direct-push infra work)
       COMMITS_AHEAD=$(git log origin/main..HEAD --oneline 2>/dev/null | wc -l | tr -d ' ')
       # Check for recently pushed commits on main from this worktree
@@ -61,7 +61,7 @@ PY
 fi
 
 # ─── ARRA REINDEX ───────────────────────────────────────────────────
-ARRA_DIR="$HOME/ghq/github.com/deachawatss/arra-oracle-v3"
+ARRA_DIR="$HOME/ghq/github.com/<your-github-user>/arra-oracle-v3"
 LOCK="/tmp/arra-reindex.lock"
 
 # Reindex arra in background (non-blocking, ~10s)

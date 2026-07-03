@@ -55,7 +55,7 @@ After completing work:
 # Standing codex solo fix: git push -u origin <branch> && maw pr (Closes #N) →
 #   maw hey <oracle-pane> "[codex] PR #N ready. <url>" — the L1 Oracle reviews + proves live behavior + merges + closes issues + maw done
 ```
-**RRR ownership in Wind-Framework:** the Claude L2/worktree orchestrator runs the aggregate `/rrr` before DONE-pinging L1. L3 OMX workers do not run `/rrr`; they finish with slice commit + DONE report to L2.
+**RRR ownership in Gale-Framework:** the Claude L2/worktree orchestrator runs the aggregate `/rrr` before DONE-pinging L1. L3 OMX workers do not run `/rrr`; they finish with slice commit + DONE report to L2.
 
 **Heartbeat** (delegated tasks): `maw hey <your-oracle-pane> "[<name>] PROGRESS: <what finished>"` every ~5 min; `… STUCK: <reason>` when blocked. Report to the pane that briefed you — L2 for team workers; the target is in your brief. SECONDARY file reports: `<repo>/.codex-reports/<role>-{done,stuck}.md` (`maw hey` is primary).
 
@@ -92,4 +92,4 @@ curl -s -X POST http://localhost:47778/api/learn -H "Content-Type: application/j
 ## Context
 
 - **Knowledge base**: MCP `arra-oracle-v3` or `http://localhost:47778/api/`.
-- **Fleet**: discover live with `maw ls` — never assume a roster or count (the fleet grows). Human: **Wind** (he/him). Repos: `~/ghq/github.com/deachawatss/`.
+- **Fleet**: discover live with `maw ls` — never assume a roster or count (the fleet grows). Human: your operator (name/pronouns live in their identity file). Repos: `~/ghq/github.com/<your-github-user>/`.

@@ -31,7 +31,7 @@ AI-generated UI has recognizable patterns. Avoid ALL of them:
 | Stock card grids | Uniform grids ignore information priority and scanning patterns | Purpose-driven layouts |
 | Shadow-heavy design | Layered shadows compete with content | Subtle or no shadows unless the design system specifies |
 
-**If it looks like "ChatGPT made this" — rework it.** Use the project's theme skill (`/nwf-theme`, `/sl-theme`, `/doctor-theme`) and the Reference Design Systems lane.
+**If it looks like "ChatGPT made this" — rework it.** Use the project's theme skill (if one exists) and the Reference Design Systems lane.
 
 ## Component Architecture Rules
 
@@ -93,12 +93,10 @@ No prop drilling deeper than 3 levels — introduce context or restructure.
 ## Project Theming
 
 Before writing any UI code, load the correct brand/theme skill:
-- NWFTH projects -> `/nwf-theme`
-- Solution Lab projects -> `/sl-theme`
-- Clinic / healthcare (YD Wellness / Youngdo / doctor-branded social listening) projects -> `/doctor-theme`
+- The project has a theme/brand skill? Load it.
 - No brand skill for the project? Gather brand context first (personality, palette, logo, audience) — never invent a brand silently.
 
-**Brand/theme skill boundary:** `/nwf-theme`, `/sl-theme`, and `/doctor-theme` should stay broad — logo assets, official color anchors, and minimal brand text/conventions only. Do **not** push layout, component, token, typography, table/form/dashboard, animation, or "impeccable" design prescriptions into those theme skills. All UI/UX decisions and implementation quality belong here in `/sop-frontend` plus the target project's own design source of truth. If a healthcare app is hosted under a Solution Lab domain but the visible product brand is Youngdo/clinic, use `/doctor-theme`, not `/sl-theme`.
+**Brand/theme skill boundary:** a project's theme skill should stay broad — logo assets, official color anchors, and minimal brand text/conventions only. Do **not** push layout, component, token, typography, table/form/dashboard, animation, or "impeccable" design prescriptions into a theme skill. All UI/UX decisions and implementation quality belong here in `/sop-frontend` plus the target project's own design source of truth. When the same app is hosted under one brand's domain but the visible product brand is different, follow the visible product brand.
 
 ## Consolidated UX/UI Operating System
 
@@ -120,7 +118,7 @@ This skill now absorbs the operating procedures that used to require separate UX
 
 Before declaring UI good, collect evidence instead of judging from a diff:
 1. Inspect actual repo context: `PRODUCT.md`, `DESIGN.md`, theme/tokens/global styles, component library, existing routes/screens, and brand skill.
-2. Run or open the real surface when possible; if local, use the project-approved command only. NWFTH/BME Docker surfaces stay Docker-first.
+2. Run or open the real surface when possible; if local, use the project-approved command only. Containerized (Docker) surfaces stay Docker-first.
 3. Capture screenshots at desktop (1920×1080), tablet landscape (1024–1280), and mobile/narrow where relevant.
 4. Check browser console after navigation and after significant interactions. Silent JS errors are UX findings.
 5. Exercise the primary workflow, not just page chrome. Count clicks for the main job; >5 clicks is a red flag unless the domain truly requires it.
@@ -162,9 +160,9 @@ Use before implementation when design direction is unclear.
    - emphasis: content-first vs action-first vs tool-first
    - layout: table-first vs split-pane vs document-style
    - aesthetic: utilitarian vs editorial vs premium vs playful
-3. Use realistic content, real states, and minimal interaction (click/toggle/filter/hover) so Wind can compare behavior, not static decoration.
+3. Use realistic content, real states, and minimal interaction (click/toggle/filter/hover) so the human can compare behavior, not static decoration.
 4. Verify each variant visually before presenting. If it visibly breaks, fix before showing.
-5. Present a head-to-head table and give an opinionated recommendation. Once Wind picks, consolidate — do not leave a pile of options.
+5. Present a head-to-head table and give an opinionated recommendation. Once the human picks, consolidate — do not leave a pile of options.
 
 ### Design Artifact lane
 
@@ -187,13 +185,13 @@ Use real-world references as vocabulary, not as cloning.
   - premium: Apple, BMW, Stripe, Superhuman, Revolut
   - playful/friendly: PostHog, Figma, Lovable, Zapier, Miro
 - Extract principles: density, type posture, spacing rhythm, interaction model, surface treatment, contrast, and motion discipline.
-- Do **not** copy proprietary layouts, branded surfaces, exact command structures, or copyrighted content unless Wind owns/has rights to the source.
-- Transform the reference into the project's brand and use `nwf-theme` / `sl-theme` / `doctor-theme` anchors.
+- Do **not** copy proprietary layouts, branded surfaces, exact command structures, or copyrighted content unless the human owns/has rights to the source.
+- Transform the reference into the project's brand and use the project's theme-skill anchors.
 
 ### DESIGN.md Token Spec lane
 
 Use when the design needs to persist as machine-readable source of truth.
-1. Create or update `DESIGN.md` in the project root when Wind asks for design tokens/system spec or when multiple agents must reuse the same visual identity.
+1. Create or update `DESIGN.md` in the project root when the human asks for design tokens/system spec or when multiple agents must reuse the same visual identity.
 2. YAML front matter carries normative tokens: colors, typography, rounded, spacing, and component entries.
 3. Markdown body carries rationale in canonical order: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts.
 4. Component variants are sibling entries (`button-primary-hover`), not nested pseudo-states.
@@ -215,7 +213,7 @@ A UI task is **not DONE** until all applicable items are true:
 
 ## Impeccable-Inspired Operating Model
 
-Source learned: <https://impeccable.style/docs/> and `pbakaus/impeccable` npm package/README. Use this as our local `/sop-frontend` vocabulary; do **not** require installing Impeccable unless the repo already uses it or Wind asks.
+Source learned: <https://impeccable.style/docs/> and `pbakaus/impeccable` npm package/README. Use this as our local `/sop-frontend` vocabulary; do **not** require installing Impeccable unless the repo already uses it or the human asks.
 
 1. **Context first** — before design changes, inspect the repo for tokens/components/theme and read `PRODUCT.md`, `DESIGN.md`, brand skills, or existing UI patterns. New work must inherit the system, not invent a model-default style.
 2. **Register matters** — product UI, dashboards, admin tools, landing pages, healthcare, ERP, and mobile/tablet operations need different defaults. Decide the register explicitly before applying "bolder" or "delight".
@@ -324,7 +322,7 @@ Use BEFORE writing code for a feature. Design planning only — produces a brief
 Use to design/improve onboarding, empty states, first-run. Goal: reach the "aha moment" fast, not teach everything. Principles: show don't tell (real functionality, progressive disclosure), make it skippable, teach the 20% that delivers 80%, context over ceremony, respect user intelligence. Empty states must give: what will be here + why it matters + clear CTA (+ template/example) + light visual + optional help — never a blank page. Empty-state types: first-use, user-cleared, no-results, no-permissions, error. Tours: 3-7 steps, interactive, spotlight, skippable, replayable; track "seen" in localStorage and never repeat. Never block product behind long onboarding or patronize.
 
 #### Harden
-Use after `Audit` or before shipping production UI. Make the interface resilient to real data, real devices, and real failures. Checklist: every async region has loading/error/empty/success states; long text wraps/truncates intentionally with title/details access; table cells handle nulls, long IDs, mixed languages, and 0/1/many counts; forms handle server validation, duplicate submit, offline/timeout, permission denial, and stale sessions; i18n/date/number/currency formats are explicit (Wind default date = DD/MM/YYYY); destructive actions use named confirmation with consequence; images have dimensions/fallbacks; popovers/menus are not clipped by overflow containers; keyboard and screen-reader flows work; no horizontal page scroll except deliberate data-table scroll with affordance; reduced motion, color-blind safety, and high contrast survive all states. Production hardening is not visual polish — it prevents embarrassed users and support tickets.
+Use after `Audit` or before shipping production UI. Make the interface resilient to real data, real devices, and real failures. Checklist: every async region has loading/error/empty/success states; long text wraps/truncates intentionally with title/details access; table cells handle nulls, long IDs, mixed languages, and 0/1/many counts; forms handle server validation, duplicate submit, offline/timeout, permission denial, and stale sessions; i18n/date/number/currency formats are explicit (the human default date = DD/MM/YYYY); destructive actions use named confirmation with consequence; images have dimensions/fallbacks; popovers/menus are not clipped by overflow containers; keyboard and screen-reader flows work; no horizontal page scroll except deliberate data-table scroll with affordance; reduced motion, color-blind safety, and high contrast survive all states. Production hardening is not visual polish — it prevents embarrassed users and support tickets.
 
 #### Clarify
 Use to fix unclear UX copy — errors, labels, microcopy, instructions. Per-piece: one primary message, the action needed, right tone, within constraints. Patterns: errors explain what+how-to-fix in plain language, no blame, with examples ("Email addresses need an @ symbol. Try name@example.com"); labels specific not generic, format via example, instructions before the field; buttons = verb+noun ("Save changes" not "OK"); help text adds value beyond the label; empty/success/loading set expectations; confirmations state the specific action + consequence ("Delete 'Project Alpha'? This can't be undone"). Rules: specific, concise, active voice, human, helpful, consistent terminology (pick one term, stick to it). Never placeholders-as-only-labels.

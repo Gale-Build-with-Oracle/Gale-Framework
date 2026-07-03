@@ -39,7 +39,7 @@ maw workon <project>
 
 ```bash
 # 1. Read Task Brief (if exists)
-cat ~/ghq/github.com/deachawatss/<PROJECT>/TASK-*.md 2>/dev/null
+cat ~/ghq/github.com/<your-github-user>/<PROJECT>/TASK-*.md 2>/dev/null
 
 # 2. Check past audit findings for this project
 arra_search("<project-name> audit")
@@ -88,10 +88,10 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:<frontend-port>/
 ### 1.2 Authentication
 
 ```bash
-# Export creds locally first (never commit literals): export NWFTH_TEST_USER=... NWFTH_TEST_PASSWORD=...
+# Export creds locally first (never commit literals): export APP_TEST_USER=... APP_TEST_PASSWORD=...
 TOKEN=$(curl -s -X POST http://localhost:<port>/api/auth/login \
   -H "Content-Type: application/json" \
-  -d "{\"username\":\"$NWFTH_TEST_USER\",\"password\":\"$NWFTH_TEST_PASSWORD\"}" | jq -r '.token // .access_token // empty')
+  -d "{\"username\":\"$APP_TEST_USER\",\"password\":\"$APP_TEST_PASSWORD\"}" | jq -r '.token // .access_token // empty')
 echo "TOKEN: ${TOKEN:0:20}..."
 # MUST get a token. No token → CRITICAL FAIL.
 ```
@@ -776,7 +776,7 @@ After deployment, monitor and use these thresholds to decide next action:
 
 ## Phase 7: Database & Data Integrity (ALCOA+)
 
-### 7.1 Schema Checks (via bme-mssql MCP)
+### 7.1 Schema Checks (via your-db MCP)
 
 ```sql
 -- Audit trail columns exist
@@ -895,7 +895,7 @@ A NEW REQ in SRS.md MUST appear (same id) in a UAT.md row — a REQ present in S
 
 ### 7.5.5 G4 — PR Scope vs SRS (per-PR gate)
 
-Validate that the files changed in this PR are consistent with the requirements cited in its `REQ:` line. A PR claiming `REQ: REQ-BME-001` (label printing) but modifying auth middleware is a scope leak — either the REQ line is wrong or the change is out of scope.
+Validate that the files changed in this PR are consistent with the requirements cited in its `REQ:` line. A PR claiming `REQ: REQ-APP-001` (label printing) but modifying auth middleware is a scope leak — either the REQ line is wrong or the change is out of scope.
 
 ```bash
 # 1. Extract REQ-ids from PR description
@@ -1008,7 +1008,7 @@ A P1 sync-gap never burns the main model. Run `/doc-sync`: it reads merged PRs s
 
 ### HANDOFF
 **To [Developer Oracle]**: [specific tasks with evidence]
-**To Gale**: [summary for Wind]
+**To Gale**: [summary for the human]
 ```
 
 ### 8.3 Communication Templates
@@ -1062,11 +1062,12 @@ These findings ALWAYS block release:
 
 ---
 
-## NWFTH Legacy Exceptions (Wind-Approved)
+## Project-Specific Exceptions (operator-approved)
 
-- Hard DELETE of inventory records is ALLOWED (BME projects)
-- FDA 21 CFR Part 11 does NOT apply (NWFTH = food manufacturer)
-- ALCOA+ Enduring: BinTransfer audit trail is sufficient for BME projects
+Record any operator-approved deviations from the default compliance posture here. Examples of what belongs in this list:
+- Which destructive operations (e.g. hard DELETE) are permitted, and in which projects.
+- Which regulatory frameworks do NOT apply to this product, and why.
+- Which audit-trail mechanism is accepted as sufficient.
 - Test server: localhost ONLY. NEVER remote/production.
 
 ---

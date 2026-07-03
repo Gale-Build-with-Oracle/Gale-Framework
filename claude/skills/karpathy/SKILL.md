@@ -2,8 +2,8 @@
 name: karpathy
 description: 'Behavioral guidelines to reduce common LLM coding mistakes.'
 license: MIT
-source: https://github.com/forrestchang/andrej-karpathy-skills (forked → deachawatss/andrej-karpathy-skills)
-adopted: 2026-04-18 by Gale (Wind's fleet)
+source: https://github.com/forrestchang/andrej-karpathy-skills (forked → <your-github-user>/andrej-karpathy-skills)
+adopted: 2026-04-18 by Gale (the human's fleet)
 ---
 
 # Karpathy Guidelines
@@ -74,7 +74,7 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-> **In the Gale fleet**, translate Wind's task into testable acceptance criteria BEFORE writing code, not after — verifiable artifacts are what `/sop-review` checks the PR against.
+> **In the Gale fleet**, translate the human's task into testable acceptance criteria BEFORE writing code, not after — verifiable artifacts are what `/sop-review` checks the PR against.
 
 ## 5. No Tautological Tests
 

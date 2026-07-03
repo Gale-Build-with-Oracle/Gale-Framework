@@ -6,21 +6,21 @@ description: 'Batch doc reconciliation at stabilization — reads merged PRs sin
 
 > Docs chase settled behavior, never moving targets. One sync, one PR, zero mismatch at the moments docs are read.
 
-Part of the lean CMMI standard (`/sop-cmmi`). Tailoring decision 2026-06-05 (Wind-approved, recorded in `gale-oracle/docs/org/TAILORING.md`): the per-PR doc mandate was replaced by this batch sync because per-PR doc edits chased moving designs and produced mismatch.
+Part of the lean CMMI standard (`/sop-cmmi`). Tailoring decision 2026-06-05 (the human-approved, recorded in `gale-oracle/docs/org/TAILORING.md`): the per-PR doc mandate was replaced by this batch sync because per-PR doc edits chased moving designs and produced mismatch.
 
 ## When this MUST run
 
 1. **Before any UAT session** — the UAT.md script the testers hold MUST describe current behavior.
 2. **Before any release/deploy** — `/sop-qa` Phase 7.5.2 release gate BLOCKS (P1) if the marker is behind.
 
-No calendar cadence — these two gates are the only triggers (Wind decision 2026-06-05).
+No calendar cadence — these two gates are the only triggers (the human decision 2026-06-05).
 
 ## Executable collection step
 
-The runnable collector lives in Wind-Framework and is the first command to run from the target project repo:
+The runnable collector lives in Gale-Framework and is the first command to run from the target project repo:
 
 ```bash
-bash ~/ghq/github.com/deachawatss/Wind-Framework/scripts/doc-sync.sh --write-report
+bash ~/ghq/github.com/<your-github-user>/Gale-Framework/scripts/doc-sync.sh --write-report
 ```
 
 It reads `docs/.last-doc-sync`, scans merged PRs on `main`, validates every merged PR has `REQ: ...` or `REQ: none`, and writes `docs/.doc-sync/merged-prs.md` for the doc-writing agents. If it reports missing/invalid REQ lines, fix the PR metadata or traceability record first; do not advance the marker.
@@ -28,7 +28,7 @@ It reads `docs/.last-doc-sync`, scans merged PRs on `main`, validates every merg
 After the docs are updated and `/sop-qa` traceability checks pass, advance the marker with:
 
 ```bash
-bash ~/ghq/github.com/deachawatss/Wind-Framework/scripts/doc-sync.sh --apply-marker
+bash ~/ghq/github.com/<your-github-user>/Gale-Framework/scripts/doc-sync.sh --apply-marker
 git add docs/
 ```
 
@@ -38,7 +38,7 @@ git add docs/
 
 ```bash
 # 1. Collect merged PR numbers, titles, REQ lines, and validation status.
-bash ~/ghq/github.com/deachawatss/Wind-Framework/scripts/doc-sync.sh --write-report
+bash ~/ghq/github.com/<your-github-user>/Gale-Framework/scripts/doc-sync.sh --write-report
 
 # 1.5 The report now includes specs/ content automatically.
 #     Design specs provide the WHY behind each PR's changes.

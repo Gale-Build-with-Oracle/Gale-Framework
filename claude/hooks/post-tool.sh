@@ -13,7 +13,7 @@ INPUT=$(cat)
 COMMAND=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // ""' 2>/dev/null)
 STDOUT=$(printf '%s' "$INPUT" | jq -r '.tool_output.stdout // ""' 2>/dev/null)
 
-# --- Code-ship verify nudge (non-blocking; Wind 2026-06-05) ---
+# --- Code-ship verify nudge (non-blocking; the human 2026-06-05) ---
 # Root pattern: "committed/merged CODE without running the changed function" hit
 # 4 of 7 recent sessions (rrr metrics error column). On a code-ship command,
 # remind to show the changed function actually RAN. Fires ONLY when real code
@@ -106,7 +106,7 @@ PY
 else
   ORACLE_HOME=$(echo "$PWD" | grep -oE '[a-z]+-oracle' | head -1 || echo "leaf")
   echo -e "${YLW}⚠️ PR #${PR_NUM} created. Notify main session:${RST}" >&2
-  echo -e "${YLW}  maw hey wind:${ORACLE_HOME} \"DONE: PR #${PR_NUM} ready. ${PR_URL}\"${RST}" >&2
+  echo -e "${YLW}  maw hey <host>:${ORACLE_HOME} \"DONE: PR #${PR_NUM} ready. ${PR_URL}\"${RST}" >&2
 fi
 
 exit 0

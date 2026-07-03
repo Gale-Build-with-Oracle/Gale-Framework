@@ -4,7 +4,7 @@
 # Exits (notifying L1) when the PR appears on the dispatched branch.
 #
 # Usage: bash ~/.claude/hooks/watch-l2-pr.sh <owner/repo> <branch>
-# Example: bash ~/.claude/hooks/watch-l2-pr.sh deachawatss/NWFTH-NPD-Forms agents/2-fix-ui-readability
+# Example: bash ~/.claude/hooks/watch-l2-pr.sh <your-github-user>/YourProduct-App agents/2-fix-ui-readability
 
 REPO="$1"
 BRANCH="$2"

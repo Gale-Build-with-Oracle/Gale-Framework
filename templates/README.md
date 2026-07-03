@@ -1,4 +1,4 @@
-# Wind-Framework Templates
+# Gale-Framework Templates
 
 ## Active Templates
 
