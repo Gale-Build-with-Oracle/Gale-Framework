@@ -22,7 +22,7 @@ Before implementing:
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
 
-> **In the Gale fleet**, this overlaps with `shared-claude.md` §"Before You Diagnose or Build" (audit existing state first). The Karpathy framing extends that rule to *intent* ambiguity, not just state ambiguity.
+> **In the Gale fleet**, this overlaps with core.md §"Decision Gate — Verify Before Action" (verify in the actual target first). The Karpathy framing extends that rule to *intent* ambiguity, not just state ambiguity.
 
 ## 2. Simplicity First
 
@@ -75,6 +75,12 @@ For multi-step tasks, state a brief plan:
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
 > **In the Gale fleet**, translate Wind's task into testable acceptance criteria BEFORE writing code, not after — verifiable artifacts are what `/sop-review` checks the PR against.
+
+## 5. No Tautological Tests
+
+**Expected values must come from independent sources.**
+
+Known-good literals, worked examples, the spec — never recompute the expected result the way the code under test does. `expect(add(a,b)).toBe(a+b)` gives zero confidence: it re-asserts the implementation, not the behavior.
 
 ---
 

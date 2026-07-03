@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# maw git-guard :: pre-push — engine-agnostic (fires for Claude AND Codex).
+# Blocks: (1) push to <upstream-org>/* (a read-only fork upstream — edit the
+#         placeholder below to the org you forked from, if any);
+#         (2) push to main/master on a PRODUCT repo (must open a PR).
+# Force-push is NOT judged here (git can't tell --force from --force-with-lease, which
+# Claude's pre-guard legitimately allows); product main is protected by rule (2) anyway.
+# Default ALLOW. stdin = "<lref> <lsha> <rref> <rsha>" lines (buffered for chaining).
+set -uo pipefail
+
+remote_url="${2:-}"
+case "$remote_url" in
+  *"<upstream-org>"/*)
+    echo "⛔ git-guard: push to <upstream-org> (read-only upstream) blocked." >&2
+    exit 1 ;;
+esac
+
+GUARD_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+. "$GUARD_DIR/_classify.sh" 2>/dev/null || { cat >/dev/null; exit 0; }
+guard_classify
+
+input="$(cat)"   # buffer stdin so we can re-feed a chained hook
+block=0
+if [ "${GUARD_IS_PRODUCT:-0}" = "1" ]; then
+  while read -r _lref _lsha rref _rsha; do
+    [ -z "${rref:-}" ] && continue
+    if [ "$rref" = "refs/heads/main" ] || [ "$rref" = "refs/heads/master" ]; then
+      echo "⛔ git-guard: push to '$rref' blocked in product repo '${GUARD_REPO}' — open a PR." >&2
+      block=1
+    fi
+  done <<EOF
+$input
+EOF
+fi
+[ "$block" = "1" ] && exit 1
+
+# Chain to a pre-existing repo-local pre-push (re-feeding the buffered ref list).
+common="$(git rev-parse --git-common-dir 2>/dev/null || echo "")"
+toplevel="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+for cand in "$common/hooks/pre-push" "$toplevel/.husky/pre-push"; do
+  if [ -x "$cand" ]; then printf '%s\n' "$input" | "$cand" "$@"; exit $?; fi
+done
+exit 0

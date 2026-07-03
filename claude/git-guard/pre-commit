@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# maw git-guard :: pre-commit — engine-agnostic (fires for Claude AND Codex).
+# Blocks: committing on main/master in a PRODUCT repo (must use a worktree/branch).
+# Default ALLOW — only a clearly-matched bad condition exits non-zero (no lockout).
+set -uo pipefail
+
+GUARD_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+. "$GUARD_DIR/_classify.sh" 2>/dev/null || exit 0   # fail-open if helper missing
+
+guard_classify
+branch="$(git symbolic-ref --short HEAD 2>/dev/null || echo "")"
+
+if [ "${GUARD_IS_PRODUCT:-0}" = "1" ] && { [ "$branch" = "main" ] || [ "$branch" = "master" ]; }; then
+  echo "⛔ git-guard: commit on '$branch' blocked in product repo '${GUARD_REPO}'." >&2
+  echo "   Product changes go through a worktree + PR: maw workon ${GUARD_REPO} <slug>" >&2
+  exit 1
+fi
+
+guard_chain_noinput "pre-commit" "$@"
+exit 0
