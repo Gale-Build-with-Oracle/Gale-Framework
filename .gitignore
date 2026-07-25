@@ -8,6 +8,13 @@ maw/maw.config.json
 .maw/
 .oracle-build-backups/
 
+# Claude Code session transcripts — NEVER publish. your-framework (private) tracks
+# ~825MB of these under claude-sessions/; they are raw tool output and routinely
+# contain DB names, connection details and anything else printed during a session.
+# `*.jsonl` above does not cover them (they are .txt / .meta.json), so a tree-copy
+# sync from your-framework would silently publish them into this PUBLIC repo.
+claude-sessions/
+
 # Databases / logs / dumps
 *.sqlite
 *.sqlite-wal
@@ -18,3 +25,13 @@ maw/maw.config.json
 # Dependencies / OS
 node_modules/
 .DS_Store
+# >>> maw ephemeral markers (managed by maw-rs) >>>
+.maw/delivery.json
+.maw/l1-review-request.json
+.maw/delivery-notified
+.maw/l1-oracle
+.maw/pane-id
+.maw/auto-done-pinged
+.maw/phase.json
+.maw/req-line
+# <<< maw ephemeral markers <<<
