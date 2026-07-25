@@ -28,7 +28,6 @@ oracle-skills-cli v2.0.0
 - retrospective
 - awaken
 - oracle-soul-sync-update
-- oracle-family-scan
 - rrr
 - deep-research
 - oracle

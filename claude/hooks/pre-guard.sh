@@ -18,6 +18,13 @@ RED='\033[1;31m'
 YLW='\033[1;33m'
 RST='\033[0m'
 
+# ─── INSTALL-LOCAL IDENTIFIERS ──────────────────────────────────────
+# This framework is a public template, so no private infrastructure is named here.
+# The guards below read these values, which means the protections keep working as
+# soon as you point them at your own setup. Override per machine via the environment.
+GUARD_PROD_DB="${GUARD_PROD_DB:-PRODDB}"                              # production database to protect (read-only)
+GUARD_INFRA_REPOS="${GUARD_INFRA_REPOS:-gale-oracle your-framework}"  # lightweight-lane repos (space separated)
+
 # Source registry-derived guard patterns (defines is_hook_blocked / is_product_repo
 # from fleet/projects.yaml). This is the SAME file git-guard + prompt-inject source.
 _GUARD_PATTERNS="$HOME/.config/git/hooks/_generated-patterns.sh"
@@ -138,7 +145,7 @@ if [ "$TOOL" = "Bash" ]; then
     exit 2
   fi
 
-  # Block direct push to main in Acme repos
+  # Block direct push to main in product repos
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*git[[:space:]]+push[[:space:]]+(origin[[:space:]]+)?main([[:space:]]|$)'; then
     EFFECTIVE_DIR=""
     if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*cd[[:space:]]+'; then
@@ -240,7 +247,7 @@ if [ "$TOOL" = "Bash" ]; then
     fi
   fi
 
-  # Acme worktree enforcement — block direct commits on main
+  # Product worktree enforcement — block direct commits on main
   if echo "$CMD" | grep -qE '(^|;|&&|\|\|)[[:space:]]*git[[:space:]]+commit'; then
     REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "")
     REPO_NAME=$(basename "$REPO_ROOT" 2>/dev/null || echo "")
@@ -252,7 +259,7 @@ if [ "$TOOL" = "Bash" ]; then
       fi
     fi
     # Fleet-sync reminder — doctrine fragment edits must propagate fleet-wide
-    if [ "$REPO_NAME" = "gale-oracle" ] || [ "$REPO_NAME" = "your-framework" ]; then
+    if printf '%s\n' $GUARD_INFRA_REPOS | grep -qxF "$REPO_NAME"; then
       STAGED=$(git diff --cached --name-only 2>/dev/null || echo "")
       if echo "$STAGED" | grep -qE '(doctrine/(core|claude|codex)\.md|oracle-build\.sh|oracle-.*-(claude|agents)\.md)'; then
         echo -e "${YLW}⚡ DOCTRINE FILES STAGED: run \`gale-oracle/scripts/fleet-sync.sh\` after this commit to propagate to all oracles.${RST}" >&2
@@ -305,9 +312,9 @@ if [ "$TOOL" = "Bash" ]; then
   fi
 
   # Production DB guard for SQL CLI tools
-  if echo "$CMD" | grep -iqE "(sqlcmd|mssql-cli|osql).*PRODDB"; then
+  if echo "$CMD" | grep -iqE "(sqlcmd|mssql-cli|osql).*${GUARD_PROD_DB}"; then
     if echo "$CMD" | grep -iqE '(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE)([^[:alnum:]_]|$)'; then
-      echo -e "${RED}BLOCKED: SQL CLI write targeting PRODDB (production). Read-only.${RST}" >&2
+      echo -e "${RED}BLOCKED: SQL CLI write targeting ${GUARD_PROD_DB} (production). Read-only.${RST}" >&2
       exit 2
     fi
   fi
@@ -441,7 +448,7 @@ case "$TOOL" in
           "$PROJECT_ROOT"/*|"$PROJECT_ROOT") ;;
           /tmp/*|/private/tmp/*|"$HOME_ROOT"/.claude/*|"$HOME_ROOT"/.*) ;;
           "$HOME_ROOT"/Library/*) ;;
-          */ghq/github.com/your-org/*|*/ghq/github.com/second-org/*) ;;
+          */ghq/github.com/your-org/*|*/ghq/github.com/your-second-org/*) ;;
           *)
             echo -e "${RED}BLOCKED: Editing outside project ($(basename "$PROJECT_ROOT")). Target: $(dirname "$FILE_ABS")${RST}" >&2
             exit 2 ;;
@@ -489,7 +496,7 @@ case "$TOOL" in
       fi
     fi
 
-    # Production DB guard: block setting PRODDB as default in TRACKED config
+    # Production DB guard: block setting the prod DB as default in TRACKED config
     # Gitignored files (.env) are excluded — they hold legitimate connection strings
     CONTENT=$(printf '%s' "$INPUT" | jq -r '.tool_input.new_string // .tool_input.content // ""' 2>/dev/null)
     if echo "$FILE_PATH" | grep -iqE '\.(yaml|yml|env|toml|json)$'; then
@@ -497,8 +504,8 @@ case "$TOOL" in
       FILE_BASE=$(basename "$FILE_PATH" 2>/dev/null)
       IS_GITIGNORED=$(git -C "$FILE_DIR" check-ignore -q "$FILE_PATH" 2>/dev/null && echo "yes" || echo "no")
       if [ "$IS_GITIGNORED" = "no" ]; then
-        if echo "$CONTENT" | grep -iqE "(database|MSSQL_DATABASE).*PRODDB"; then
-          echo -e "${RED}BLOCKED: Cannot set PRODDB (production) as default database in tracked config.${RST}" >&2
+        if echo "$CONTENT" | grep -iqE "(database|MSSQL_DATABASE).*${GUARD_PROD_DB}"; then
+          echo -e "${RED}BLOCKED: Cannot set ${GUARD_PROD_DB} (production) as default database in tracked config.${RST}" >&2
           exit 2
         fi
       fi
@@ -509,14 +516,14 @@ esac
 
 # ─── MCP SQL GUARD ──────────────────────────────────────────────────
 case "$TOOL" in
-  mcp__example-sql*|mcp__example-sql*)
+  mcp__*sql*)
     SQL=$(printf '%s' "$INPUT" | jq -r '.tool_input.sql // ""' 2>/dev/null)
-    if echo "$SQL" | grep -iqE "PRODDB"; then
+    if echo "$SQL" | grep -iqE "${GUARD_PROD_DB}"; then
       if echo "$SQL" | grep -iqE '^[[:space:]]*(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|EXEC|MERGE|GRANT|REVOKE)([^[:alnum:]_]|$)'; then
-        echo -e "${RED}BLOCKED: Write operation on PRODDB (production). Read-only.${RST}" >&2
+        echo -e "${RED}BLOCKED: Write operation on ${GUARD_PROD_DB} (production). Read-only.${RST}" >&2
         exit 2
       fi
-      if echo "$SQL" | grep -iqE '^[[:space:]]*USE[[:space:]]+.*PRODDB'; then
+      if echo "$SQL" | grep -iqE "^[[:space:]]*USE[[:space:]]+.*${GUARD_PROD_DB}"; then
         echo -e "${RED}BLOCKED: Cannot switch to production database.${RST}" >&2
         exit 2
       fi

@@ -268,7 +268,6 @@ Build the combined table. For each of the 29 arra skills, show: profile tier, in
   11 inbox                    lab        ✓          v3.7.2    ✓ ok         4
   12 incubate                 full       ✓          v3.7.2    ✓ ok         6
   13 learn                    standard   ✓          v3.7.2    ✓ ok         7
-  14 oracle-family-scan       standard   ✓          v3.7.2    ✓ ok         4
   15 oracle-soul-sync-update  standard   ✓          v3.7.2    ✓ ok         3
   16 philosophy               full       ✗          —         —            4
   17 project                  full       ✗          —         —            6
@@ -295,7 +294,6 @@ Build the combined table. For each of the 29 arra skills, show: profile tier, in
 
 ```bash
 for skill in about-oracle awaken contacts create-shortcut \
-  dig dream feel forward go inbox incubate learn oracle-family-scan \
   oracle-soul-sync-update philosophy project recap resonance rrr \
   schedule standup talk-to team-agents trace vault where-we-are who-are-you xray; do
   count=$(grep -rl "/$skill" ~/.claude/projects/*/*.jsonl 2>/dev/null | wc -l)

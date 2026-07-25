@@ -36,18 +36,17 @@ When Wind describes a feature/change/bug for an EXISTING project, recognize as a
 
 ## Project Name Resolution
 
-| Wind says | Repo | Tier |
+Map the shorthand the human actually says to the repo it means, so a one-word
+request routes without guessing. Keep one row per active project:
+
+| Human says | Repo | Tier |
 |---|---|---|
-| bulk-picking | example-picking | Acme |
-| partial-picking | example-partial | Acme |
-| putaway | example-putaway | Acme |
-| run-creation | example-run | Acme |
-| example-hr | example-hr | Acme |
-| example-label | example-label | Acme |
-| wind-diary, blog, diary | wind-diary | SL |
-| portfolio | example-portfolio | SL |
-| structura | example-structura | SL |
-| example-social, social | example-social | SL |
+| warehouse, picking | example-picking | strict |
+| leave, hr | example-hr | strict |
+| labels | example-label | strict |
+| blog, diary | example-diary | preferred |
+| portfolio | example-portfolio | preferred |
+| dashboard | example-dashboard | preferred |
 
 Unknown name → ASK before delegating.
 
@@ -119,7 +118,7 @@ Routing: bug fix = no Task Brief. Single-Oracle feature = light brief. Multi-Ora
 
 **Non-Acme tooling repos** (`Gale-Oracle`, `*-oracle`, `oracle`, `maw-js`, `maw-ui`, plugins): do not force the Acme pipeline by habit. Direct Codex work, subagents, or `$team-agents`; commit and push directly when hooks/repo policy allow.
 
-Every Acme/project prompt MUST include: (1) what+acceptance, (2) `maw pr` rule with `MAW_PR_REQ='REQ-<PROJECT>-NNN'` for feature/behavior PRs or `REQ: none` only for true refactor/chore, (3) self-QA via `/sop-qa`, (4) Task Brief path, (5) use localhost (you ARE on localhost), (6) port, (7) theme/skill, (8) heartbeat 5-min, (9) lifecycle closer, (10) **no `git add -A` or `git add .`** — stage by name only. Acme test creds: `/nwf-sql`.
+Every project prompt MUST include: (1) what+acceptance, (2) `maw pr` rule with `MAW_PR_REQ='REQ-<PROJECT>-NNN'` for feature/behavior PRs or `REQ: none` only for true refactor/chore, (3) self-QA via `/sop-qa`, (4) Task Brief path, (5) use localhost (you ARE on localhost), (6) port, (7) theme/skill, (8) heartbeat 5-min, (9) lifecycle closer, (10) **no `git add -A` or `git add .`** — stage by name only. Test credentials: see the project's own setup docs — never inline them.
 
 ## Lifecycle / Full Pipeline
 

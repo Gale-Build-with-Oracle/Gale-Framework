@@ -25,7 +25,7 @@
 
 ## Theme / UI
 
-<!-- brand skill to invoke (/nwf-theme, /sl-theme, /doctor-theme) if frontend -->
+<!-- brand skill to invoke, if this project has a frontend -->
 
 ## Project-Specific Rules
 

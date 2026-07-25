@@ -6,7 +6,7 @@ description: 'The lean project doc standard — ONE flat 7-doc set for EVERY pro
 
 > One standard. Every project. Seven documents. Code first, docs after.
 
-This replaces the old 35-doc, 4-tier, gate-enforced CMMI machine. There are no phases, no `.maw/phase.json`, no doc-before-code hook gates, no per-project tiers. Every project — Acme, Studio, oracle, client — keeps the **same seven documents**. That is the whole standard.
+This replaces the old 35-doc, 4-tier, gate-enforced CMMI machine. There are no phases, no `.maw/phase.json`, no doc-before-code hook gates, no per-project tiers. Every project — product, internal, oracle, client — keeps the **same seven documents**. That is the whole standard.
 
 ---
 
@@ -328,7 +328,7 @@ Detailed audit recipe: `references/doc-sync-enforcement-audit.md`.
 ## 10. Cross-References
 
 - `/sop-qa` — the single quality gate. Runs after build, before `maw pr`. Includes doc-completeness.
-- `/nwf-doc` / `/sl-doc` — branded document *generation* (PDF/DOCX/PPTX/XLSX deliverables), distinct from these markdown specs.
+- A brand document skill handles branded *generation* (PDF/DOCX/PPTX/XLSX deliverables), which is distinct from these markdown specs.
 - `/sop-maw` — worktree, PR, merge, cleanup.
 - `/post-mortem` — engineering RCA (pairs with the CAR section of RISK.md).
 - `/sop-delegation` — the delegation + orchestration pipeline (same for every project; merge gate and stack are per-repo, not per-doctrine). Uses this same 7-doc standard.

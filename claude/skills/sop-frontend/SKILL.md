@@ -31,7 +31,8 @@ AI-generated UI has recognizable patterns. Avoid ALL of them:
 | Stock card grids | Uniform grids ignore information priority and scanning patterns | Purpose-driven layouts |
 | Shadow-heavy design | Layered shadows compete with content | Subtle or no shadows unless the design system specifies |
 
-**If it looks like "ChatGPT made this" — rework it.** Use the project's theme skill (`/nwf-theme`, `/sl-theme`, `/doctor-theme`) and the Reference Design Systems lane.
+**If it looks like "ChatGPT made this" — rework it.** Use the project's own theme
+skill and the Reference Design Systems lane.
 
 ## Component Architecture Rules
 
@@ -93,12 +94,19 @@ No prop drilling deeper than 3 levels — introduce context or restructure.
 ## Project Theming
 
 Before writing any UI code, load the correct brand/theme skill:
-- Acme projects -> `/nwf-theme`
-- Studio projects -> `/sl-theme`
-- Clinic / healthcare (Example Clinic / example-clinic / doctor-branded social listening) projects -> `/doctor-theme`
-- No brand skill for the project? Gather brand context first (personality, palette, logo, audience) — never invent a brand silently.
+- Each brand or client you work for gets its own theme skill, holding that brand's
+  logo assets, official colour anchors, and minimal brand conventions.
+- Route by the **visible product brand**, not by who hosts it. If an app lives on
+  one client's domain but presents another's brand, load the brand the user sees.
+- No brand skill for the project? Gather brand context first (personality, palette,
+  logo, audience) — never invent a brand silently.
 
-**Brand/theme skill boundary:** `/nwf-theme`, `/sl-theme`, and `/doctor-theme` should stay broad — logo assets, official color anchors, and minimal brand text/conventions only. Do **not** push layout, component, token, typography, table/form/dashboard, animation, or "impeccable" design prescriptions into those theme skills. All UI/UX decisions and implementation quality belong here in `/sop-frontend` plus the target project's own design source of truth. If a healthcare app is hosted under a Studio domain but the visible product brand is example-clinic/clinic, use `/doctor-theme`, not `/sl-theme`.
+**Brand/theme skill boundary:** a theme skill stays broad — logo assets, official
+colour anchors, and minimal brand text/conventions only. Do **not** push layout,
+component, token, typography, table/form/dashboard, animation, or "impeccable"
+design prescriptions into a theme skill. All UI/UX decisions and implementation
+quality belong here in `/sop-frontend` plus the target project's own design source
+of truth.
 
 ## Consolidated UX/UI Operating System
 

@@ -9,7 +9,7 @@ description: 'New project onboarding checklist — repo creation, tier assignmen
 Before anything else, confirm these with Wind:
 
 ```
-1. Tier?  → Acme (strict) / Studio (preferred) / Oracle-tooling (unrestricted)
+1. Tier?  → product (strict) / internal (preferred) / oracle-tooling (unrestricted)
 2. Owner? → Leaf (Acme) / Bamboo (SL) / Sky (trading) / other
 3. Stack? → Rust/Go/Node/Python + frontend framework
 4. Port?  → which port does the app run on?
@@ -186,7 +186,7 @@ bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.co
 [ ] GitHub repo created/cloned (ghq)
 [ ] Branch protection on main
 [ ] AGENTS.md — Rule Zero + Karpathy + Docker + localhost + MSSQL
-[ ] CLAUDE.md — stack + dev + testing + /nwf-theme + worktree pipeline trigger
+[ ] CLAUDE.md — stack + dev + testing + brand skill + worktree pipeline trigger
 [ ] docs/ — 7-doc standard bootstrapped (PROJECT_PLAN/SRS/SDD/CR/RISK/UXUI/UAT)
 [ ] ψ/ — memory structure initialized
 [ ] Docker — docker-compose.yml with resource limits
@@ -203,7 +203,7 @@ bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.co
 
 ---
 
-## Path B: Studio Project (Preferred Tier)
+## Path B: Internal Project (Preferred Tier)
 
 **Owner**: Bamboo | **Worktree**: preferred | **QA**: `/sop-qa` self-QA | **Docs**: optional | **Discord**: 1 channel
 
@@ -232,10 +232,10 @@ Same as A3 but without MSSQL references. Use generic DB rules.
 http://localhost:<PORT>
 
 ## Theme
-invoke /sl-theme before any UI work
+invoke the project brand skill before any UI work
 
 ## Docs
-invoke /sl-doc for documents
+invoke the project document skill for documents
 
 ## Worktree Pipeline — DO NOT STOP AFTER COMMITTING
 
@@ -276,7 +276,7 @@ Same as A10 (if Docker-based).
 
 1. **Tier table**: add to gale-oracle shared-claude.md preferred tier list
 2. **Fleet config**: add to `~/.config/maw/fleet/03-bamboo.json`
-3. **sop-enforce.sh**: add to Studio case pattern
+3. **sop-enforce.sh**: add to the internal-tier case pattern
 
 ### B9. Notify
 
@@ -296,7 +296,7 @@ bash ~/ghq/github.com/your-org/gale-oracle/scripts/smoke-test.sh ~/ghq/github.co
 ```
 [ ] GitHub repo created/cloned
 [ ] AGENTS.md — Rule Zero + Karpathy + localhost
-[ ] CLAUDE.md — stack + /sl-theme + /sl-doc
+[ ] CLAUDE.md — stack + brand skill + document skill
 [ ] ψ/ — memory structure initialized
 [ ] CI/CD — GitHub Actions configured
 [ ] Discord — 1 channel, channel map updated

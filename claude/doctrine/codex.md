@@ -67,7 +67,6 @@ After completing work:
 
 ## Skill Deny List — orchestrator-only, NEVER invoke
 
-`/maw-check`, `/standup`, `/recap`, `/fleet-*`, `/oracle-family-scan`, `/dream`, `/forward`, `/where-we-are` — fleet/session infrastructure for the Head Oracle, not coding tools. Need infra info? **Ask your orchestrator.** NOT blocked (you need these): `/rrr` (worktree retros via `maw done`), `/talk-to` (report back).
 
 ## Worktree Ping Discipline — Re-read After External Unstick
 

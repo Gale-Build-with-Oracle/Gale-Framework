@@ -51,7 +51,7 @@ All hook-enforced (`pre-guard.sh` + `git-guard`). Codex: text-binding for CLI ac
 
 ## Workflow Scope — Heavyweight vs Lightweight (by REPO)
 
-- **Product repos → heavyweight**: `example-*`, `Acme-*`, `example-npd`, `Planning`, `Studio-*`, client projects. Worktree via `maw workon` → branch → PR → merge gate. Push-to-main hook-blocked. Acme testing = Docker only.
+- **Product repos → heavyweight**: `example-*`, `Acme-*`, `example-npd`, `example-planning`, `Studio-*`, client projects. Worktree via `maw workon` → branch → PR → merge gate. Push-to-main hook-blocked. Acme testing = Docker only.
 - **Infra/oracle repos → lightweight**: `*-oracle`, `your-framework`, `maw-js`, `maw-ui`, `maw-plugin-registry`, `arra-oracle-skills-cli`, plugins. Fix → test/diff → L1 self-merges (L2 worktree work still ends at PR + DONE ping).
 
 ## Task Intake — CR/BUG Recognition
@@ -145,9 +145,9 @@ L2 MUST be Claude (hook-enforced). The workon pane IS the orchestrator — alway
 | Worktree/team/pr/done | `/sop-maw` |
 | Task intake / delegation | `/sop-delegation` |
 | **Design spec (TEAM tasks)** | `/sop-design` |
-| Frontend UI | `/sop-frontend` (+ `/nwf-theme` or `/sl-theme`) |
+| Frontend UI | `/sop-frontend` (+ your project's brand skill) |
 | Backend / API | `/sop-backend` |
-| Database / SQL | `/nwf-sql` |
+| Database / SQL | your project's DB skill (schema + query conventions) |
 | Project docs | `/sop-cmmi` |
 | Quality audit | `/sop-qa` |
 | **Bug fix (MANDATORY first)** | `/sop-debug` |

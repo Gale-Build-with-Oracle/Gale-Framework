@@ -29,9 +29,9 @@ L2 MUST be Claude (hook-enforced). The workon pane IS the orchestrator — alway
 | Worktree/team/pr/done | `/sop-maw` |
 | Task intake / delegation | `/sop-delegation` |
 | **Design spec (TEAM tasks)** | `/sop-design` |
-| Frontend UI | `/sop-frontend` (+ `/nwf-theme` or `/sl-theme`) |
+| Frontend UI | `/sop-frontend` (+ your project's brand skill) |
 | Backend / API | `/sop-backend` |
-| Database / SQL | `/nwf-sql` |
+| Database / SQL | your project's DB skill (schema + query conventions) |
 | Project docs | `/sop-cmmi` |
 | Quality audit | `/sop-qa` |
 | **Bug fix (MANDATORY first)** | `/sop-debug` |

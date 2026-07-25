@@ -9,7 +9,7 @@
 
 ## 1. The defined lifecycle
 
-Every project — Acme, Studio, oracle, client — follows the same lifecycle. Stack and merge gate differ per repo; the *process* does not.
+Every project — product, internal, oracle, client — follows the same lifecycle. Stack and merge gate differ per repo; the *process* does not.
 
 ```
 PER PR:            intake → design spec (TEAM tasks) → build (code-first) → /sop-qa → /sop-review → merge → maw done
@@ -41,7 +41,7 @@ Full delegation mechanics: `/sop-delegation`.
 ## 4. Merge gate (per repo, not per doctrine)
 
 - **Acme** (production): Wind approves the merge; direct push to `main` is hook-blocked.
-- **Studio internal**: dev oracle auto-merges after `/sop-qa` PASS.
+- **Internal tier**: the dev oracle auto-merges after `/sop-qa` PASS.
 - **Infra / oracle repos**: self-merge (lightweight).
 - Risk classification (frontend/docs/config = low; backend/API/DB/security/cross-boundary = high → Kati) lives in the fleet CLAUDE.md "Merge gate classification".
 

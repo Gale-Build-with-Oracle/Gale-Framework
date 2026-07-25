@@ -162,9 +162,9 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
     fi
     # Frontend/theme SOP detection by repo family
     case "$REPO_NAME" in
-      Acme-*|acme-*)  FRONTEND_SOP="/sop-frontend + /nwf-theme. DB → /nwf-sql." ;;
-      example-*)            FRONTEND_SOP="/sop-frontend + /nwf-theme. DB → /nwf-sql." ;;
-      Studio*|example-social*|example-webhook|example-portfolio) FRONTEND_SOP="/sop-frontend + /sl-theme." ;;
+      # Map your repo families to their brand skill, e.g.
+      #   acme-*) FRONTEND_SOP="/sop-frontend + /acme-theme. DB -> /acme-sql." ;;
+      example-*)        FRONTEND_SOP="/sop-frontend + the project brand skill." ;;
       odoo_*|odoo19-*)  FRONTEND_SOP="/sop-frontend (Odoo XML/QWeb views)." ;;
     esac
     # Also detect from file presence (catches repos not in the case list)
@@ -211,7 +211,7 @@ if [ "$EVENT" = "UserPromptSubmit" ]; then
     if [ -n "$_SESSION" ]; then
       _WT_WINS=$(tmux list-windows -t "$_SESSION" -F '#{window_name}' 2>/dev/null \
         | grep -v "^${_CUR_WIN}$" \
-        | grep -E 'Acme-|example-|Planning-|example-npd-|example-hr|example-label|example-forms|example-crm' \
+        | grep -E 'example-' \
         | head -3 | tr '\n' ', ' | sed 's/,$//')
       if [ -n "$_WT_WINS" ]; then
         PARTS+=("⚠️ ACTIVE L2 WORKTREE(s): ${_WT_WINS} — if L2 opened a PR, /sop-review + prove live behavior + merge NOW (L1 merge authority is IMMEDIATE). Before maw done, confirm DONE-ping says L2 RRR done or inspect/bounce L2 for /rrr. L3 worker /rrr is not required for your-framework. After merge close linked issues if not auto-closed. Check: gh pr list --repo your-org/<repo> --head agents/2-<slug>")
